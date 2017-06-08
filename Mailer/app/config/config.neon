@@ -30,6 +30,8 @@ services:
 	- Remp\MailerModule\Auth\Authenticator
 	- Remp\MailerModule\Auth\RemoteUser(%sso_host%)
 
+	-  Remp\MailerModule\Job\Queue
+
 	# Repositories
 	- Remp\MailerModule\Repository\UsersRepository
 	- Remp\MailerModule\Repository\LogsRepository('2000-01-01 00:00:00')
@@ -40,6 +42,7 @@ services:
 	# Factories
 	- Remp\MailerModule\Components\IDataTableFactory
 	- Remp\MailerModule\Components\ITemplateStatsFactory
+	- Remp\MailerModule\Components\IQueueStatsFactory
 
 	# Forms
 	- Remp\MailerModule\Forms\SignInFormFactory

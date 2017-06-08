@@ -11,6 +11,7 @@ class CreateListTable extends AbstractMigration
             ->addColumn('name', 'string')
             ->addColumn('description', 'text')
             ->addColumn('order', 'integer')
+            ->addColumn('priority', 'integer')
             ->addColumn('is_consent_required', 'boolean', ['default' => false])
             ->addColumn('is_locked', 'boolean', ['default' => true])
             ->addColumn('is_public', 'boolean', ['default' => true])
