@@ -4,30 +4,40 @@ namespace Remp\MailerModule\Components;
 
 use Nette\Application\UI\Control;
 use Remp\MailerModule\Job\Queue;
+use Remp\MailerModule\Repository\BatchesRepository;
 
 class QueueStats extends Control
 {
+    /** @var BatchesRepository */
+    private $batchesRepository;
+
     /** @var Queue */
     private $queue;
 
-    public function __construct(Queue $queue)
-    {
+    public function __construct(
+        BatchesRepository $batchesRepository,
+        Queue $queue
+    ) {
+        $this->batchesRepository = $batchesRepository;
         $this->queue = $queue;
+
         parent::__construct();
     }
 
     public function render()
     {
         $stats = [];
+        $batches = $this->batchesRepository->getActiveBatches();
 
-        // get all jobs
-        $jobs = [];
+        foreach ($batches as $batch) {
+            $totalCount = $batch->max_emails;
+            $count = $this->queue->getTasksCount($batch->id);
 
-        foreach ($jobs as $job) {
-            $stats[$job] = [
-                'totalCount' => 1,
-                'count' => $this->queue->getTasksCount($job),
-                'status' => $this->queue->isQueueActive($job),
+            $stats[$batch->job_id][] = [
+                'totalCount' => $totalCount,
+                'count' => $count,
+                'percent' => round($count / $totalCount * 100),
+                'active' => $this->queue->isQueueActive($batch->id),
             ];
         }
 

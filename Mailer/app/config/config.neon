@@ -38,6 +38,8 @@ services:
 	- Remp\MailerModule\Repository\LayoutsRepository
 	- Remp\MailerModule\Repository\ListsRepository
 	- Remp\MailerModule\Repository\TemplatesRepository
+	- Remp\MailerModule\Repository\JobsRepository
+	- Remp\MailerModule\Repository\BatchesRepository
 
 	# Factories
 	- Remp\MailerModule\Components\IDataTableFactory
