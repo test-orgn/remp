@@ -44,13 +44,19 @@ class BatchesRepository extends Repository
         return parent::update($row, $data);
     }
 
-    public function getActiveBatches()
+    public function getActiveBatches($jobId)
     {
-        return $this->getTable()->where('status', [
+        $selection = $this->getTable()->where('status', [
             BatchesRepository::STATE_PROCESSING,
             BatchesRepository::STATE_PROCESSED,
             BatchesRepository::STATE_SENDING,
         ]);
+
+        if ($jobId !== null) {
+            $selection->where('mail_job_id', $jobId);
+        }
+
+        return $selection;
     }
 
     public function tableFilter($query, $order, $orderDirection)

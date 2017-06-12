@@ -24,10 +24,10 @@ class QueueStats extends Control
         parent::__construct();
     }
 
-    public function render()
+    public function render($jobId = null)
     {
         $stats = [];
-        $batches = $this->batchesRepository->getActiveBatches();
+        $batches = $this->batchesRepository->getActiveBatches($jobId);
 
         foreach ($batches as $batch) {
             $totalCount = $batch->max_emails;
