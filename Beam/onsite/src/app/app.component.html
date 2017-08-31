@@ -1,0 +1,42 @@
+<div id="__remp-overlay">
+  <div id="__remp-ui">
+    <md-toolbar color="primary">
+      <span>Remp On Site Stats</span>
+    </md-toolbar>
+    <md-card>
+      <md-slide-toggle [(ngModel)]="enableHud"><md-icon>Enable</md-icon></md-slide-toggle>
+    </md-card>
+    <md-card *ngIf="enableHud">
+      <app-hud></app-hud>
+    </md-card>
+  </div>
+  <app-articles *ngIf="enableHud"></app-articles>
+</div>
+
+  <!--<remp-picker></remp-picker>-->
+
+  <!--<hud [config]="config"></dhud>-->
+
+
+<!--<div id="__onsite-overlay">-->
+  <!--<md-grid-list cols="1" rowHeight="100px">-->
+    <!--<md-grid-tile-->
+      <!--[colspan]="1"-->
+      <!--[rowspan]="1">-->
+      <!--<md-toolbar color="primary">-->
+        <!--<span>Application Title</span>-->
+      <!--</md-toolbar>-->
+    <!--</md-grid-tile>-->
+    <!--<md-grid-tile [style.background]="lightblue">-->
+        <!--<md-select placeholder="Favorite food" [(ngModel)]="selectedValue" name="food">-->
+          <!--<md-option *ngFor="let food of foods" [value]="food.value">-->
+            <!--{{food.viewValue}}-->
+          <!--</md-option>-->
+        <!--</md-select>-->
+    <!--</md-grid-tile>-->
+    <!--<md-grid-tile>-->
+      <!--<md-slide-toggle [(ngModel)]="enableOnSite" (change)="toggleOnSite()">Enable</md-slide-toggle>-->
+    <!--</md-grid-tile>-->
+  <!--</md-grid-list>-->
+<!--</div>-->
+

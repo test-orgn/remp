@@ -1,0 +1,30 @@
+.__remp-highlight {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: rgba(182,230,255,.2);
+  /*border: 1px solid rgba(87,157,193,.5);*/
+  border-radius: 4px;
+  -webkit-animation: __cb-hud-fade-in 100ms cubic-bezier(.04,.45,.38,.97) forwards;
+  animation: __cb-hud-fade-in 100ms cubic-bezier(.04,.45,.38,.97) forwards;
+}
+
+.__remp-highlight-stats {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: rgba(182,230,255,.2);
+  /*border: 1px solid rgba(87,157,193,.5);*/
+  border-radius: 4px;
+  -webkit-animation: __cb-hud-fade-in 100ms cubic-bezier(.04,.45,.38,.97) forwards;
+  animation: __cb-hud-fade-in 100ms cubic-bezier(.04,.45,.38,.97) forwards;
+  background: rgba(87,157,193,.5);
+}
+
+.__remp-highlight-stats div {
+  color: rgb(88, 88, 88);
+  padding:3px;
+  font-size: xx-small;
+}

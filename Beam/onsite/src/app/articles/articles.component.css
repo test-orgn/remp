@@ -1,0 +1,21 @@
+.__cb-hud-render-layer {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  transform: translate3d(0, 0, 0);
+  z-index: 2;
+}
+
+.__remp-hud-stats-layer {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  left: -20px;
+  top: 0;
+  pointer-events: none;
+  transform: translate3d(0, 0, 0);
+  z-index: 2;
+}

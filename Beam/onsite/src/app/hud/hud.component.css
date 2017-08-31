@@ -1,0 +1,14 @@
+#__remp-hud {
+  bottom: auto;
+}
+
+.material-icons{
+  color: red !important;
+  font-weight: bold;
+
+}
+
+.md-button-toggle-checked .material-icons{
+  color: green !important;
+  font-weight: bold;
+}

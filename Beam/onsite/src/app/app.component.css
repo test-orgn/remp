@@ -1,0 +1,53 @@
+
+h1 {
+    color: #369;
+    font-family: Ariel, Helvetica;
+    font-size: 250%;
+}
+
+#__remp-overlay {
+  position: absolute;
+  display: block!important;
+  margin: 0;
+  padding: 0;
+  left: 0px;
+  top: 0px;
+  z-index: 2147483647;
+  -moz-transform: none;
+  transform: none;
+  direction: ltr;
+}
+
+#__remp-ui {
+  position: fixed;
+  display: block!important;
+  margin: 0;
+  padding: 0;
+  left: 5px;
+  top: 5px;
+  z-index: 2147483647;
+  -moz-transform: none;
+  transform: none;
+  direction: ltr;
+  background: #00acc1;
+
+}
+
+#__onsite-overlay {
+    /*position: absolute;*/
+    /*display: block!important;*/
+    /*margin: 0;*/
+    /*padding: 0;*/
+    /*left: 0;*/
+    /*top: 0;*/
+    /*z-index: 2147483647;*/
+    /*-webkit-transform: none;*/
+    /*-moz-transform: none;*/
+    /*transform: none;*/
+    /*direction: ltr;*/
+}
+
+
+md-grid-tile {
+  background: lightblue;
+}
