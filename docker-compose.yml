@@ -20,6 +20,7 @@ services:
           - "beam.remp.app"
           - "tracker.beam.remp.app"
           - "segments.beam.remp.app"
+          - "iota.beam.remp.app"
           - "grafana.beam.remp.app"
           - "mailhog.remp.app"
     depends_on:
