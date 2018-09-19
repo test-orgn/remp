@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-	"time"
 
 	"github.com/olivere/elastic"
 	"github.com/pkg/errors"
@@ -122,39 +121,31 @@ func (eDB *ElasticDB) countRowCollectionFromAggregations(result *elastic.SearchR
 	tags := make(map[string]string)
 
 	err := eDB.UnwrapAggregation(result.Hits.TotalHits, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
-		crcTags := make(map[string]string)
-
-		var histogram []HistogramItem
+		cr := CountRow{}
+		esc := ElasticCountCollector{Aggs: aggregations, DocCount: count}
 
 		if options.TimeHistogram != nil {
-			histogramData, ok := aggregations.DateHistogram("date_time_histogram")
+			hc := HistogramCollector{}
+			histogram, err := hc.Collect("", esc)
+			if err != nil {
+				return err
+			}
+			cr.Histogram = histogram
+		} else {
+			value, ok := esc.Value("")
 			if !ok {
-				errors.New("missing expected histogram aggregation data")
+				return nil
 			}
-
-			for _, histogramItem := range histogramData.Buckets {
-				time, err := time.Parse(time.RFC3339, *histogramItem.KeyAsString)
-				if err != nil {
-					errors.New("cant parse time from elastic search with RFC3339 layout")
-				}
-
-				histogram = append(histogram, HistogramItem{
-					Time:  time,
-					Value: float64(histogramItem.DocCount),
-				})
-			}
+			cr.Count = int(value)
 		}
 
+		crcTags := make(map[string]string)
 		// copy tags to avoid memory sharing
 		for key, val := range tags {
 			crcTags[key] = val
 		}
 
-		crc = append(crc, CountRow{
-			Tags:      crcTags,
-			Count:     int(count),
-			Histogram: histogram,
-		})
+		crc = append(crc, cr)
 
 		return nil
 	})
@@ -171,40 +162,22 @@ func (eDB *ElasticDB) sumRowCollectionFromAggregations(result *elastic.SearchRes
 	tags := make(map[string]string)
 
 	err := eDB.UnwrapAggregation(result.Hits.TotalHits, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
-
-		var histogram []HistogramItem
-		var sumValue float64
+		sr := SumRow{}
+		esc := ElasticSumCollector{Aggs: aggregations}
 
 		if options.TimeHistogram != nil {
-			histogramData, ok := aggregations.DateHistogram("date_time_histogram")
-			if !ok {
-				return errors.New("missing expected histogram aggregation data")
+			hc := HistogramCollector{}
+			histogram, err := hc.Collect(sumField, esc)
+			if err != nil {
+				return err
 			}
-
-			for _, histogramItem := range histogramData.Buckets {
-				sumAggLabel := fmt.Sprintf("%s_sum", sumField)
-				agg, ok := histogramItem.Aggregations.Sum(sumAggLabel)
-				if !ok {
-					return errors.New("cant find timespent_sum sub agg in date histogram agg")
-				}
-
-				time := time.Unix(0, int64(histogramItem.Key)*int64(time.Millisecond)).UTC()
-				histogram = append(histogram, HistogramItem{
-					Time:  time,
-					Value: float64(*agg.Value),
-				})
-
-				sumValue += float64(*agg.Value)
-			}
+			sr.Histogram = histogram
 		} else {
-			sumAgg, ok := aggregations.Sum(targetAgg)
+			value, ok := esc.Value(sumField)
 			if !ok {
 				return nil
 			}
-
-			if sumAgg.Value != nil {
-				sumValue = *sumAgg.Value
-			}
+			sr.Sum = value
 		}
 
 		srcTags := make(map[string]string)
@@ -213,12 +186,7 @@ func (eDB *ElasticDB) sumRowCollectionFromAggregations(result *elastic.SearchRes
 			srcTags[key] = val
 		}
 
-		src = append(src, SumRow{
-			Tags:      srcTags,
-			Sum:       sumValue,
-			Histogram: histogram,
-		})
-
+		src = append(src, sr)
 		return nil
 	})
 
@@ -236,39 +204,23 @@ func (eDB *ElasticDB) avgRowCollectionFromAggregations(result *elastic.SearchRes
 	tags := make(map[string]string)
 
 	err := eDB.UnwrapAggregation(result.Hits.TotalHits, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
-
-		var histogram []HistogramItem
-		// in case of histogram, total avg value is 0 since it cannot be simply computed as average of averages
-		var avgValue float64
+		ar := AvgRow{}
+		esc := ElasticAvgCollector{Aggs: aggregations}
 
 		if options.TimeHistogram != nil {
-			histogramData, ok := aggregations.DateHistogram("date_time_histogram")
-			if !ok {
-				return errors.New("missing expected histogram aggregation data")
+			hc := HistogramCollector{}
+			histogram, err := hc.Collect(avgField, esc)
+			if err != nil {
+				return err
 			}
-
-			for _, histogramItem := range histogramData.Buckets {
-				avgAggLabel := fmt.Sprintf("%s_avg", avgField)
-				agg, ok := histogramItem.Aggregations.Avg(avgAggLabel)
-				if !ok {
-					return errors.New("cant find timespent_avg sub agg in date histogram agg")
-				}
-
-				time := time.Unix(0, int64(histogramItem.Key)*int64(time.Millisecond)).UTC()
-				histogram = append(histogram, HistogramItem{
-					Time:  time,
-					Value: float64(*agg.Value),
-				})
-			}
+			ar.Histogram = histogram
 		} else {
-			avgAgg, ok := aggregations.Avg(targetAgg)
+			value, ok := esc.Value(avgField)
 			if !ok {
 				return nil
 			}
-
-			if avgAgg.Value != nil {
-				avgValue = *avgAgg.Value
-			}
+			ar.Avg = value
+			// in case of histogram, total avg value is 0 since it cannot be simply computed as average of averages
 		}
 
 		srcTags := make(map[string]string)
@@ -277,12 +229,7 @@ func (eDB *ElasticDB) avgRowCollectionFromAggregations(result *elastic.SearchRes
 			srcTags[key] = val
 		}
 
-		src = append(src, AvgRow{
-			Tags:      srcTags,
-			Avg:       avgValue,
-			Histogram: histogram,
-		})
-
+		src = append(src, ar)
 		return nil
 	})
 
@@ -300,39 +247,23 @@ func (eDB *ElasticDB) uniqueRowCollectionFromAggregations(result *elastic.Search
 	tags := make(map[string]string)
 
 	err := eDB.UnwrapAggregation(result.Hits.TotalHits, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
-
-		var histogram []HistogramItem
-		// in case of histogram, total count will be 0 since we cannot compute distinc values from histogram buckets
-		var countValue float64
+		cr := CountRow{}
+		esc := ElasticCardinalityCollector{Aggs: aggregations}
 
 		if options.TimeHistogram != nil {
-			histogramData, ok := aggregations.DateHistogram("date_time_histogram")
-			if !ok {
-				return errors.New("missing expected histogram aggregation data")
+			hc := HistogramCollector{}
+			histogram, err := hc.Collect(uniqueField, esc)
+			if err != nil {
+				return err
 			}
-
-			for _, histogramItem := range histogramData.Buckets {
-				uniqueAggLabel := fmt.Sprintf("%s_unique", uniqueField)
-				agg, ok := histogramItem.Aggregations.Cardinality(uniqueAggLabel)
-				if !ok {
-					return errors.New("cant find timespent_unique sub agg in date histogram agg")
-				}
-
-				time := time.Unix(0, int64(histogramItem.Key)*int64(time.Millisecond)).UTC()
-				histogram = append(histogram, HistogramItem{
-					Time:  time,
-					Value: float64(*agg.Value),
-				})
-			}
+			cr.Histogram = histogram
 		} else {
-			avgAgg, ok := aggregations.Cardinality(targetAgg)
+			value, ok := esc.Value(uniqueField)
 			if !ok {
 				return nil
 			}
-
-			if avgAgg.Value != nil {
-				countValue = *avgAgg.Value
-			}
+			// in case of histogram, total count will be 0 since we cannot compute distinct values from histogram buckets
+			cr.Count = int(value)
 		}
 
 		srcTags := make(map[string]string)
@@ -340,13 +271,9 @@ func (eDB *ElasticDB) uniqueRowCollectionFromAggregations(result *elastic.Search
 		for key, val := range tags {
 			srcTags[key] = val
 		}
+		cr.Tags = srcTags
 
-		src = append(src, CountRow{
-			Tags:      srcTags,
-			Count:     int(countValue),
-			Histogram: histogram,
-		})
-
+		src = append(src, cr)
 		return nil
 	})
 
