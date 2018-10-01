@@ -226,11 +226,11 @@
                         if (that.data !== null) {
                             let mouse = d3.mouse(this);
                             const xDate = x.invert(mouse[0])
-                            that.highlightRows(xDate, height)
+                            that.highlightRow(xDate, height)
                         }
                     })
             },
-            highlightRows(xDate, height) {
+            highlightRow(xDate, height) {
                 const bisectDate = d3.bisector(d => d.date).left;
                 const xDateMillis = moment(xDate).valueOf()
 
