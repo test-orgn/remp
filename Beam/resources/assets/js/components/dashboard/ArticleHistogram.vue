@@ -14,19 +14,29 @@
             </svg>
         </div>
 
+        <div id="events-legend-wrapper">
+            <div id="events-legend"
+                 v-if="eventLegend.data"
+                 v-show="eventLegend.visible"
+                 v-bind:style="{ left: eventLegend.left }">
+                Popis eventu
+            </div>
+        </div>
+
         <div ref="svg-container" style="height: 200px" id="article-chart">
             <svg style="z-index: 10" ref="svg"></svg>
         </div>
-        <div id="legend-wrapper">
-            <div v-if="highlightedRow" v-show="legendVisible" v-bind:style="{ left: legendLeft }" id="article-graph-legend">
 
-                <span>{{highlightedRow.startDate | formatDate(data.intervalMinutes)}}</span>
+        <div id="legend-wrapper">
+            <div v-if="legend.data" v-show="legend.visible" v-bind:style="{ left: legend.left }" id="article-graph-legend">
+
+                <span>{{legend.data.startDate | formatDate(data.intervalMinutes)}}</span>
                 <table>
                     <tr>
                         <th>Source</th>
                         <th>Value</th>
                     </tr>
-                    <tr v-for="item in highlightedRow.values">
+                    <tr v-for="item in legend.data.values">
                         <td>
                             <span style="font-weight: bold" v-bind:style="{color: item.color}">&#9679;</span>&nbsp;
                             <span v-if="item.tag==''">Uncategorized</span>
@@ -36,7 +46,7 @@
                     </tr>
                     <tr style="border-top: 1px solid #d1d1d1">
                         <td><b>Total</b></td>
-                        <td><b>{{highlightedRow.sum}}</b></td>
+                        <td><b>{{legend.data.sum}}</b></td>
                     </tr>
                 </table>
             </div>
@@ -52,7 +62,7 @@
         position: relative;
     }
 
-    #legend-wrapper {
+    #legend-wrapper, #events-legend-wrapper {
         position: relative;
         height:0;
     }
@@ -75,6 +85,20 @@
         background-color: #494949;
         border-radius: 2px;
         border: 2px solid #494949;
+        transform: translate(-50%, 0px)
+    }
+
+    #events-legend {
+        position:absolute;
+        z-index: 1000;
+        bottom:-20px;
+        left: 0;
+        opacity: 0.85;
+        color: #fff;
+        padding: 2px;
+        background-color: #00bdf1;
+        border-radius: 2px;
+        border: 2px solid #00bdf1;
         transform: translate(-50%, 0px)
     }
 
@@ -108,7 +132,7 @@
 
     const bisectDate = d3.bisector(d => d.date).left;
 
-    let container, svg, dataG, x,y, colorScale, xAxis, vertical, mouseRect,
+    let container, svg, dataG, eventsG, x,y, colorScale, xAxis, vertical, mouseRect,
         margin = {top: 20, right: 20, bottom: 20, left: 20},
         loadDataTimer = null
 
@@ -123,9 +147,16 @@
                 data: null,
                 loading: false,
                 interval: 'today',
-                legendVisible: false,
-                highlightedRow: null,
-                legendLeft: "0px"
+                legend: {
+                    visible: false,
+                    data: null,
+                    left: "0px"
+                },
+                eventLegend: {
+                    visible: false,
+                    data: null,
+                    left: "0px"
+                }
             };
         },
         watch: {
@@ -161,7 +192,6 @@
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
                 dataG = svg.append("g").attr("class", "data-g")
-
                 x = d3.scaleTime().range([0, width])
                 y = d3.scaleLinear().range([height, 0])
 
@@ -171,6 +201,8 @@
                     .attr("transform", "translate(0," + height + ")")
                     .attr("class", "axis axis--x")
                     .call(xAxis)
+
+                eventsG = svg.append("g").attr("class", "events-g")
 
                 // Mouse events
                 let mouseG = svg.append("g")
@@ -190,12 +222,12 @@
                     .attr('fill', 'none')
                     .attr('pointer-events', 'all')
                     .on('mouseout', function() {
-                        that.legendVisible = false
+                        that.legend.visible = false
                         vertical
                             .style("opacity", "0");
                     })
                     .on('mouseover', function() {
-                        that.legendVisible = true
+                        that.legend.visible = true
                         vertical
                             .style("opacity", "1");
                     })
@@ -204,25 +236,55 @@
                             let mouse = d3.mouse(this);
                             const xDate = x.invert(mouse[0])
                             that.highlightRow(xDate, height)
+                            that.highlightEvent(xDate)
                         }
                     })
             },
-            highlightRow(xDate, height) {
-                let rowIndex = bisectDate(this.data.results, xDate);
-                let rowRight = this.data.results[rowIndex]
-                let rowLeft = this.data.results[rowIndex - 1]
-                let row = rowRight
+            highlightEvent(xDate) {
+                const xDateMillis = moment(xDate).valueOf()
+                const pxThresholdToShowLegend = 50
 
-                // Find out which value is closer
-                if (rowLeft !== undefined) {
-                    const xDateMillis = moment(xDate).valueOf()
-                    const leftDateMillis = moment(rowLeft.date).valueOf()
-                    const rightDateMillis = moment(rowRight.date).valueOf()
-
-                    if ((xDateMillis - leftDateMillis) < (rightDateMillis - xDateMillis)){
-                        row = rowLeft
+                // get closest event (not using bisect, as there are only few events to search)
+                let selectedEvent, min = Number.MAX_SAFE_INTEGER
+                for (const event of this.data.events) {
+                    let diff = Math.abs(xDateMillis - moment(event.date).valueOf())
+                    if (diff < min) {
+                        min = diff
+                        selectedEvent = event
                     }
                 }
+
+                // show event only if its too close to x-position of mouse
+                if (Math.abs(x(selectedEvent.date) - x(xDate)) < pxThresholdToShowLegend) {
+                    this.eventLegend.left = (x(selectedEvent.date) + margin.left) + "px"
+                    this.eventLegend.visible = true
+                    this.eventLegend.data = selectedEvent
+                } else {
+                    this.eventLegend.visible = false
+                }
+            },
+            highlightRow(xDate, height) {
+                const xDateMillis = moment(xDate).valueOf()
+
+                function getSelectedRow(rowIndex, data, dateAccessor) {
+                    let rowRight = data[rowIndex]
+                    let rowLeft = data[rowIndex - 1]
+                    let row = rowRight
+
+                    // Find out which value is closer
+                    if (rowLeft !== undefined) {
+                        const leftDateMillis = moment(dateAccessor(rowLeft)).valueOf()
+                        const rightDateMillis = moment(dateAccessor(rowRight)).valueOf()
+                        if ((xDateMillis - leftDateMillis) < (rightDateMillis - xDateMillis)){
+                            row = rowLeft
+                        }
+                    }
+                    return row
+                }
+
+                // get closest row
+                let rowIndex = bisectDate(this.data.results, xDate);
+                let row = getSelectedRow(rowIndex, this.data.results, (item) => item.date)
 
                 let verticalX = x(row.date)
 
@@ -244,20 +306,21 @@
                     }
                 })
 
-                this.highlightedRow = {
+                this.legend.data = {
                     startDate: row.date,
                     values: values,
                     sum: valuesSum
                 }
 
-                this.legendLeft = (Math.round(x(row.date)) + margin.left) + "px"
-
+                this.legend.left = (Math.round(x(row.date)) + margin.left) + "px"
             },
             fillData() {
                 if (this.data === null){
                     return
                 }
-                let results = this.data.results, tags = this.data.tags
+                let results = this.data.results,
+                    tags = this.data.tags,
+                    events = this.data.events
 
                 let outerWidth = container.clientWidth,
                     outerHeight = container.clientHeight,
@@ -288,8 +351,9 @@
                     .range(colors);
 
                 // Remove original data if present
-                dataG.selectAll(".layer").remove();
-                dataG.selectAll(".layer-line").remove();
+                dataG.selectAll(".layer").remove()
+                dataG.selectAll(".layer-line").remove()
+                eventsG.selectAll('.event').remove()
 
                 let area = d3.area()
                     .x(function (d, i) { return x(d.data.date) })
@@ -320,6 +384,37 @@
                     .attr("shape-rendering", "geometricPrecision")
                     .attr("fill", "none")
 
+                let eventLayers = eventsG.selectAll(".event")
+                    .data(events)
+                    .enter().append("g")
+                    .attr("class", "event")
+
+                eventLayers
+                    .append("path")
+                    .attr("d", function(item, i){
+                        let xDate = x(item.date)
+                        let d = "M" + xDate + "," + height
+                        d += " " + xDate + "," + 0
+                        return d
+                    })
+                    .attr("stroke-dasharray", "6 4")
+                    .attr("stroke", "#00bdf1")
+
+                eventLayers
+                    .append("polygon")
+                    .attr("points", function (item, i) {
+                        let xDate = x(item.date)
+                        // small triangle
+                        let size = 5
+                        let points = [
+                            [xDate - size, 0],
+                            [xDate + size, 0],
+                            [xDate, size],
+                        ]
+                        return points.map((p) => p[0] + "," + p[1]).join(" ")
+                    })
+                    .attr("fill", "#00bdf1")
+
                 // Update axis
                 svg.select('.axis--x').transition().call(xAxis)
             },
@@ -339,16 +434,23 @@
                         const addParsedDate = function (d) {
                             let dataObject = {
                                 date: d3.isoParse(d.date)
-                            };
+                            }
                             tags.forEach(function (s) {
                                 dataObject[s] = +d[s];
                             })
                             return dataObject;
                         }
 
+                        let events = response.data.events.map(function(event) {
+                            return {
+                                date: d3.isoParse(event.date),
+                                event: event
+                            }
+                        })
+
                         this.data = {
                             results: response.data.results.map(addParsedDate),
-                            events: response.data.events.map(addParsedDate),
+                            events: events,
                             tags: tags,
                             intervalMinutes: response.data.intervalMinutes
                         }
