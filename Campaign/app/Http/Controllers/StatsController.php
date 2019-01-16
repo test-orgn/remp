@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Campaign;
-use Carbon\Carbon;
 use App\CampaignBanner;
 use Illuminate\Http\Request;
 use App\Contracts\Remp\Stats;
 use Remp\MultiArmedBandit\Lever;
 use Remp\MultiArmedBandit\Machine;
+use App\Contracts\StatsContract;
+use App\Contracts\StatsHelper;
+use Illuminate\Support\Carbon;
 
 class StatsController extends Controller
 {
-    public $statTypes = [
+    private $statTypes = [
         "show" => [
             "label" => "Shows",
             "backgroundColor" => "#E63952",
@@ -27,93 +29,18 @@ class StatsController extends Controller
         ],
     ];
 
-    public function campaignStatsCount($variantUuids, $type, Stats $stats, Request $request)
-    {
-        $result = $stats->count()
-                        ->events('banner', $type)
-                        ->forVariants($variantUuids)
-                        ->from(Carbon::parse($request->get('from'), $request->input('tz')))
-                        ->to(Carbon::parse($request->get('to'), $request->input('tz')))
-                        ->get();
+    private $statsHelper;
 
-        return $result[0];
+    private $stats;
+
+    public function __construct(StatsHelper $statsHelper, StatsContract $stats)
+    {
+        $this->statsHelper = $statsHelper;
+        $this->stats = $stats;
     }
 
-    public function variantStatsCount(CampaignBanner $variant, $type, Stats $stats, Request $request)
+    private function getHistogramData(array $variantUuids, Carbon $from, Carbon $to, $chartWidth)
     {
-        $result = $stats->count()
-                        ->events('banner', $type)
-                        ->forVariant($variant->uuid)
-                        ->from(Carbon::parse($request->get('from'), $request->input('tz')))
-                        ->to(Carbon::parse($request->get('to'), $request->input('tz')))
-                        ->get();
-
-        return $result[0];
-    }
-
-    public function campaignPaymentStatsCount($variantUuids, $step, Stats $stats, Request $request)
-    {
-        $result = $stats->count()
-                        ->commerce($step)
-                        ->forVariants($variantUuids)
-                        ->from(Carbon::parse($request->get('from'), $request->input('tz')))
-                        ->to(Carbon::parse($request->get('to'), $request->input('tz')))
-                        ->get();
-
-        return $result[0];
-    }
-
-    public function campaignPaymentStatsSum($variantUuids, $step, Stats $stats, Request $request)
-    {
-        $result = $stats->sum()
-                        ->commerce($step)
-                        ->forVariants($variantUuids)
-                        ->from(Carbon::parse($request->get('from'), $request->input('tz')))
-                        ->to(Carbon::parse($request->get('to'), $request->input('tz')))
-                        ->get();
-
-        return $result[0];
-    }
-
-    public function campaignStatsHistogram($variantUuids, Stats $stats, Request $request)
-    {
-        return $this->getHistogramData($stats, $request, $variantUuids);
-    }
-
-    public function variantPaymentStatsCount(CampaignBanner $variant, $step, Stats $stats, Request $request)
-    {
-        $result = $stats->count()
-                        ->commerce($step)
-                        ->from(Carbon::parse($request->get('from'), $request->input('tz')))
-                        ->to(Carbon::parse($request->get('to'), $request->input('tz')))
-                        ->forVariant($variant->uuid)
-                        ->get();
-
-        return $result[0];
-    }
-
-    public function variantPaymentStatsSum(CampaignBanner $variant, $step, Stats $stats, Request $request)
-    {
-        $result = $stats->sum()
-                        ->commerce($step)
-                        ->from(Carbon::parse($request->get('from'), $request->input('tz')))
-                        ->to(Carbon::parse($request->get('to'), $request->input('tz')))
-                        ->forVariant($variant->uuid)
-                        ->get();
-
-        return $result[0];
-    }
-
-    public function variantStatsHistogram(CampaignBanner $variant, Stats $stats, Request $request)
-    {
-        return $this->getHistogramData($stats, $request, [$variant->uuid]);
-    }
-
-    protected function getHistogramData(Stats $stats, Request $request, $variantUuids)
-    {
-        $from = Carbon::parse($request->get('from'), $request->input('tz'));
-        $to = Carbon::parse($request->get('to'), $request->input('tz'));
-        $chartWidth = $request->get('chartWidth');
         $parsedData = [];
         $labels = [];
 
@@ -161,13 +88,20 @@ class StatsController extends Controller
         ];
     }
 
-    public function getStats(Campaign $campaign, Request $request, Stats $stats)
+    public function getStats(Campaign $campaign, Request $request)
     {
-        $campaignData = $this->campaignStats($campaign, $request, $stats);
+        $from = Carbon::parse($request->get('from'), $request->input('tz'));
+        $to = Carbon::parse($request->get('to'), $request->input('tz'));
+        $chartWidth = $request->get('chartWidth');
+
+        $campaignData = $this->statsHelper->campaignStats($campaign, $from, $to);
+        $campaignData['histogram'] = $this->getHistogramData($campaign->variants_uuids, $from, $to, $chartWidth);
 
         $variantsData = [];
         foreach ($campaign->campaignBanners()->withTrashed()->get() as $variant) {
-            $variantsData[$variant->id] = $this->variantStats($variant, $request, $stats);
+            $variantStats = $this->statsHelper->variantStats($variant, $from, $to);
+            $variantStats['histogram'] = $this->getHistogramData([$variant->uuid], $from, $to, $chartWidth);
+            $variantsData[$variant->id] = $variantStats;
         }
 
         // a/b test evaluation data
@@ -281,7 +215,7 @@ class StatsController extends Controller
         ];
     }
 
-    protected function calcInterval(Carbon $from, Carbon $to, $chartWidth)
+    private function calcInterval(Carbon $from, Carbon $to, $chartWidth)
     {
         $numOfCols = intval($chartWidth / 40);
 
