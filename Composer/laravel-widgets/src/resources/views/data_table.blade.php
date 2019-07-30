@@ -68,6 +68,15 @@
                     @if (isset($col['orderable']))
                     orderable: false,
                     @endif
+                    @if (isset($col['order']))
+                    orderSequence: [
+                        @if ($col['order'] == 'desc')
+                            'desc', 'asc'
+                        @else
+                            'asc', 'desc'
+                        @endif
+                    ],
+                    @endif
                     @if (isset($col['searchable']))
                     searchable: false,
                     @endif

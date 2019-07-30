@@ -44,12 +44,14 @@
                     'searchable' => false,
                     'priority' => 2,
                     'className' => 'text-right',
+                    'order' => 'desc'
                 ],
                 'conversions_rate' => [
                     'searchable' => false,
                     'header' => 'conversions rate',
                     'priority' => 2,
                     'className' => 'text-right',
+                    'order' => 'desc'
                 ],
                 'amount' => [
                     'header' => 'amount',
@@ -57,6 +59,7 @@
                     'priority' => 1,
                     'searchable' => false,
                     'className' => 'text-right',
+                    'order' => 'desc'
                 ],
                 'average' => [
                     'header' => 'average',
@@ -64,6 +67,7 @@
                     'priority' => 2,
                     'searchable' => false,
                     'className' => 'text-right',
+                    'order' => 'desc'
                 ],
                 'authors' => [
                     'header' => 'authors',
