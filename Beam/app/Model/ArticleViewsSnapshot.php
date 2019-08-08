@@ -1,7 +1,6 @@
 <?php
 namespace App\Model;
 
-use DB;
 use Illuminate\Database\Eloquent\Model;
 
 class ArticleViewsSnapshot extends Model
@@ -30,8 +29,7 @@ class ArticleViewsSnapshot extends Model
 
     public static function deleteForTimes(array $times): int
     {
-        return DB::table(self::getTableName())
-            ->whereIn('time', $times)
+        return self::whereIn('time', $times)
             ->delete();
     }
 }
