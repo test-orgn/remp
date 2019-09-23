@@ -16,7 +16,12 @@ use Remp\MailerModule\Repository\TemplatesRepository;
 use Remp\MailerModule\Repository\UserSubscriptionsRepository;
 use Remp\MailerModule\Repository\UserSubscriptionVariantsRepository;
 
-class BaseFeatureTestCase extends TestCase
+/**
+ * Class DatabaseTestCase
+ * This test case truncates DB table after tests are done to keep DB clean
+ * @package Tests\Feature
+ */
+class DatabaseTestCase extends TestCase
 {
     private $container;
 

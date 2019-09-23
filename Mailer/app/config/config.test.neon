@@ -1,0 +1,5 @@
+security:
+	debugger: true
+services:
+	mailCache:
+		class: Remp\MailerModule\Job\InMemoryMailCache

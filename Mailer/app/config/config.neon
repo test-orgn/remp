@@ -130,6 +130,8 @@ services:
 			- addMailer(Remp\MailerModule\Mailer\SmtpMailer())
 			- addMailer(Remp\MailerModule\Mailer\MailgunMailer())
 
+	- Remp\MailerModule\Commands\ProcessJobCommand
+
 #	# Internal CRM system. For more details contact Tomas Bella.
 #	authenticator:
 #		class: Remp\MailerModule\Auth\Authenticator
@@ -155,8 +157,10 @@ services:
 	- Remp\MailerModule\Config\Config
 	- Remp\MailerModule\Sender
 	- Remp\MailerModule\Job\BatchEmailGenerator(@mailProcessLogger)
-	- Remp\MailerModule\Job\MailCache(%redis.host%, %redis.port%, %redis.db%)
 	- Remp\MailerModule\Auth\AutoLogin
+
+	mailCache:
+		class: Remp\MailerModule\Job\RedisMailCache(%redis.host%, %redis.port%, %redis.db%)
 
 	# API
 	- Tomaj\NetteApi\Link\ApiLink

@@ -61,7 +61,7 @@ class MailWorkerCommand extends Command
         LogsRepository $mailLogRepository,
         TemplatesRepository $mailTemplatesRepository,
         BatchTemplatesRepository $batchTemplatesRepository,
-        MailCache $redis,
+        MailCache $mailCache,
         Emitter $emitter,
         Container $container
     ) {
@@ -73,7 +73,7 @@ class MailWorkerCommand extends Command
         $this->mailLogRepository = $mailLogRepository;
         $this->mailTemplateRepository = $mailTemplatesRepository;
         $this->batchTemplatesRepository = $batchTemplatesRepository;
-        $this->mailCache = $redis;
+        $this->mailCache = $mailCache;
         $this->emitter = $emitter;
         $this->container = $container;
         $this->logger = $logger;
