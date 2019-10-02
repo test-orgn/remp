@@ -62,9 +62,7 @@ class SnapshotArticlesViews extends Command
             $derivedRefererMedium = $record->tags->derived_referer_medium;
             $explicitRefererMedium = $record->tags->explicit_referer_medium;
 
-            $key = self::key($token, $articleId, $derivedRefererMedium, $explicitRefererMedium);
-
-            $items[$key] = [
+            $items[] = [
                 'time' => $dbTime,
                 'property_token' => $token,
                 'external_article_id' => $articleId,
@@ -75,18 +73,12 @@ class SnapshotArticlesViews extends Command
             ];
         }
 
-        // Save
         ArticleViewsSnapshot::where('time', $dbTime)->delete();
-        
+
         foreach (array_chunk($items, 100) as $itemsChunk) {
             ArticleViewsSnapshot::insert($itemsChunk);
             $count = count($itemsChunk);
             $this->line("$count records inserted");
         }
-    }
-
-    private static function key($token, $articleId, $derivedRefererMedium, $explicitRefererMedium)
-    {
-        return "{$token}|||{$articleId}|||{$derivedRefererMedium}|||{$explicitRefererMedium}";
     }
 }
