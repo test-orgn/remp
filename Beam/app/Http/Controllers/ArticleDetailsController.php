@@ -7,6 +7,8 @@ use App\Helpers\Journal\JournalHelpers;
 use App\Helpers\Colors;
 use App\Helpers\Journal\JournalInterval;
 use App\Http\Resources\ArticleResource;
+use App\Model\Config\Config;
+use App\Model\Config\ConfigNames;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Remp\Journal\AggregateRequest;
@@ -300,7 +302,7 @@ class ArticleDetailsController extends Controller
         $pageviewsSubscribersToAllRatio =
             $article->pageviews_all == 0 ? 0 : ($article->pageviews_subscribers / $article->pageviews_all) * 100;
 
-        $mediums = $this->journalHelper->derivedRefererMediumGroups()->mapWithKeys(function ($item) {
+        $mediums = $this->journalHelper->refererMediumGroups()->mapWithKeys(function ($item) {
             return [$item => JournalHelpers::refererMediumAlias($item)];
         });
 
@@ -322,6 +324,11 @@ class ArticleDetailsController extends Controller
 
     public function dtReferers(Article $article, Request $request)
     {
+        $mediumsShownAsSingleSource = [];
+        foreach (explode(',', Config::loadByName(ConfigNames::REFERER_MEDIUMS_SHOWN_AS_SINGLE_SOURCE, '')) as $m) {
+            $mediumsShownAsSingleSource[$m] = true;
+        }
+
         $length = $request->input('length');
         $start = $request->input('start');
         $orderOptions = $request->input('order');
@@ -332,13 +339,23 @@ class ArticleDetailsController extends Controller
 
         $ar = (new AggregateRequest('pageviews', 'load'))
             ->setTime($visitedFrom, $visitedTo)
-            ->addGroup('derived_referer_host_with_path', 'derived_referer_medium', 'derived_referer_source')
+            ->addGroup('derived_referer_host_with_path', 'derived_referer_medium', 'explicit_referer_medium', 'derived_referer_source')
             ->addFilter('article_id', $article->external_id);
+
+        $mediumFilters = [];
 
         $columns = $request->input('columns');
         foreach ($columns as $index => $column) {
             if (isset($column['search']['value'])) {
-                $ar->addFilter($column['name'], ...explode(',', $column['search']['value']));
+                if ($column['name'] === 'referer_medium') {
+                    // ATM it's not possible to use Journal API to correctly filter through both
+                    // explicit and derived referer_medium columns using OR operator, therefore doing filtering manually
+                    foreach (explode(',', $column['search']['value']) as $mediumFilter) {
+                        $mediumFilters[$mediumFilter] = true;
+                    }
+                } else {
+                    $ar->addFilter($column['name'], ...explode(',', $column['search']['value']));
+                }
             }
         }
 
@@ -349,30 +366,42 @@ class ArticleDetailsController extends Controller
         // since we do not want to distinguish between e.g. m.facebook.com and facebook.com, all should be categorized as one
         $aggregated = [];
         foreach ($records as $record) {
-            $derivedMedium = JournalHelpers::refererMediumAlias($record->tags->derived_referer_medium);
+            // Explicit referer medium has priority over derived one
+            $m = !empty($record->tags->explicit_referer_medium) ? $record->tags->explicit_referer_medium : $record->tags->derived_referer_medium;
+
+            // Filtering mediums
+            if ($mediumFilters && !array_key_exists($m, $mediumFilters)) {
+                continue;
+            }
+
+            $medium = JournalHelpers::refererMediumAlias($m);
+
             $derivedSource = $record->tags->derived_referer_source;
             $source = $record->tags->derived_referer_host_with_path;
             $count = $record->count;
 
-            if (!array_key_exists($derivedMedium, $aggregated)) {
-                $aggregated[$derivedMedium] = [];
+            if (!array_key_exists($medium, $aggregated)) {
+                $aggregated[$medium] = [];
             }
 
             $key = $source;
             if ($derivedSource) {
                 $key = $derivedSource;
             }
-
-            if (!array_key_exists($key, $aggregated[$derivedMedium])) {
-                $aggregated[$derivedMedium][$key] = 0;
+            if (array_key_exists($medium, $mediumsShownAsSingleSource)) {
+                $key = $medium;
             }
-            $aggregated[$derivedMedium][$key] += $count;
+
+            if (!array_key_exists($key, $aggregated[$medium])) {
+                $aggregated[$medium][$key] = 0;
+            }
+            $aggregated[$medium][$key] += $count;
         }
 
         foreach ($aggregated as $medium => $mediumSources) {
             foreach ($mediumSources as $source => $count) {
                 $data->push([
-                    'derived_referer_medium' => $medium,
+                    'referer_medium' => $medium,
                     'source' => $source,
                     'visits_count' => $count,
                 ]);

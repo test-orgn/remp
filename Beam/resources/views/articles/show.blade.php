@@ -188,7 +188,7 @@
                 {!! Widget::run('DataTable', [
                     'paging' => [[10,30,100], 30],
                     'colSettings' => [
-                        'derived_referer_medium' => [
+                        'referer_medium' => [
                             'header' => 'medium',
                             'orderable' => false,
                             'filter' => $mediums,

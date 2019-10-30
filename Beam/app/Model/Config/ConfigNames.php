@@ -20,6 +20,7 @@ class ConfigNames
 
     const DASHBOARD_FRONTPAGE_REFERER =  'dashboard_frontpage_referer';
 
+    const REFERER_MEDIUMS_SHOWN_AS_SINGLE_SOURCE =  'referer_mediums_shown_as_single_source';
 
     /**
      * Lists config options that can specified for token properties

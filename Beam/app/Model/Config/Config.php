@@ -106,12 +106,20 @@ class Config extends Model
         return $results;
     }
 
-    public static function loadByName(string $name, $globalOnly = false)
+
+    /**
+     * Load config value by its name
+     * @param $name
+     * @param null $default if config item is not found, return $default value
+     *
+     * @return bool|float|int|string returned value type casted according to `value` attribute
+     */
+    public static function loadByName(string $name, $default = null)
     {
         $q = Config::where('name', $name);
         $fallback = false;
         // Try to load property config if present
-        if (!$globalOnly && in_array($name, ConfigNames::propertyConfigs(), true)) {
+        if (in_array($name, ConfigNames::propertyConfigs(), true)) {
             $fallback = true;
             $q = $q->ofSelectedToken();
         }
@@ -123,7 +131,7 @@ class Config extends Model
         }
 
         if (!$config) {
-            throw new \Exception("missing configuration for '$name'");
+            return $default;
         }
 
         return $config->getValue();

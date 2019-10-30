@@ -43,14 +43,19 @@ class JournalHelpers
      *
      * @return Collection
      */
-    public function derivedRefererMediumGroups(int $hoursAgo = 12): Collection
+    public function refererMediumGroups(int $hoursAgo = 12): Collection
     {
         $ar = (new AggregateRequest('pageviews', 'load'))
             ->setTime(Carbon::now()->subHours($hoursAgo), Carbon::now())
-            ->addGroup('derived_referer_medium');
+            ->addGroup('derived_referer_medium', 'explicit_referer_medium');
 
-        $results = collect($this->journal->count($ar));
-        return $results->pluck('tags.derived_referer_medium');
+        $mediums = collect();
+        foreach (collect($this->journal->count($ar)) as $result) {
+            $m = !empty($result->tags->explicit_referer_medium) ? $result->tags->explicit_referer_medium : $result->tags->derived_referer_medium;
+            $mediums->push($m);
+        }
+
+        return $mediums->unique();
     }
 
     /**
