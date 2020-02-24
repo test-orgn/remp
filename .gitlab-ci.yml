@@ -40,6 +40,7 @@ tests:
   script:
     - make composer-install
     - make copy-env    
+    - make migrate-db
     - make phpunit
   services:
     - name: mysql:5.7.21

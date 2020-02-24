@@ -16,4 +16,10 @@
             <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <env name="ENV" value="test"/>
+        <env name="DB_DATABASE" value="remp_test"/>
+        <env name="DB_PASSWORD" value="secret"/>
+        <env name="DB_HOST" value="mysql"/>
+    </php>
 </phpunit>

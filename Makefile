@@ -25,6 +25,10 @@ composer-install:
 	composer install -d $(SUB_MAILER) --no-progress
 	composer install -d $(SUB_SSO) --no-progress
 
+migrate-db:
+	# Beam and Campaign DBs are migrate automatically when running tests
+	cd $(SUB_MAILER) && php bin/command.php migrate:migrate
+	
 phpunit:
 	cd $(SUB_BEAM) && vendor/bin/phpunit
 	cd $(SUB_CAMPAIGN) && vendor/bin/phpunit
@@ -32,6 +36,7 @@ phpunit:
 copy-env:
 	cd $(SUB_BEAM) && cp .env.example .env
 	cd $(SUB_CAMPAIGN) && cp .env.example .env
+	cd $(SUB_MAILER) && cp .env.example .env
 
 phpstan:
 	cd $(SUB_MAILER) && make phpstan
