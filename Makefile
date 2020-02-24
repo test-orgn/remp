@@ -37,6 +37,7 @@ copy-env:
 	cd $(SUB_BEAM) && cp .env.example .env
 	cd $(SUB_CAMPAIGN) && cp .env.example .env
 	cd $(SUB_MAILER) && cp .env.example .env
+	cd $(SUB_MAILER) && cp app/config/config.local.neon.example app/config/config.local.neon
 
 phpstan:
 	cd $(SUB_MAILER) && make phpstan
