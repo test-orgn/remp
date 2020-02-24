@@ -32,6 +32,7 @@ migrate-db:
 phpunit:
 	cd $(SUB_BEAM) && vendor/bin/phpunit
 	cd $(SUB_CAMPAIGN) && vendor/bin/phpunit
+	cd $(SUB_MAILER) && vendor/bin/phpunit
 
 copy-env:
 	cd $(SUB_BEAM) && cp .env.example .env
