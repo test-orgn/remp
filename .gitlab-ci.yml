@@ -47,7 +47,7 @@ tests:
       alias: mysql
   variables:
       MYSQL_DATABASE: remp_test
-      MYSQL_ROOT_PASSWORD: secret2
+      MYSQL_ROOT_PASSWORD: secret
 
 mailer/🇸🇰:
   stage: deploy
