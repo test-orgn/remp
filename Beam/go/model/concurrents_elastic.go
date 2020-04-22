@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 )
 
 // ConcurrentElastic is ElasticDB implementation of ConcurrentStorage.
@@ -39,7 +39,7 @@ func (pDB *ConcurrentElastic) Count(options AggregateOptions) (CountRowCollectio
 		// extract simplified results (no aggregation)
 		return CountRowCollection{
 			CountRow{
-				Count: int(result.Hits.TotalHits),
+				Count: int(result.Hits.TotalHits.Value),
 			},
 		}, true, nil
 	}

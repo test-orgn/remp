@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
 )
 
@@ -65,7 +65,7 @@ func (eDB *EventElastic) Count(options AggregateOptions) (CountRowCollection, bo
 		// extract simplified results (no aggregation)
 		return CountRowCollection{
 			CountRow{
-				Count: int(result.Hits.TotalHits),
+				Count: int(result.Hits.TotalHits.Value),
 			},
 		}, true, nil
 	}
@@ -106,14 +106,14 @@ func (eDB *EventElastic) List(options ListOptions) (EventRowCollection, error) {
 		for _, hit := range results.Hits.Hits {
 			// populate event for collection
 			event := &Event{}
-			if err := json.Unmarshal(*hit.Source, event); err != nil {
+			if err := json.Unmarshal(hit.Source, event); err != nil {
 				return nil, errors.Wrap(err, "error reading pageview record from elastic")
 			}
 			event.ID = hit.Id
 
 			// extract raw event data to build tags map
 			rawEvent := make(map[string]interface{})
-			if err := json.Unmarshal(*hit.Source, &rawEvent); err != nil {
+			if err := json.Unmarshal(hit.Source, &rawEvent); err != nil {
 				return nil, errors.Wrap(err, "error reading pageview record from elastic")
 			}
 

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
 )
 
@@ -127,7 +127,7 @@ func (eDB *ElasticDB) countRowCollectionFromAggregations(result *elastic.SearchR
 	var crc CountRowCollection
 	tags := make(map[string]string)
 
-	err := eDB.UnwrapAggregation(result.Hits.TotalHits, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
+	err := eDB.UnwrapAggregation(result.Hits.TotalHits.Value, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
 		crcTags := make(map[string]string)
 
 		var timeHistogram []TimeHistogramItem
@@ -195,7 +195,7 @@ func (eDB *ElasticDB) sumRowCollectionFromAggregations(result *elastic.SearchRes
 	var src SumRowCollection
 	tags := make(map[string]string)
 
-	err := eDB.UnwrapAggregation(result.Hits.TotalHits, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
+	err := eDB.UnwrapAggregation(result.Hits.TotalHits.Value, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
 
 		var timeHistogram []TimeHistogramItem
 		var sumValue float64
@@ -262,7 +262,7 @@ func (eDB *ElasticDB) avgRowCollectionFromAggregations(result *elastic.SearchRes
 	var src AvgRowCollection
 	tags := make(map[string]string)
 
-	err := eDB.UnwrapAggregation(result.Hits.TotalHits, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
+	err := eDB.UnwrapAggregation(result.Hits.TotalHits.Value, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
 
 		var timeHistogram []TimeHistogramItem
 		// in case of histogram, total avg value is 0 since it cannot be simply computed as average of averages
@@ -328,7 +328,7 @@ func (eDB *ElasticDB) uniqueRowCollectionFromAggregations(result *elastic.Search
 	var src CountRowCollection
 	tags := make(map[string]string)
 
-	err := eDB.UnwrapAggregation(result.Hits.TotalHits, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
+	err := eDB.UnwrapAggregation(result.Hits.TotalHits.Value, result.Aggregations, options.GroupBy, tags, func(tags map[string]string, count int64, aggregations elastic.Aggregations) error {
 
 		var timeHistogram []TimeHistogramItem
 		// in case of histogram, total count will be 0 since we cannot compute distinc values from histogram buckets

@@ -6,7 +6,7 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
 )
 
@@ -58,7 +58,7 @@ func (cDB *CommerceElastic) Count(options AggregateOptions) (CountRowCollection,
 		// extract simplified results (no aggregation)
 		return CountRowCollection{
 			CountRow{
-				Count: int(result.Hits.TotalHits),
+				Count: int(result.Hits.TotalHits.Value),
 			},
 		}, true, nil
 	}
@@ -98,15 +98,16 @@ func (cDB *CommerceElastic) List(options ListOptions) (CommerceRowCollection, er
 		// Send the hits to the hits channel
 		for _, hit := range results.Hits.Hits {
 			// populate commerce for collection
+
 			commerce := &Commerce{}
-			if err := json.Unmarshal(*hit.Source, commerce); err != nil {
+			if err := json.Unmarshal(hit.Source, commerce); err != nil {
 				return nil, errors.Wrap(err, "error reading commerce record from elastic")
 			}
 			commerce.ID = hit.Id
 
 			// extract raw event data to build tags map
 			rawCommerce := make(map[string]interface{})
-			if err := json.Unmarshal(*hit.Source, &rawCommerce); err != nil {
+			if err := json.Unmarshal(hit.Source, &rawCommerce); err != nil {
 				return nil, errors.Wrap(err, "error reading pageview record from elastic")
 			}
 

@@ -6,7 +6,7 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
 )
 
@@ -83,7 +83,7 @@ func (pDB *PageviewElastic) Count(options AggregateOptions) (CountRowCollection,
 		// extract simplified results (no aggregation)
 		return CountRowCollection{
 			CountRow{
-				Count: int(result.Hits.TotalHits),
+				Count: int(result.Hits.TotalHits.Value),
 			},
 		}, true, nil
 	}
@@ -295,14 +295,14 @@ func (pDB *PageviewElastic) List(options ListPageviewsOptions) (PageviewRowColle
 		for _, hit := range results.Hits.Hits {
 			// populate pageview for collection
 			pv := &Pageview{}
-			if err := json.Unmarshal(*hit.Source, pv); err != nil {
+			if err := json.Unmarshal(hit.Source, pv); err != nil {
 				return nil, errors.Wrap(err, "error reading pageview record from elastic")
 			}
 			pv.ID = hit.Id
 
 			// extract raw pageview data to build tags map
 			rawPv := make(map[string]interface{})
-			if err := json.Unmarshal(*hit.Source, &rawPv); err != nil {
+			if err := json.Unmarshal(hit.Source, &rawPv); err != nil {
 				return nil, errors.Wrap(err, "error reading pageview record from elastic")
 			}
 
@@ -407,7 +407,7 @@ func loadTimespent(pDB *PageviewElastic, pageviewIDs []string) (map[string]int, 
 
 		for _, hit := range results.Hits.Hits {
 			pv := &Pageview{}
-			if err := json.Unmarshal(*hit.Source, pv); err != nil {
+			if err := json.Unmarshal(hit.Source, pv); err != nil {
 				return nil, errors.Wrap(err, "error reading timespent record from elastic")
 			}
 			timespentForPageviews[pv.ID] = pv.Timespent
