@@ -3,9 +3,10 @@ package controller
 import (
 	"time"
 
+	"beam/cmd/segments/app"
+	"beam/model"
+
 	"github.com/goadesign/goa"
-	"gitlab.com/remp/remp/Beam/go/cmd/segments/app"
-	"gitlab.com/remp/remp/Beam/go/model"
 )
 
 // CommerceController implements the event resource.

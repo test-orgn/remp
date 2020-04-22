@@ -19,12 +19,13 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 	cache "github.com/patrickmn/go-cache"
 	"github.com/pkg/errors"
-	"gitlab.com/remp/remp/Beam/go/cmd/segments/app"
-	"gitlab.com/remp/remp/Beam/go/cmd/segments/controller"
-	"gitlab.com/remp/remp/Beam/go/model"
+
+	"beam/cmd/segments/app"
+	"beam/cmd/segments/controller"
+	"beam/model"
 )
 
 func main() {
