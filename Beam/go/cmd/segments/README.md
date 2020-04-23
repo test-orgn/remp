@@ -30,10 +30,6 @@ If you have Go 1.8+ environment set up, you can run the build manually by runnin
 make build
 ```
 
-As a dependency management tool we're using `github.com/golang/dep`. We also commit all dependencies into the
-repository, so you don't need to rely on our dependency tool of choice. However if you make a commit updating
-the dependency, please make sure to run also `dep ensure -update` to keep stuff consistent.
-
 ## Running
 
 Once you have your environment variables set or `.env` file ready, run the built binary.
