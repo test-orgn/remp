@@ -3,7 +3,6 @@ package controller
 import (
 	"beam/cmd/segments/app"
 	"beam/model"
-
 	"encoding/json"
 	"fmt"
 	"strconv"

@@ -1,10 +1,9 @@
 package controller
 
 import (
-	"time"
-
 	"beam/cmd/segments/app"
 	"beam/model"
+	"time"
 
 	"github.com/goadesign/goa"
 )
