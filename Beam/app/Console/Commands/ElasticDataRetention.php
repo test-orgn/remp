@@ -51,7 +51,7 @@ class ElasticDataRetention extends Command
         if ($this->input->getOption('auth')) {
             $auth = $this->input->getOption('auth');
             if (!str_contains($auth, ':')) {
-                $this->line("<error>ERROR</error> You need to provide <info>--auth</info> option with a name and a password separated by ':', e.g. admin:password");
+                $this->line("<error>ERROR</error> You need to provide <info>--auth</info> option with a name and a password (to Elastic instance) separated by ':', e.g. admin:password");
                 return;
             }
 
