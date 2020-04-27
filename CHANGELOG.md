@@ -48,6 +48,7 @@ Please follow the upgrade steps:
 - Go dep dependencies management system replaced with go modules. remp/remp#616
 - Added `FORCE_HTTPS` environment variable to enforce HTTPS generation to URLs instead of determining protocol based on the request. This is useful in case you're running your application on `https`, but internally use proxy forwarding the request via `http`. remp/remp#619
 - Added new APIs `api/authors/top` and `api/tags/top` for retrieving top authors and tags per given time period. remp/web#366
+- Added ability to specify (Elasticsearch) indexes prefix in `.env` for Tracker and Segments apps. remp/remp#616
 
 ### [Campaign]
 
