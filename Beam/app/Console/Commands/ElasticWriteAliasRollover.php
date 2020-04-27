@@ -10,7 +10,7 @@ class ElasticWriteAliasRollover extends Command
 {
     const COMMAND = 'service:elastic-write-alias-rollover';
 
-    protected $signature = self::COMMAND . ' {--host=} {--write-alias=} {--read-alias=} {--user=}';
+    protected $signature = self::COMMAND . ' {--host=} {--write-alias=} {--read-alias=} {--auth=}';
 
     protected $description = 'Rollover write index and assign newly created index to read index';
 
@@ -41,8 +41,14 @@ class ElasticWriteAliasRollover extends Command
 
 
         $options = [];
-        if ($this->input->getOption('user')) {
-            [$user, $pass] = explode(':', $this->input->getOption('user'), 2);
+        if ($this->input->getOption('auth')) {
+            $auth = $this->input->getOption('auth');
+            if (!str_contains($auth, ':')) {
+                $this->line("<error>ERROR</error> You need to provide <info>--auth</info> option with a name and a password separated by ':', e.g. admin:password");
+                return;
+            }
+
+            [$user, $pass] = explode(':', $auth, 2);
             $options = [
                 'auth' => [$user, $pass]
             ];

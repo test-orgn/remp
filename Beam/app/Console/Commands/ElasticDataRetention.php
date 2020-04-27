@@ -11,7 +11,7 @@ class ElasticDataRetention extends Command
 {
     const COMMAND = 'service:elastic-data-retention';
 
-    protected $signature = self::COMMAND . ' {--host=} {--match-index=} {--date=} {--user=}';
+    protected $signature = self::COMMAND . ' {--host=} {--match-index=} {--date=} {--auth=}';
 
     protected $description = 'Data retention tries to find index based on match-index and date options and removes it';
 
@@ -48,8 +48,14 @@ class ElasticDataRetention extends Command
         ));
 
         $options = [];
-        if ($this->input->getOption('user')) {
-            [$user, $pass] = explode(':', $this->input->getOption('user'), 2);
+        if ($this->input->getOption('auth')) {
+            $auth = $this->input->getOption('auth');
+            if (!str_contains($auth, ':')) {
+                $this->line("<error>ERROR</error> You need to provide <info>--auth</info> option with a name and a password separated by ':', e.g. admin:password");
+                return;
+            }
+
+            [$user, $pass] = explode(':', $auth, 2);
             $options = [
                 'auth' => [$user, $pass]
             ];
