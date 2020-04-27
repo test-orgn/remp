@@ -11,7 +11,7 @@ class ElasticDataRetention extends Command
 {
     const COMMAND = 'service:elastic-data-retention';
 
-    protected $signature = self::COMMAND . ' {--host=} {--match-index=} {--date=}';
+    protected $signature = self::COMMAND . ' {--host=} {--match-index=} {--date=} {--user=}';
 
     protected $description = 'Data retention tries to find index based on match-index and date options and removes it';
 
@@ -47,9 +47,17 @@ class ElasticDataRetention extends Command
             $targetIndices
         ));
 
+        $options = [];
+        if ($this->input->getOption('user')) {
+            [$user, $pass] = explode(':', $this->input->getOption('user'), 2);
+            $options = [
+                'auth' => [$user, $pass]
+            ];
+        }
+
         // execute index delete; https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-delete-index.html
         try {
-            $client->delete($targetIndices);
+            $client->delete($targetIndices, $options);
         } catch (ClientException $e) {
             $body = json_decode($e->getResponse()->getBody());
             dump($body);
