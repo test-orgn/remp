@@ -14,19 +14,21 @@ import (
 
 // ElasticDB represents data layer based on ElasticSearch.
 type ElasticDB struct {
-	Client  *elastic.Client
-	Debug   bool
-	Context context.Context
+	Client      *elastic.Client
+	Debug       bool
+	Context     context.Context
+	IndexPrefix string
 
 	fieldsCache map[string]map[string]string // fields cache represents list of all index (map key) fields (map values)
 }
 
 // NewElasticDB returns new instance of ElasticSearch DB implementation
-func NewElasticDB(ctx context.Context, client *elastic.Client, debug bool) *ElasticDB {
+func NewElasticDB(ctx context.Context, client *elastic.Client, debug bool, indexPrefix string) *ElasticDB {
 	edb := &ElasticDB{
-		Client:  client,
-		Debug:   debug,
-		Context: ctx,
+		Client:      client,
+		Debug:       debug,
+		Context:     ctx,
+		IndexPrefix: indexPrefix,
 	}
 	edb.fieldsCache = make(map[string]map[string]string)
 	return edb
@@ -521,7 +523,7 @@ func (eDB *ElasticDB) resolveZeroValue(index, field string) (interface{}, error)
 
 // cacheFieldMapping downloads and caches field mappings for specified index
 func (eDB *ElasticDB) cacheFieldMapping(index string) (map[string]string, error) {
-	result, err := eDB.Client.GetMapping().Index(index).Do(eDB.Context)
+	result, err := eDB.Client.GetMapping().Index(eDB.IndexPrefix + index).Do(eDB.Context)
 	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("unable to get field mappings for index: %s", index))
 	}
@@ -588,7 +590,7 @@ func (eDB *ElasticDB) cacheFieldMapping(index string) (map[string]string, error)
 		readMapping(root)
 	} else {
 		// there's no such index, but there might be an alias, let's try those
-		aliases, err := eDB.Client.Aliases().Index(index).Do(eDB.Context)
+		aliases, err := eDB.Client.Aliases().Index(eDB.IndexPrefix + index).Do(eDB.Context)
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to get aliases for index: %s", index))
 		}

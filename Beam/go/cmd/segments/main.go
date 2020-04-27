@@ -216,7 +216,7 @@ func initElasticEventStorages(ctx context.Context, c Config) (model.EventStorage
 	if err != nil {
 		return nil, nil, nil, nil, errors.Wrap(err, "unable to initialize elasticsearch client")
 	}
-	elasticDB := model.NewElasticDB(ctx, ec, c.Debug)
+	elasticDB := model.NewElasticDB(ctx, ec, c.Debug, c.IndexPrefix)
 
 	eventStorage := &model.EventElastic{
 		DB: elasticDB,

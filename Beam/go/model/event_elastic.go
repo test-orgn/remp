@@ -24,7 +24,7 @@ func (eDB *EventElastic) Count(options AggregateOptions) (CountRowCollection, bo
 	extras := make(map[string]elastic.Aggregation)
 
 	search := eDB.DB.Client.Search().
-		Index("events").
+		Index(eDB.DB.IndexPrefix + "events").
 		Type("_doc").
 		Size(0) // return no specific results
 
@@ -172,7 +172,7 @@ func (eDB *EventElastic) Categories() ([]string, error) {
 	}
 
 	// prepare aggregation
-	search := eDB.DB.Client.Search().Index("events").Type("_doc").Size(0)
+	search := eDB.DB.Client.Search().Index(eDB.DB.IndexPrefix + "events").Type("_doc").Size(0)
 	agg := elastic.NewTermsAggregation().Field("category.keyword")
 	search = search.Aggregation("buckets", agg)
 
@@ -208,7 +208,7 @@ func (eDB *EventElastic) Actions(category string) ([]string, error) {
 	}
 
 	// prepare aggregation
-	search := eDB.DB.Client.Search().Index("events").Type("_doc").Size(0)
+	search := eDB.DB.Client.Search().Index(eDB.DB.IndexPrefix + "events").Type("_doc").Size(0)
 	agg := elastic.NewTermsAggregation().Field("action.keyword")
 	search = search.Aggregation("buckets", agg)
 
@@ -238,7 +238,7 @@ func (eDB *EventElastic) Actions(category string) ([]string, error) {
 // Users lists all tracked users.
 func (eDB *EventElastic) Users() ([]string, error) {
 	// prepare aggregation
-	search := eDB.DB.Client.Search().Index("events").Type("_doc").Size(0)
+	search := eDB.DB.Client.Search().Index(eDB.DB.IndexPrefix + "events").Type("_doc").Size(0)
 	agg := elastic.NewTermsAggregation().Field("user_id.keyword")
 	search = search.Aggregation("buckets", agg)
 

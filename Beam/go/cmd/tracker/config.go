@@ -13,4 +13,6 @@ type Config struct {
 	MysqlDBName string `envconfig:"mysql_dbname" required:"true"`
 
 	InternalHosts string `envconfig:"internal_hosts" required:"false"`
+
+	IndexPrefix string `envconfig:"index_prefix" required:"false"`
 }

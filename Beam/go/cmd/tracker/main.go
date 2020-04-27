@@ -148,6 +148,7 @@ func main() {
 		propertyDB,
 		entitySchemaDB,
 		strings.Split(c.InternalHosts, ","),
+		c.IndexPrefix,
 	))
 
 	// server init

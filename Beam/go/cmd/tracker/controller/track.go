@@ -25,6 +25,7 @@ type TrackController struct {
 	PropertyStorage     model.PropertyStorage
 	EntitySchemaStorage model.EntitySchemaStorage
 	InternalHosts       []string
+	IndexPrefix         string
 }
 
 // Event represents Influx event structure
@@ -36,13 +37,14 @@ type Event struct {
 }
 
 // NewTrackController creates a track controller.
-func NewTrackController(service *goa.Service, ep sarama.AsyncProducer, ps model.PropertyStorage, ess model.EntitySchemaStorage, ih []string) *TrackController {
+func NewTrackController(service *goa.Service, ep sarama.AsyncProducer, ps model.PropertyStorage, ess model.EntitySchemaStorage, ih []string, ip string) *TrackController {
 	return &TrackController{
 		Controller:          service.NewController("TrackController"),
 		EventProducer:       ep,
 		PropertyStorage:     ps,
 		EntitySchemaStorage: ess,
 		InternalHosts:       ih,
+		IndexPrefix:         ip,
 	}
 }
 
@@ -444,7 +446,7 @@ func (c *TrackController) pushInternal(measurement string, time time.Time,
 	data := make(map[string]interface{})
 	data["_json"] = string(json)
 
-	p, err := influxClient.NewPoint(measurement, nil, data, time)
+	p, err := influxClient.NewPoint(c.IndexPrefix+measurement, nil, data, time)
 	if err != nil {
 		return err
 	}
