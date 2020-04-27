@@ -23,7 +23,6 @@ clean:
 
 gen:
 	set -e
-	export GO111MODULE=on
 	go get github.com/goadesign/goa/...@v1
 	goagen app -d=$(DESIGN_PKG)
 	goagen swagger -d=$(DESIGN_PKG)
