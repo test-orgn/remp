@@ -40,9 +40,8 @@ class StatsController extends Controller
     public function getStats(Campaign $campaign, StatsRequest $request)
     {
         $tz = $request->input('tz');
-
-        $from = Carbon::parse($request->get('from'), $tz);
-        $to = Carbon::parse($request->get('to'), $tz);
+        $from = Carbon::parse($request->input('from'), $tz);
+        $to = Carbon::parse($request->input('to'), $tz);
 
         // round values if interval is bigger than 1 hour
         if ($from->diffInMinutes($to) >= 3600) {
