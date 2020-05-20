@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Campaign;
-use App\CampaignBanner;
-use App\CampaignBannerStats;
 use App\Contracts\StatsContract;
 use App\Contracts\StatsHelper;
-use Illuminate\Http\Request;
+use App\Http\Requests\StatsRequest;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Remp\MultiArmedBandit\Lever;
 use Remp\MultiArmedBandit\Machine;
 
@@ -40,7 +37,7 @@ class StatsController extends Controller
         $this->stats = $stats;
     }
 
-    public function getStats(Campaign $campaign, Request $request)
+    public function getStats(Campaign $campaign, StatsRequest $request)
     {
         $tz = $request->input('tz');
 
