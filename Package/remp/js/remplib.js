@@ -8,6 +8,8 @@ export default {
 
     userSubscribed: null,
 
+    productId: null,
+
     browserId: null,
 
     cacheThreshold: 15 * 60000, // 15 minutes
@@ -28,6 +30,10 @@ export default {
 
     isUserSubscriber: function() {
         return this.userSubscribed;
+    },
+
+    getProductId: function() {
+        return this.productId;
     },
 
     getBrowserId: function() {
