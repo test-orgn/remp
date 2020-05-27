@@ -7,6 +7,28 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### Docker
+
+- **BREAKING**: Replaced `spotify/kafka` docker image with `wurstmeister/kafka` as original image was no longed maintained and new installations stopped working. remp/remp#638
+  
+  - In case you have existing installation in place using the docker compose, please run:
+    ```bash
+    docker-compose stop beam_tracker telegraf
+    docker-compose rm beam_tracker telegraf
+    docker-compose build beam_tracker telegraf
+    ```  
+
+### [Mailer]
+
+- Added API endpoint `mailers/mail-type-categories` to list mail type categories. GH-64
+- Extended API endpoint `mailers/mail-types` to include additional data and filter via `public_listing` and `code` parameters. GH-64
+- Added API endpoint `users/is-unsubscribed` to check if user is explicitly unsubscribed from the newsletter. GH-64
+- Added API endpoint `users/logs-count-per-status` to get number of emails sent to user per each status within provided timeframe. GH-64
+- Added API endpoint `users/logs` to retrieve logs of emails sent to user. Various filter can apply, see [README.md](./Mailer/README.md) for more details. GH-64
+- Added JSON schema validation to `Subscribe` and `BulkSubscribe` APIs. GH-64
+- Added API endpoint `users/preferences` to read user's subscriptions to newsletters (mail types). GH-64
+- Improved speed of job detail page - unsubscribe stats could slow rendering a bit if job was sent to 6+-figure recipients. remp/remp#624
+
 ### [Beam]
 
 - **BREAKING**: Application now requires Elasticsearch 7. Upgrade requires to rebuild Tracker and Segments apps and Telegraf configuration upgrade (`type_name` should be omitted, see `Docker/telegraf/telegraf.conf` docker configuration file for specific configuration). remp/remp#616
@@ -14,12 +36,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Added support for timezone parameter in Journal aggregations. remp/remp#605
 - Quick range day filters now start from beginning of the day. remp/remp#605
 - Go dep dependencies management system replaced with go modules. remp/remp#616
+- Added `FORCE_HTTPS` environment variable to enforce HTTPS generation to URLs instead of determining protocol based on the request. This is useful in case you're running your application on `https`, but internally use proxy forwarding the request via `http`. remp/remp#619
+- Added new APIs `api/authors/top` and `api/tags/top` for retrieving top authors and tags per given time period. remp/web#366
 
 ### [Campaign]
 
 - Added early-version support for search in the top searchbox. Searchable are banners and campaigns. GH-62
 - Improved intervals in campaign stats charts. remp/remp#605
 - Quick range day filters now start from beginning of the day. remp/remp#605
+- Added `FORCE_HTTPS` environment variable to enforce HTTPS generation to URLs instead of determining protocol based on the request. This is useful in case you're running your application on `https`, but internally use proxy forwarding the request via `http`. remp/remp#619
+- Fixed add new ab variant replaces last variant instead of adding new after last one. remp/remp#634
+
+### [Sso]
+- Added `FORCE_HTTPS` environment variable to enforce HTTPS generation to URLs instead of determining protocol based on the request. This is useful in case you're running your application on `https`, but internally use proxy forwarding the request via `http`. remp/remp#619
 
 ---
 
@@ -68,6 +97,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Fixed and redesigned mailing list variants statistics to be sortable and filterable. remp/remp#593
 - Fixed attachment_size column type - changing to integer (from incorrectly assigned datetime).
 - Added option to select events to handle when starting Hermes worker in case there's need to run separate workers for mission-critical event types.
+- Fixed possibly incorrectly skipped newsletter subscription in user registered API handler. remp/crm#1159
 
 ### [Sso]
 
