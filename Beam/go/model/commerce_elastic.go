@@ -18,8 +18,7 @@ type CommerceElastic struct {
 // Count returns count of events based on the provided filter options.
 func (cDB *CommerceElastic) Count(options AggregateOptions) (CountRowCollection, bool, error) {
 	search := cDB.DB.Client.Search().
-		Index(cDB.DB.IndexPrefix + "commerce").
-		Type("_doc").
+		Index(cDB.DB.resolveIndex("commerce")).
 		Size(0) // return no specific results
 
 	search, err := cDB.DB.addSearchFilters(search, "commerce", options)
@@ -73,7 +72,6 @@ func (cDB *CommerceElastic) List(options ListOptions) (CommerceRowCollection, er
 
 	fsc := elastic.NewFetchSourceContext(true).Include(options.SelectFields...)
 	scroll := cDB.DB.Client.Scroll("commerce").
-		Type("_doc").
 		Size(1000).
 		FetchSourceContext(fsc)
 
@@ -165,8 +163,7 @@ func (cDB *CommerceElastic) Sum(options AggregateOptions) (SumRowCollection, boo
 	extras[targetAgg] = elastic.NewSumAggregation().Field("revenue")
 
 	search := cDB.DB.Client.Search().
-		Index(cDB.DB.IndexPrefix + "commerce").
-		Type("_doc").
+		Index(cDB.DB.resolveIndex("commerce")).
 		Size(0) // return no specific results
 
 	search, err := cDB.DB.addSearchFilters(search, "commerce", options)

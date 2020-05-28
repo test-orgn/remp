@@ -15,8 +15,7 @@ func (pDB *ConcurrentElastic) Count(options AggregateOptions) (CountRowCollectio
 	extras := make(map[string]elastic.Aggregation)
 
 	search := pDB.DB.Client.Search().
-		Index(pDB.DB.IndexPrefix + TableConcurrents).
-		Type("_doc").
+		Index(pDB.DB.resolveIndex(TableConcurrents)).
 		Size(0) // return no specific results
 
 	search, err := pDB.DB.addSearchFilters(search, TableConcurrents, options)

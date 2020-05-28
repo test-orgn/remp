@@ -37,8 +37,7 @@ func (pDB *PageviewElastic) Count(options AggregateOptions) (CountRowCollection,
 	extras := make(map[string]elastic.Aggregation)
 
 	search := pDB.DB.Client.Search().
-		Index(pDB.DB.IndexPrefix + binding.Index).
-		Type("_doc").
+		Index(pDB.DB.resolveIndex(binding.Index)).
 		Size(0) // return no specific results
 
 	search, err = pDB.DB.addSearchFilters(search, binding.Index, options)
@@ -109,8 +108,7 @@ func (pDB *PageviewElastic) Sum(options AggregateOptions) (SumRowCollection, boo
 	extras[targetAgg] = elastic.NewSumAggregation().Field(binding.Field)
 
 	search := pDB.DB.Client.Search().
-		Index(pDB.DB.IndexPrefix + binding.Index).
-		Type("_doc").
+		Index(pDB.DB.resolveIndex(binding.Index)).
 		Size(0) // return no specific results
 
 	search, err = pDB.DB.addSearchFilters(search, binding.Index, options)
@@ -162,8 +160,7 @@ func (pDB *PageviewElastic) Avg(options AggregateOptions) (AvgRowCollection, boo
 	extras[targetAgg] = elastic.NewAvgAggregation().Field(binding.Field)
 
 	search := pDB.DB.Client.Search().
-		Index(pDB.DB.IndexPrefix + binding.Index).
-		Type("_doc").
+		Index(pDB.DB.resolveIndex(binding.Index)).
 		Size(0) // return no specific results
 
 	search, err = pDB.DB.addSearchFilters(search, binding.Index, options)
@@ -225,8 +222,7 @@ func (pDB *PageviewElastic) Unique(options AggregateOptions, item string) (Count
 	extras[targetAgg] = elastic.NewCardinalityAggregation().Field(binding.Field)
 
 	search := pDB.DB.Client.Search().
-		Index(pDB.DB.IndexPrefix + binding.Index).
-		Type("_doc").
+		Index(pDB.DB.resolveIndex(binding.Index)).
 		Size(0) // return no specific results
 
 	search, err := pDB.DB.addSearchFilters(search, binding.Index, options)
@@ -267,7 +263,6 @@ func (pDB *PageviewElastic) List(options ListPageviewsOptions) (PageviewRowColle
 
 	fsc := elastic.NewFetchSourceContext(true).Include(options.SelectFields...)
 	scroll := pDB.DB.Client.Scroll("pageviews").
-		Type("_doc").
 		Size(1000).
 		FetchSourceContext(fsc)
 
@@ -376,7 +371,6 @@ func (pDB *PageviewElastic) List(options ListPageviewsOptions) (PageviewRowColle
 func loadTimespent(pDB *PageviewElastic, pageviewIDs []string) (map[string]int, error) {
 	fsc := elastic.NewFetchSourceContext(true).Include("timespent", "remp_pageview_id")
 	scroll := pDB.DB.Client.Scroll("pageviews_time_spent").
-		Type("_doc").
 		Size(1000).
 		FetchSourceContext(fsc)
 
@@ -445,7 +439,7 @@ func (pDB *PageviewElastic) Actions(category string) ([]string, error) {
 // Users lists all tracked users.
 func (pDB *PageviewElastic) Users() ([]string, error) {
 	// prepare aggregation
-	search := pDB.DB.Client.Search().Index(pDB.DB.IndexPrefix + "pageviews").Type("_doc").Size(0)
+	search := pDB.DB.Client.Search().Index(pDB.DB.resolveIndex("pageviews")).Size(0)
 	agg := elastic.NewTermsAggregation().Field("user_id.keyword")
 	search = search.Aggregation("buckets", agg)
 
