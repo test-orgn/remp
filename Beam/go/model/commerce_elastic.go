@@ -15,13 +15,17 @@ type CommerceElastic struct {
 	DB *ElasticDB
 }
 
+func (cDB *CommerceElastic) getIndex() string {
+	return cDB.DB.resolveIndex("commerce")
+}
+
 // Count returns count of events based on the provided filter options.
 func (cDB *CommerceElastic) Count(options AggregateOptions) (CountRowCollection, bool, error) {
 	search := cDB.DB.Client.Search().
-		Index(cDB.DB.resolveIndex("commerce")).
+		Index(cDB.getIndex()).
 		Size(0) // return no specific results
 
-	search, err := cDB.DB.addSearchFilters(search, "commerce", options)
+	search, err := cDB.DB.addSearchFilters(search, cDB.getIndex(), options)
 	if err != nil {
 		return nil, false, err
 	}
@@ -42,7 +46,7 @@ func (cDB *CommerceElastic) Count(options AggregateOptions) (CountRowCollection,
 			ExtendedBounds(options.TimeAfter, options.TimeBefore)
 	}
 
-	search, err = cDB.DB.addGroupBy(search, "commerce", options, nil, dateHistogramAgg)
+	search, err = cDB.DB.addGroupBy(search, cDB.getIndex(), options, nil, dateHistogramAgg)
 	if err != nil {
 		return nil, false, err
 	}
@@ -71,11 +75,11 @@ func (cDB *CommerceElastic) List(options ListOptions) (CommerceRowCollection, er
 	var crc CommerceRowCollection
 
 	fsc := elastic.NewFetchSourceContext(true).Include(options.SelectFields...)
-	scroll := cDB.DB.Client.Scroll("commerce").
+	scroll := cDB.DB.Client.Scroll(cDB.getIndex()).
 		Size(1000).
 		FetchSourceContext(fsc)
 
-	scroll, err := cDB.DB.addScrollFilters(scroll, "commerce", options.AggregateOptions)
+	scroll, err := cDB.DB.addScrollFilters(scroll, cDB.getIndex(), options.AggregateOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -163,10 +167,10 @@ func (cDB *CommerceElastic) Sum(options AggregateOptions) (SumRowCollection, boo
 	extras[targetAgg] = elastic.NewSumAggregation().Field("revenue")
 
 	search := cDB.DB.Client.Search().
-		Index(cDB.DB.resolveIndex("commerce")).
+		Index(cDB.getIndex()).
 		Size(0) // return no specific results
 
-	search, err := cDB.DB.addSearchFilters(search, "commerce", options)
+	search, err := cDB.DB.addSearchFilters(search, cDB.getIndex(), options)
 	if err != nil {
 		return nil, false, err
 	}
@@ -185,7 +189,7 @@ func (cDB *CommerceElastic) Sum(options AggregateOptions) (SumRowCollection, boo
 			Offset(options.TimeHistogram.Offset)
 	}
 
-	search, err = cDB.DB.addGroupBy(search, "commerce", options, extras, dateHistogramAgg)
+	search, err = cDB.DB.addGroupBy(search, cDB.getIndex(), options, extras, dateHistogramAgg)
 	if err != nil {
 		return nil, false, err
 	}

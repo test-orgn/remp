@@ -40,7 +40,7 @@ func (pDB *PageviewElastic) Count(options AggregateOptions) (CountRowCollection,
 		Index(pDB.DB.resolveIndex(binding.Index)).
 		Size(0) // return no specific results
 
-	search, err = pDB.DB.addSearchFilters(search, binding.Index, options)
+	search, err = pDB.DB.addSearchFilters(search, pDB.DB.resolveIndex(binding.Index), options)
 	if err != nil {
 		return nil, false, err
 	}
@@ -67,7 +67,7 @@ func (pDB *PageviewElastic) Count(options AggregateOptions) (CountRowCollection,
 			Offset(options.TimeHistogram.Offset)
 	}
 
-	search, err = pDB.DB.addGroupBy(search, binding.Index, options, extras, dateHistogramAgg)
+	search, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
 	if err != nil {
 		return nil, false, err
 	}
@@ -111,7 +111,7 @@ func (pDB *PageviewElastic) Sum(options AggregateOptions) (SumRowCollection, boo
 		Index(pDB.DB.resolveIndex(binding.Index)).
 		Size(0) // return no specific results
 
-	search, err = pDB.DB.addSearchFilters(search, binding.Index, options)
+	search, err = pDB.DB.addSearchFilters(search, pDB.DB.resolveIndex(binding.Index), options)
 	if err != nil {
 		return nil, false, err
 	}
@@ -129,7 +129,7 @@ func (pDB *PageviewElastic) Sum(options AggregateOptions) (SumRowCollection, boo
 			Offset(options.TimeHistogram.Offset)
 	}
 
-	search, err = pDB.DB.addGroupBy(search, binding.Index, options, extras, dateHistogramAgg)
+	search, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
 	if err != nil {
 		return nil, false, err
 	}
@@ -163,7 +163,7 @@ func (pDB *PageviewElastic) Avg(options AggregateOptions) (AvgRowCollection, boo
 		Index(pDB.DB.resolveIndex(binding.Index)).
 		Size(0) // return no specific results
 
-	search, err = pDB.DB.addSearchFilters(search, binding.Index, options)
+	search, err = pDB.DB.addSearchFilters(search, pDB.DB.resolveIndex(binding.Index), options)
 	if err != nil {
 		return nil, false, err
 	}
@@ -181,7 +181,7 @@ func (pDB *PageviewElastic) Avg(options AggregateOptions) (AvgRowCollection, boo
 			Offset(options.TimeHistogram.Offset)
 	}
 
-	search, err = pDB.DB.addGroupBy(search, binding.Index, options, extras, dateHistogramAgg)
+	search, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
 	if err != nil {
 		return nil, false, err
 	}
@@ -225,7 +225,7 @@ func (pDB *PageviewElastic) Unique(options AggregateOptions, item string) (Count
 		Index(pDB.DB.resolveIndex(binding.Index)).
 		Size(0) // return no specific results
 
-	search, err := pDB.DB.addSearchFilters(search, binding.Index, options)
+	search, err := pDB.DB.addSearchFilters(search, pDB.DB.resolveIndex(binding.Index), options)
 	if err != nil {
 		return nil, false, err
 	}
@@ -243,7 +243,7 @@ func (pDB *PageviewElastic) Unique(options AggregateOptions, item string) (Count
 			Offset(options.TimeHistogram.Offset)
 	}
 
-	search, err = pDB.DB.addGroupBy(search, binding.Index, options, extras, dateHistogramAgg)
+	search, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
 	if err != nil {
 		return nil, false, err
 	}
@@ -261,12 +261,14 @@ func (pDB *PageviewElastic) Unique(options AggregateOptions, item string) (Count
 func (pDB *PageviewElastic) List(options ListPageviewsOptions) (PageviewRowCollection, error) {
 	var prc PageviewRowCollection
 
+	index := pDB.DB.resolveIndex("pageviews")
+
 	fsc := elastic.NewFetchSourceContext(true).Include(options.SelectFields...)
-	scroll := pDB.DB.Client.Scroll("pageviews").
+	scroll := pDB.DB.Client.Scroll(index).
 		Size(1000).
 		FetchSourceContext(fsc)
 
-	scroll, err := pDB.DB.addScrollFilters(scroll, "pageviews", options.AggregateOptions)
+	scroll, err := pDB.DB.addScrollFilters(scroll, index, options.AggregateOptions)
 	if err != nil {
 		return nil, err
 	}

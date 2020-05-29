@@ -6,6 +6,7 @@ import (
 	"math"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/olivere/elastic/v7"
@@ -35,7 +36,11 @@ func NewElasticDB(ctx context.Context, client *elastic.Client, debug bool, index
 }
 
 func (eDB *ElasticDB) resolveIndex(index string) string {
-	return eDB.IndexPrefix + index
+	if !strings.HasPrefix(index, eDB.IndexPrefix) {
+		return eDB.IndexPrefix + index
+	}
+
+	return index
 }
 
 func (eDB *ElasticDB) addSearchFilters(search *elastic.SearchService, index string, o AggregateOptions) (*elastic.SearchService, error) {
@@ -527,7 +532,9 @@ func (eDB *ElasticDB) resolveZeroValue(index, field string) (interface{}, error)
 
 // cacheFieldMapping downloads and caches field mappings for specified index
 func (eDB *ElasticDB) cacheFieldMapping(index string) (map[string]string, error) {
-	result, err := eDB.Client.GetMapping().Index(eDB.resolveIndex(index)).Do(eDB.Context)
+	index = eDB.resolveIndex(index)
+
+	result, err := eDB.Client.GetMapping().Index(index).Do(eDB.Context)
 	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("unable to get field mappings for index: %s", index))
 	}
@@ -594,7 +601,7 @@ func (eDB *ElasticDB) cacheFieldMapping(index string) (map[string]string, error)
 		readMapping(root)
 	} else {
 		// there's no such index, but there might be an alias, let's try those
-		aliases, err := eDB.Client.Aliases().Index(eDB.resolveIndex(index)).Do(eDB.Context)
+		aliases, err := eDB.Client.Aliases().Index(index).Do(eDB.Context)
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("unable to get aliases for index: %s", index))
 		}

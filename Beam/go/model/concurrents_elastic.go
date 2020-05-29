@@ -10,20 +10,24 @@ type ConcurrentElastic struct {
 	actionsCached map[string][]string
 }
 
+func (pDB *ConcurrentElastic) getIndex() string {
+	return pDB.DB.resolveIndex(TableConcurrents)
+}
+
 // Count returns number of Concurrents matching the filter defined by AggregateOptions.
 func (pDB *ConcurrentElastic) Count(options AggregateOptions) (CountRowCollection, bool, error) {
 	extras := make(map[string]elastic.Aggregation)
 
 	search := pDB.DB.Client.Search().
-		Index(pDB.DB.resolveIndex(TableConcurrents)).
+		Index(pDB.getIndex()).
 		Size(0) // return no specific results
 
-	search, err := pDB.DB.addSearchFilters(search, TableConcurrents, options)
+	search, err := pDB.DB.addSearchFilters(search, pDB.getIndex(), options)
 	if err != nil {
 		return nil, false, err
 	}
 
-	search, err = pDB.DB.addGroupBy(search, TableConcurrents, options, extras, nil)
+	search, err = pDB.DB.addGroupBy(search, pDB.getIndex(), options, extras, nil)
 	if err != nil {
 		return nil, false, err
 	}
