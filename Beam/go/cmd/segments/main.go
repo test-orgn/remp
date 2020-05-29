@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
@@ -198,7 +199,12 @@ func main() {
 
 func initElasticEventStorages(ctx context.Context, c Config) (model.EventStorage, model.PageviewStorage, model.CommerceStorage, model.ConcurrentsStorage, error) {
 	elasticAddrs := strings.Split(c.ElasticAddrs, ",")
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
 	eopts := []elastic.ClientOptionFunc{
+		elastic.SetHttpClient(client),
 		elastic.SetBasicAuth(c.ElasticUser, c.ElasticPasswd),
 		elastic.SetURL(elasticAddrs...),
 		elastic.SetSniff(false),
@@ -216,7 +222,7 @@ func initElasticEventStorages(ctx context.Context, c Config) (model.EventStorage
 	if err != nil {
 		return nil, nil, nil, nil, errors.Wrap(err, "unable to initialize elasticsearch client")
 	}
-	elasticDB := model.NewElasticDB(ctx, ec, c.Debug, c.IndexPrefix)
+	elasticDB := model.NewElasticDB(ctx, ec, c.IndexPrefix, c.Debug)
 
 	eventStorage := &model.EventElastic{
 		DB: elasticDB,

@@ -24,7 +24,7 @@ type ElasticDB struct {
 }
 
 // NewElasticDB returns new instance of ElasticSearch DB implementation
-func NewElasticDB(ctx context.Context, client *elastic.Client, debug bool, indexPrefix string) *ElasticDB {
+func NewElasticDB(ctx context.Context, client *elastic.Client, indexPrefix string, debug bool) *ElasticDB {
 	edb := &ElasticDB{
 		Client:      client,
 		Debug:       debug,
