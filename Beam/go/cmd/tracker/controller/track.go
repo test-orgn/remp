@@ -36,7 +36,7 @@ type Event struct {
 }
 
 // NewTrackController creates a track controller.
-func NewTrackController(service *goa.Service, ep sarama.AsyncProducer, ps model.PropertyStorage, ess model.EntitySchemaStorage, ih []string, ip string) *TrackController {
+func NewTrackController(service *goa.Service, ep sarama.AsyncProducer, ps model.PropertyStorage, ess model.EntitySchemaStorage, ih []string) *TrackController {
 	return &TrackController{
 		Controller:          service.NewController("TrackController"),
 		EventProducer:       ep,
