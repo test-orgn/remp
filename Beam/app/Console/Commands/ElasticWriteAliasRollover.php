@@ -86,7 +86,7 @@ class ElasticWriteAliasRollover extends Command
 
         // if rollover happened, add newly created index to the read alias (so it contains all the indices)
         try {
-            $client->post("/_aliases", [
+            $client->post("/_aliases", array_merge([
                 'json' => [
                     'actions' => [
                         'add' => [
@@ -95,7 +95,7 @@ class ElasticWriteAliasRollover extends Command
                         ],
                     ],
                 ],
-            ]);
+            ], $options));
         } catch (ClientException $e) {
             $body = json_decode($e->getResponse()->getBody());
             dump($body);
