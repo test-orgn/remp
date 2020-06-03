@@ -371,8 +371,10 @@ func (pDB *PageviewElastic) List(options ListPageviewsOptions) (PageviewRowColle
 }
 
 func loadTimespent(pDB *PageviewElastic, pageviewIDs []string) (map[string]int, error) {
+	index := pDB.DB.resolveIndex("pageviews_time_spent")
+
 	fsc := elastic.NewFetchSourceContext(true).Include("timespent", "remp_pageview_id")
-	scroll := pDB.DB.Client.Scroll("pageviews_time_spent").
+	scroll := pDB.DB.Client.Scroll(index).
 		Size(1000).
 		FetchSourceContext(fsc)
 
@@ -385,7 +387,7 @@ func loadTimespent(pDB *PageviewElastic, pageviewIDs []string) (map[string]int, 
 	}
 	ao.FilterBy = append(ao.FilterBy, fb)
 
-	scroll, err := pDB.DB.addScrollFilters(scroll, "pageviews_time_spent", ao)
+	scroll, err := pDB.DB.addScrollFilters(scroll, index, ao)
 	if err != nil {
 		return nil, err
 	}
