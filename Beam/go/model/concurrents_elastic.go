@@ -20,7 +20,8 @@ func (pDB *ConcurrentElastic) Count(options AggregateOptions) (CountRowCollectio
 
 	search := pDB.DB.Client.Search().
 		Index(pDB.getIndex()).
-		Size(0) // return no specific results
+		TrackTotalHits(true). // allow to compute more than 10000 hits (default value)
+		Size(0)               // return no specific results
 
 	search, err := pDB.DB.addSearchFilters(search, pDB.getIndex(), options)
 	if err != nil {
