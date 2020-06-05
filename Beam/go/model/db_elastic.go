@@ -121,16 +121,19 @@ func (eDB *ElasticDB) boolQueryFromOptions(index string, o AggregateOptions) (*e
 // addGroupBy creates a standard (wrapped) aggregation. The results are fetchable
 // via countRowCollectionFromBuckets or sumRowCollectionFromBuckets.
 func (eDB *ElasticDB) addGroupBy(search *elastic.SearchService, index string, o AggregateOptions,
-	extras map[string]elastic.Aggregation, dateHistogramAgg *elastic.DateHistogramAggregation) (*elastic.SearchService, error) {
+	extras map[string]elastic.Aggregation, dateHistogramAgg *elastic.DateHistogramAggregation) (*elastic.SearchService, bool, error) {
+
+	aggregationAdded := false
 
 	if len(o.GroupBy) > 0 || len(extras) > 0 || dateHistogramAgg != nil {
 		var err error
 		search, _, err = eDB.WrapAggregation(index, o.GroupBy, search, extras, dateHistogramAgg, nil)
 		if err != nil {
-			return nil, err
+			return nil, false, err
 		}
+		aggregationAdded = true
 	}
-	return search, nil
+	return search, aggregationAdded, nil
 }
 
 // countRowCollectionFromAggregations generates CountRowCollection based on query result aggregations.

@@ -67,7 +67,7 @@ func (pDB *PageviewElastic) Count(options AggregateOptions) (CountRowCollection,
 			Offset(options.TimeHistogram.Offset)
 	}
 
-	search, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
+	search, _, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
 	if err != nil {
 		return nil, false, err
 	}
@@ -129,7 +129,7 @@ func (pDB *PageviewElastic) Sum(options AggregateOptions) (SumRowCollection, boo
 			Offset(options.TimeHistogram.Offset)
 	}
 
-	search, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
+	search, _, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
 	if err != nil {
 		return nil, false, err
 	}
@@ -181,7 +181,7 @@ func (pDB *PageviewElastic) Avg(options AggregateOptions) (AvgRowCollection, boo
 			Offset(options.TimeHistogram.Offset)
 	}
 
-	search, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
+	search, _, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
 	if err != nil {
 		return nil, false, err
 	}
@@ -243,7 +243,7 @@ func (pDB *PageviewElastic) Unique(options AggregateOptions, item string) (Count
 			Offset(options.TimeHistogram.Offset)
 	}
 
-	search, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
+	search, _, err = pDB.DB.addGroupBy(search, pDB.DB.resolveIndex(binding.Index), options, extras, dateHistogramAgg)
 	if err != nil {
 		return nil, false, err
 	}

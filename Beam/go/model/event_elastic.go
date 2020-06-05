@@ -53,7 +53,7 @@ func (eDB *EventElastic) Count(options AggregateOptions) (CountRowCollection, bo
 			ExtendedBounds(options.TimeAfter, options.TimeBefore)
 	}
 
-	search, err = eDB.DB.addGroupBy(search, eDB.getIndex(), options, extras, dateHistogramAgg)
+	search, _, err = eDB.DB.addGroupBy(search, eDB.getIndex(), options, extras, dateHistogramAgg)
 	if err != nil {
 		return nil, false, err
 	}
