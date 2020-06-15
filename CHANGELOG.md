@@ -31,7 +31,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### [Beam]
 
-- **BREAKING**: Application now requires Elasticsearch 7. Upgrade requires to rebuild Tracker and Segments apps and Telegraf configuration upgrade (`type_name` should be omitted, see `Docker/telegraf/telegraf.conf` docker configuration file for specific configuration). remp/remp#616
+- **BREAKING**: Application now requires Elasticsearch 7. remp/remp#616
+Please follow the upgrade steps:
+  - Rebuild or download new Tracker and Segments binaries (binaries available at https://github.com/remp2020/remp/releases).
+  - Omit `type_name` from Telegraf configuration (see `Docker/telegraf/telegraf.conf` docker configuration file for more details).
+  - If you use default docker appliance to run REMP, please run:
+    ```bash
+    docker-compose stop beam_tracker beam_segments
+    docker-compose build beam_tracker beam_segments
+    docker-compose up -d beam_tracker beam_segments
+    ```
+
 - Added early-version support for search in the top searchbox. Searchable are articles, authors, sections, tags and segments. GH-62
 - Added support for timezone parameter in Journal aggregations. remp/remp#605
 - Quick range day filters now start from beginning of the day. remp/remp#605
