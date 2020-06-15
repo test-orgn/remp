@@ -120,6 +120,7 @@ func (eDB *ElasticDB) boolQueryFromOptions(index string, o AggregateOptions) (*e
 
 // addGroupBy creates a standard (wrapped) aggregation. The results are fetchable
 // via countRowCollectionFromBuckets or sumRowCollectionFromBuckets.
+// If any aggregation is added, function returns true as a second return value
 func (eDB *ElasticDB) addGroupBy(search *elastic.SearchService, index string, o AggregateOptions,
 	extras map[string]elastic.Aggregation, dateHistogramAgg *elastic.DateHistogramAggregation) (*elastic.SearchService, bool, error) {
 
