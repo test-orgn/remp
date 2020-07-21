@@ -58,6 +58,11 @@
                                     </label>
                                 </div>
 
+                                <br />
+
+                                <button v-if="!this.publicAccess" class="btn btn-sm btn-info waves-effect" @click="navigateToSettings">
+                                    Configuration
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -92,9 +97,11 @@
 </style>
 
 <script>
-    export default {
+    const publicAccess = window.location.href.indexOf('/public') !== -1;
+
+    const optionsModalModule = {
         name: 'options-modal',
-        inject: ['dashboardOptions'],
+        inject: publicAccess ? ['dashboardOptions'] : ['dashboardOptions', 'dashboardSettingsUrl'],
         mounted() {
             let referer = this.dashboardOptions['dashboard_frontpage_referer'];
             let propertyReferers = this.dashboardOptions['dashboard_frontpage_referer_of_properties']
@@ -114,6 +121,7 @@
                 onlyTrafficFromFrontPage: this.$store.state.settings.onlyTrafficFromFrontPage,
                 enableFrontpageFiltering: false,
                 frontPageReferer: null,
+                publicAccess: publicAccess
             }
         },
         methods: {
@@ -129,5 +137,13 @@
                 this.$emit('close')
             }
         }
+    };
+
+    if (!publicAccess) {
+        optionsModalModule.methods.navigateToSettings = function () {
+            window.location.href = this.dashboardSettingsUrl;
+        };
     }
+
+    export default optionsModalModule;
 </script>
