@@ -466,12 +466,50 @@ class ArticleDetailsController extends Controller
             $aggregated[$derivedMedium][$key] += $count;
         }
 
+        //retrieve conversion sources and group their counts by type(first/last), url and medium as well (same url cases)
+        $conversionSourcesCounts = [];
+        $conversionSources = $article->getConversionSources();
+        foreach ($conversionSources as $conversionSource) {
+            $medium = $this->journalHelper->refererMediumLabel($conversionSource->referer_medium);
+            $source = empty($conversionSource->referer_source) ? $conversionSource->referer_host_with_path : $conversionSource->referer_source;
+            $type = $conversionSource->type;
+
+            if (!isset($conversionSourcesCounts[$medium][$source][$type])) {
+                $conversionSourcesCounts[$medium][$source][$type] = 0;
+            }
+            $conversionSourcesCounts[$medium][$source][$type]++;
+        }
+
         foreach ($aggregated as $medium => $mediumSources) {
             foreach ($mediumSources as $source => $count) {
                 $data->push([
                     'derived_referer_medium' => $medium,
                     'source' => $source,
+                    'first_conversion_source_count' => $conversionSourcesCounts[$medium][$source]['first'] ?? 0,
+                    'last_conversion_source_count' => $conversionSourcesCounts[$medium][$source]['last'] ?? 0,
                     'visits_count' => $count,
+                ]);
+                if (isset($conversionSourcesCounts[$medium][$source]['first'])) {
+                    unset($conversionSourcesCounts[$medium][$source]['first']);
+                }
+                if (isset($conversionSourcesCounts[$medium][$source]['last'])) {
+                    unset($conversionSourcesCounts[$medium][$source]['last']);
+                }
+            }
+        }
+
+        //add also conversion sources that do not match witch article source
+        foreach ($conversionSourcesCounts as $medium => $mediumSources) {
+            foreach ($mediumSources as $source => $commerceCountByType) {
+                if (!isset($commerceCountByType['first']) && !isset($commerceCountByType['last'])) {
+                    continue;
+                }
+                $data->push([
+                    'derived_referer_medium' => $medium,
+                    'source' => $source,
+                    'first_conversion_source_count' => $commerceCountByType['first'] ?? 0,
+                    'last_conversion_source_count' => $commerceCountByType['last'] ?? 0,
+                    'visits_count' => 0,
                 ]);
             }
         }

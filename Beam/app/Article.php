@@ -9,6 +9,7 @@ use App\Model\Tag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Remp\Journal\AggregateRequest;
 use Remp\Journal\JournalContract;
@@ -246,6 +247,23 @@ SQL;
     public function getHasTitleVariantsAttribute(): bool
     {
         return count($this->variants_count['title']) > 1;
+    }
+
+    /**
+     * conversion_sources
+     * @return Collection
+     */
+    public function getConversionSources(): Collection
+    {
+        return $this
+            ->conversions()
+            ->with('conversionSources')
+            ->get()
+            ->pluck('conversionSources')
+            ->filter(function ($conversionSource) {
+                return $conversionSource->isNotEmpty();
+            })
+            ->flatten();
     }
 
     // Mutators
