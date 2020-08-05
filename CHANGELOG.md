@@ -9,7 +9,52 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Docker
 
-- **BREAKING**: Replaced `spotify/kafka` docker image with `wurstmeister/kafka` as original image was no longed maintained and new installations stopped working. remp/remp#638
+- Added tzdata installation for remp_segments docker (required by golang).
+
+### [Beam]
+
+- **BREAKING**: Application now requires Elasticsearch 7. remp/remp#616
+Please follow the upgrade steps:
+  - Rebuild or download new Tracker and Segments binaries (binaries available at https://github.com/remp2020/remp/releases).
+  - Omit `type_name` from Telegraf configuration (see `Docker/telegraf/telegraf.conf` docker configuration file for more details).
+  - If you use default docker appliance to run REMP, please run:
+    ```bash
+    docker-compose stop beam_tracker beam_segments
+    docker-compose build beam_tracker beam_segments
+    docker-compose up -d beam_tracker beam_segments
+    ```
+- Added ability to optionally specify (Elasticsearch) indexes prefix in `.env` for Tracker and Segments apps. remp/remp#616
+- Added support for Elasticsearch authentication (`auth` parameter) in `ElasticDataRetention` and `ElasticWriteAliasRollover` commands. remp/remp#616
+- Fixed ignored explicit `browserId` parameter in JS configuration. remp/remp#690
+
+## [0.11.1] - 2020-07-10
+
+### [Beam]
+
+- Added environment variables to configure Redis databases in Laravel. remp/remp#671 
+
+### [Campaign]
+
+- Added environment variables to configure Redis databases in Laravel. remp/remp#671
+
+### [Sso]
+
+- Added environment variables to configure Redis databases in Laravel. remp/remp#671
+
+## [0.11.0] - 2020-06-30
+
+### Important
+
+**Elasticsearch upgrade notice.** We'll be raising Elasticsearch compatibility to 7.* in the next release. Up until now, Segments API supported Elasticsearch 6.*.
+
+We recommend two upgrade scenarios:
+
+- When new release is ready, you can upgrade your existing cluster based on the documentation available at https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-upgrade.html.
+- If you clear your Elastic data recurrently and archive stored events to CSV, you can spin up new v7 cluster and configure [Telegraf](./Docker/telegraf/telegraf.conf) to push data to both v6 and v7 of Elastic. Once you're satisfied with the amount of data in v7 (~1 month tends to be sufficient), wait for the next release and change Elastic address in Segments API to v7 cluster. If there are no issues, you can stop pushing new events to v6 cluster in Telegraf and stop the cluster completely. 
+
+### Docker
+
+- **BREAKING**: Replaced `spotify/kafka` docker image with `wurstmeister/kafka` as original image was no longer maintained and new installations stopped working. remp/remp#638
   
   - In case you have existing installation in place using the docker compose, please run:
     ```bash
@@ -28,27 +73,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Added JSON schema validation to `Subscribe` and `BulkSubscribe` APIs. GH-64
 - Added API endpoint `users/preferences` to read user's subscriptions to newsletters (mail types). GH-64
 - Improved speed of job detail page - unsubscribe stats could slow rendering a bit if job was sent to 6+-figure recipients. remp/remp#624
+- Added API endpoint `mailers/mail-templates` to list and filter available mail templates.
+- Added early-version support for search in the top searchbox. Searchable are emails (templates), layouts, jobs and newsletter lists. GH-69
+- Added early-version support for WYSIWYG editor in Template edit form. It's configurable in `config.local.neon`, Mailer keeps HTML editor as default for now. GH-58
 
 ### [Beam]
 
-- **BREAKING**: Application now requires Elasticsearch 7. remp/remp#616
-Please follow the upgrade steps:
-  - Rebuild or download new Tracker and Segments binaries (binaries available at https://github.com/remp2020/remp/releases).
-  - Omit `type_name` from Telegraf configuration (see `Docker/telegraf/telegraf.conf` docker configuration file for more details).
-  - If you use default docker appliance to run REMP, please run:
-    ```bash
-    docker-compose stop beam_tracker beam_segments
-    docker-compose build beam_tracker beam_segments
-    docker-compose up -d beam_tracker beam_segments
-    ```
-- Added ability to optionally specify (Elasticsearch) indexes prefix in `.env` for Tracker and Segments apps. remp/remp#616
 - Added early-version support for search in the top searchbox. Searchable are articles, authors, sections, tags and segments. GH-62
 - Added support for timezone parameter in Journal aggregations. remp/remp#605
 - Quick range day filters now start from beginning of the day. remp/remp#605
 - Go dep dependencies management system replaced with go modules. remp/remp#616
 - Added `FORCE_HTTPS` environment variable to enforce HTTPS generation to URLs instead of determining protocol based on the request. This is useful in case you're running your application on `https`, but internally use proxy forwarding the request via `http`. remp/remp#619
 - Added new APIs `api/authors/top` and `api/tags/top` for retrieving top authors and tags per given time period. remp/web#366
-- Added ability to specify (Elasticsearch) index prefix in `.env` in Segments app. remp/remp#616
+- Articles upsert v2 api endpoint - process article titles only if they are present in payload. remp/remp#646
+- Fixed remplib initialization which could use misidentification of user - `remplib.getUserId()` would return `null` even when the `userId` was correctly set in `rempConfig`. remp/remp#651
 
 ### [Campaign]
 
@@ -57,6 +95,10 @@ Please follow the upgrade steps:
 - Quick range day filters now start from beginning of the day. remp/remp#605
 - Added `FORCE_HTTPS` environment variable to enforce HTTPS generation to URLs instead of determining protocol based on the request. This is useful in case you're running your application on `https`, but internally use proxy forwarding the request via `http`. remp/remp#619
 - Fixed add new ab variant replaces last variant instead of adding new after last one. remp/remp#634
+- Added option to disable banner events tracking. remp/remp#636
+- Added ability to access banner properties in custom JS code run in banner via newly added `params` object. remp/remp#636
+- Changed wording of hints in campaign's segment selection form. remp/remp#645
+- Fixed remplib initialization which could use misidentification of user - `remplib.getUserId()` would return `null` even when the `userId` was correctly set in `rempConfig`. remp/remp#651
 
 ### [Sso]
 - Added `FORCE_HTTPS` environment variable to enforce HTTPS generation to URLs instead of determining protocol based on the request. This is useful in case you're running your application on `https`, but internally use proxy forwarding the request via `http`. remp/remp#619

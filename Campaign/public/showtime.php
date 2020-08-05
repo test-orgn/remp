@@ -203,7 +203,10 @@ var run = function() {
             event.banner_variant = banner.variantUuid; 
         }
         
-        remplib.tracker.trackEvent("banner", "show", null, null, event);
+        if (!banner.manualEventsTracking) {
+            remplib.tracker.trackEvent("banner", "show", null, null, event);    
+        }
+        
         banner.show = true;
         if (banner.closeTimeout) {
             setTimeout(function() {
@@ -334,6 +337,7 @@ $redis = new \Predis\Client([
     'host'   => getenv('REDIS_HOST'),
     'port'   => getenv('REDIS_PORT') ?: 6379,
     'password' => getenv('REDIS_PASSWORD') ?: null,
+    'database' => getenv('REDIS_DEFAULT_DATABASE') ?: 0,
 ]);
 
 /** @var \App\Contracts\SegmentAggregator $segmentAggregator */

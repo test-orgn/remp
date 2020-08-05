@@ -85,9 +85,11 @@ couple of settings you can configure:
     * *From.* Who should be used as a sender of email (e.g. `Support <support@example.com`).
     * *Subject.* Email subject.
     * *Text version.* Text version used as a fallback by email clients.
-    * *HTML version.* HTML (primary) version of email that people will see. HTML version is being previewed in the
+    * *HTML version.* HTML (primary) version of email that people will see. HTML version will show preview in the
     form for creation of new email.
     
+HTML version can be edited by CodeMirror editor (html, default) or Trumbowyg editor (WYSIWYG). Default editor can be changed using `.env` variable `TEMPLATE_EDITOR`. (options: `codemirror`, `wysiwyg`)
+
 Text and HTML versions of *email* support [Twig syntax](https://twig.symfony.com/doc/2.x/templates.html) and you can use
 standard Twig features in your templates. Mailer is able to provide custom variables to your templates. These can
 originate from different sources:
@@ -1118,7 +1120,11 @@ Response:
     "id": 2,
     "email": "test@test.com",
     "subject": null,
-    "mail_template_id": 1,
+    "mail_template": {
+      "id": 1,
+      "code": "demo_email",
+      "name": "Demo email"
+    },
     "sent_at": "2020-04-08T19:26:00+02:00"
     "delivered_at": "2020-04-08T13:33:44+02:00",
     "dropped_at": "2020-04-08T19:28:36+02:00",
@@ -1132,7 +1138,11 @@ Response:
     "id": 4,
     "email": "test@test.com",
     "subject": null,
-    "mail_template_id": 2,
+    "mail_template": {
+      "id": 2,
+      "code": "example_email",
+      "name": "Example email"
+    },
     "sent_at": "2020-04-08T19:26:00+02:00"
     "delivered_at": null,
     "dropped_at": "2020-04-08T19:28:46+02:00",
@@ -1327,6 +1337,45 @@ Response:
         "default_variant_id": null
     }
 }
+```
+
+---
+
+#### GET `/api/v1/mailers/mail-templates`
+
+Get available mail templates. Possible filtering by `mail_type_code` to get only emails belonging to specified newsletter lists.
+
+##### *Headers:*
+
+| Name | Value | Required | Description |
+| --- |---| --- | --- |
+| Authorization | Bearer *String* | yes | API token. |
+
+##### *Example:*
+
+```shell
+curl -X GET \
+  http://mailer.remp.press/api/v1/mailers/mail-templates \
+  -H 'Authorization: Bearer XXX'
+```
+
+Response:
+
+```json5
+[
+  {
+      "code": "email_1",
+      "name": "Welcome email",
+      "description": "Email sent after new registration",
+      "mail_type_code": "system"
+  },
+  {
+      "code": "email_2",
+      "name": "Reset password",
+      "description": "Email sent after new password was requested",
+      "mail_type_code": "system"
+  }
+]
 ```
 
 ---
