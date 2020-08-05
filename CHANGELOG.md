@@ -41,7 +41,7 @@ Please follow the upgrade steps:
     docker-compose build beam_tracker beam_segments
     docker-compose up -d beam_tracker beam_segments
     ```
-
+- Added ability to optionally specify (Elasticsearch) indexes prefix in `.env` for Tracker and Segments apps. remp/remp#616
 - Added early-version support for search in the top searchbox. Searchable are articles, authors, sections, tags and segments. GH-62
 - Added support for timezone parameter in Journal aggregations. remp/remp#605
 - Quick range day filters now start from beginning of the day. remp/remp#605
