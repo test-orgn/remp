@@ -12,7 +12,8 @@ class ConversionSource extends Model
         'type',
         'referer_medium',
         'referer_source',
-        'referer_host_with_path'
+        'referer_host_with_path',
+        'pageview_url'
     ];
 
     protected $dates = [

@@ -6,7 +6,7 @@ use App\Conversion;
 use App\Model\ConversionCommerceEvent;
 use App\Model\ConversionSource;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Remp\Journal\JournalContract;
 use Remp\Journal\JournalException;
 use Remp\Journal\ListRequest;
@@ -163,33 +163,39 @@ class ProcessConversionSources extends Command
             ->addGroup('derived_referer_host_with_path', 'derived_referer_medium', 'derived_referer_source')
             ->addFilter('remp_session_id', $conversionSessionId);
 
-        $conversionPageViews = collect($this->journal->list($latestPageViewsListRequest));
+        $conversionPageViewsGroups = collect($this->journal->list($latestPageViewsListRequest));
         //filter out the pageviews that contain article url (e.g. refresh or source of checkout pageview (if tracked))
         $article_url = $conversion->article->url;
-        $conversionPageViews = $conversionPageViews->filter(function ($conversionPageView) use ($article_url) {
+        $conversionPageViewsGroups = $conversionPageViewsGroups->filter(function ($conversionPageView) use ($article_url) {
             $referer_host_with_path = $conversionPageView->tags->derived_referer_host_with_path;
             $referer_source = $conversionPageView->tags->derived_referer_source;
 
             return ($referer_host_with_path !== $article_url && $referer_source !== $article_url);
         });
 
-        $firstConversionPageviewTags = $conversionPageViews->where(
-            'pageviews.*.system.time',
-            $conversionPageViews->min('pageviews.*.system.time')
-        )->first()->tags;
+        $firstConversionPageViewTime = $conversionPageViewsGroups->min(function ($value) {
+            return min(array_pluck($value->pageviews, 'system.time'));
+        });
+        $lastConversionPageViewTime = $conversionPageViewsGroups->max(function ($value) {
+            return max(array_pluck($value->pageviews, 'system.time'));
+        });
 
-        $lastConversionPageviewTags = $conversionPageViews->where(
-            'pageviews.*.system.time',
-            $conversionPageViews->max('pageviews.*.system.time')
-        )->first()->tags;
+        $firstConversionPageViewsGroup = $this->getPageViewsGroupByPageViewTime($conversionPageViewsGroups, $firstConversionPageViewTime);
+        $lastConversionPageViewsGroup = $this->getPageViewsGroupByPageViewTime($conversionPageViewsGroups, $lastConversionPageViewTime);
 
-        $conversionSources[] = $this->createConversionSourceModel($firstConversionPageviewTags, $conversion, 'first');
-        $conversionSources[] = $this->createConversionSourceModel($lastConversionPageviewTags, $conversion, 'last');
+        $firstConversionPageViewUrl = $this->getPageViewUrlByPageViewTime($firstConversionPageViewsGroup, $firstConversionPageViewTime);
+        $lastConversionPageViewUrl = $this->getPageViewUrlByPageViewTime($lastConversionPageViewsGroup, $lastConversionPageViewTime);
+
+        $firstConversionPageViewUrl = $this->getHostWithPathUrl($firstConversionPageViewUrl);
+        $lastConversionPageViewUrl = $this->getHostWithPathUrl($lastConversionPageViewUrl);
+
+        $conversionSources[] = $this->createConversionSourceModel($firstConversionPageViewsGroup->tags, $firstConversionPageViewUrl, $conversion, 'first');
+        $conversionSources[] = $this->createConversionSourceModel($lastConversionPageViewsGroup->tags, $lastConversionPageViewUrl, $conversion, 'last');
 
         return $conversionSources;
     }
 
-    private function createConversionSourceModel(object $conversionPageViewTags, Conversion $conversion, string $type)
+    private function createConversionSourceModel(object $conversionPageViewTags, string $pageviewUrl, Conversion $conversion, string $type)
     {
         $conversionSource = new ConversionSource();
 
@@ -197,8 +203,33 @@ class ProcessConversionSources extends Command
         $conversionSource->referer_medium = $conversionPageViewTags->derived_referer_medium;
         $conversionSource->referer_source = empty($conversionPageViewTags->derived_referer_source) ? null : $conversionPageViewTags->derived_referer_source;
         $conversionSource->referer_host_with_path = empty($conversionPageViewTags->derived_referer_host_with_path) ? null : $conversionPageViewTags->derived_referer_host_with_path;
+        $conversionSource->pageview_url = $pageviewUrl;
         $conversionSource->conversion()->associate($conversion);
 
         return $conversionSource;
+    }
+
+    private function getPageViewsGroupByPageViewTime(Collection $pageViewsGroups, string $pageViewTime)
+    {
+        $pageViewsGroup = $pageViewsGroups->filter(function ($conversionPageViewsGroup) use ($pageViewTime) {
+            return in_array($pageViewTime, array_pluck($conversionPageViewsGroup->pageviews, 'system.time'));
+        })->first();
+
+        return $pageViewsGroup;
+    }
+
+    private function getPageViewUrlByPageViewTime(object $pageViewsGroups, string $pageViewTime)
+    {
+        $conversionPageViewUrl = collect($pageViewsGroups->pageviews)->where('system.time', $pageViewTime)->first()->user->url;
+
+        return $conversionPageViewUrl;
+    }
+
+    private function getHostWithPathUrl(string $rawUrl)
+    {
+        $rawUrl = parse_url($rawUrl);
+        $hostWithPathUrl = sprintf("%s://%s%s", $rawUrl['scheme'], $rawUrl['host'], $rawUrl['path']);
+
+        return $hostWithPathUrl;
     }
 }
