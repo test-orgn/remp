@@ -8,7 +8,9 @@ use App\Http\Request;
 use App\Model\ConversionCommerceEvent;
 use App\Model\ConversionGeneralEvent;
 use App\Model\ConversionPageviewEvent;
+use App\Model\ConversionSource;
 use App\Section;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class UserPathController extends Controller
@@ -149,5 +151,54 @@ class UserPathController extends Controller
                 'total' => $total
             ]
         ]);
+    }
+
+    public function diagramData(Request $request)
+    {
+        //todo do not use article relation, because it uses strict mapping of URLs, we need to compare only the path fragment of url
+        /*$request->validate([
+//            'tz' => 'timezone',
+            'interval' => 'required|in:7,30',
+        ]);*/
+        $from = Carbon::now()->subDays(30/*$request->get('interval')*/);
+        $to = Carbon::now();
+
+        $conversionSourcesByMedium = Conversion::where('paid_at', '>=', $from)
+            ->where('paid_at', '<=', $to)
+            ->with('conversionSources')
+            ->whereHas('conversionSources', function($query) {$query->where('type', ConversionSource::TYPE_LAST);} )
+            ->with('article')
+            ->get()
+            ->pluck('conversionSources')
+            ->flatten()
+            ->where('type', ConversionSource::TYPE_LAST)
+            ->groupBy('referer_medium');
+        dump($conversionSourcesByMedium);
+
+        $links = [];
+        $nodes [] = ['name' => 'articles'];
+        $nodes [] = ['name' => 'homepage + other'];
+
+        foreach ($conversionSourcesByMedium as $medium => $conversionSources) {
+            $nodes[] = ['name' => $medium];
+            $articlesCount = $conversionSources->filter(function ($conversionSource) {return !empty($conversionSource->article);})->count();
+            $titlesCount = $conversionSources->count() - $articlesCount;
+            if ($articlesCount) {
+                $links[] = [
+                    'source' => $medium,
+                    'target' => 'articles',
+                    'value' => $articlesCount
+                ];
+            }
+            if ($titlesCount) {
+                $links[] = [
+                    'source' => $medium,
+                    'target' => 'homepage + other',
+                    'value' => $titlesCount
+                ];
+            }
+        }
+        dd($nodes, $links);
+        return;
     }
 }

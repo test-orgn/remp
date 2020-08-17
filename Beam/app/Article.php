@@ -5,6 +5,7 @@ namespace App;
 use App\Helpers\Journal\JournalHelpers;
 use App\Model\ArticleTitle;
 use App\Model\Config\ConversionRateConfig;
+use App\Model\ConversionSource;
 use App\Model\Tag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -96,6 +97,11 @@ class Article extends Model implements Searchable
     public function articleTitles()
     {
         return $this->hasMany(ArticleTitle::class);
+    }
+
+    public function conversionSource()
+    {
+        return $this->hasOne(ConversionSource::class, 'url', 'pageview_url');
     }
 
     // Accessors
