@@ -166,7 +166,9 @@ class UserPathController extends Controller
         $conversionSourcesByMedium = Conversion::where('paid_at', '>=', $from)
             ->where('paid_at', '<=', $to)
             ->with('conversionSources')
-            ->whereHas('conversionSources', function($query) {$query->where('type', ConversionSource::TYPE_LAST);} )
+            ->whereHas('conversionSources', function ($query) {
+                $query->where('type', ConversionSource::TYPE_LAST);
+            })
             ->with('article')
             ->get()
             ->pluck('conversionSources')
@@ -181,7 +183,9 @@ class UserPathController extends Controller
 
         foreach ($conversionSourcesByMedium as $medium => $conversionSources) {
             $nodes[] = ['name' => $medium];
-            $articlesCount = $conversionSources->filter(function ($conversionSource) {return !empty($conversionSource->article);})->count();
+            $articlesCount = $conversionSources->filter(function ($conversionSource) {
+                return !empty($conversionSource->article);
+            })->count();
             $titlesCount = $conversionSources->count() - $articlesCount;
             if ($articlesCount) {
                 $links[] = [
