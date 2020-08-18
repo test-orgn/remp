@@ -29,9 +29,4 @@ class ConversionSource extends Model
     {
         return $this->belongsTo(Conversion::class);
     }
-
-    public function article()
-    {
-        return $this->belongsTo(Article::class, 'pageview_url', 'url');
-    }
 }

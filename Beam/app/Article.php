@@ -99,11 +99,6 @@ class Article extends Model implements Searchable
         return $this->hasMany(ArticleTitle::class);
     }
 
-    public function conversionSource()
-    {
-        return $this->hasOne(ConversionSource::class, 'url', 'pageview_url');
-    }
-
     // Accessors
 
     /**

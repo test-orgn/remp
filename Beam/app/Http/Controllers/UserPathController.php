@@ -11,6 +11,7 @@ use App\Model\ConversionPageviewEvent;
 use App\Model\ConversionSource;
 use App\Section;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class UserPathController extends Controller
@@ -155,27 +156,35 @@ class UserPathController extends Controller
 
     public function diagramData(Request $request)
     {
-        //todo do not use article relation, because it uses strict mapping of URLs, we need to compare only the path fragment of url
         /*$request->validate([
-//            'tz' => 'timezone',
+            'tz' => 'timezone',
             'interval' => 'required|in:7,30',
+            'conversionSourceType' => 'required|in:'.implode(',',[ConversionSource::TYPE_LAST, ConversionSource::TYPE_FIRST])
         ]);*/
+
         $from = Carbon::now()->subDays(30/*$request->get('interval')*/);
         $to = Carbon::now();
 
-        $conversionSourcesByMedium = Conversion::where('paid_at', '>=', $from)
+        $conversionSources = Conversion::where('paid_at', '>=', $from)
             ->where('paid_at', '<=', $to)
             ->with('conversionSources')
             ->whereHas('conversionSources', function ($query) {
                 $query->where('type', ConversionSource::TYPE_LAST);
             })
-            ->with('article')
             ->get()
             ->pluck('conversionSources')
-            ->flatten()
-            ->where('type', ConversionSource::TYPE_LAST)
-            ->groupBy('referer_medium');
-        dump($conversionSourcesByMedium);
+            ->flatten();
+
+        $sankeyData = $this->getSankeyNodesAndLinks($conversionSources, ConversionSource::TYPE_LAST);
+        dump($sankeyData);
+        //todo create resource class
+        return;
+    }
+
+    //todo think about helper SankeyData class that will provide all of this logic along with some validation as well or consider to put it into conversionSources class as well
+    private function getSankeyNodesAndLinks(Collection $conversionSources, string $conversionSourceType)
+    {
+        $conversionSourcesByMedium = $conversionSources->where('type', $conversionSourceType)->groupBy('referer_medium');
 
         $links = [];
         $nodes [] = ['name' => 'articles'];
@@ -184,25 +193,40 @@ class UserPathController extends Controller
         foreach ($conversionSourcesByMedium as $medium => $conversionSources) {
             $nodes[] = ['name' => $medium];
             $articlesCount = $conversionSources->filter(function ($conversionSource) {
-                return !empty($conversionSource->article);
+                return !empty($conversionSource->pageview_article_external_id);
             })->count();
             $titlesCount = $conversionSources->count() - $articlesCount;
             if ($articlesCount) {
+                $target = 'articles';
+
                 $links[] = [
                     'source' => $medium,
-                    'target' => 'articles',
+                    'target' => $target,
                     'value' => $articlesCount
                 ];
+
+                if (!in_array($target, $nodes)) {
+                    $nodes [] = ['name' => $target];
+                }
             }
             if ($titlesCount) {
+                $target = 'homepage + other';
+
                 $links[] = [
                     'source' => $medium,
-                    'target' => 'homepage + other',
+                    'target' => $target,
                     'value' => $titlesCount
                 ];
+
+                if (!in_array($target, $nodes)) {
+                    $nodes [] = ['name' => $target];
+                }
             }
         }
-        dd($nodes, $links);
-        return;
+
+        $sankeyData['nodes'] = $nodes;
+        $sankeyData['links'] = $links;
+
+        return $sankeyData;
     }
 }

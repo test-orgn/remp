@@ -14,7 +14,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### [Beam]
 
 - Fixed ignored explicit `browserId` parameter in JS configuration. remp/remp#690
-- Added one-to-one relation between article and conversion_source. remp/remp#551
 
 ## [0.11.1] - 2020-07-10
 
