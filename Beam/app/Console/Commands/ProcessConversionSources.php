@@ -200,8 +200,7 @@ class ProcessConversionSources extends Command
         $conversionSource->referer_medium = $conversionPageViewTags->derived_referer_medium;
         $conversionSource->referer_source = empty($conversionPageViewTags->derived_referer_source) ? null : $conversionPageViewTags->derived_referer_source;
         $conversionSource->referer_host_with_path = empty($conversionPageViewTags->derived_referer_host_with_path) ? null : $conversionPageViewTags->derived_referer_host_with_path;
-        $conversionSource->pageview_url = $this->getHostWithPathUrl($pageView->user->url);
-        $conversionSource->pageview_type = property_exists($pageView, 'article') ? ConversionSource::PAGEVIEWTYPE_ARTICLE : ConversionSource::PAGEVIEWTYPE_TITLE_AND_OTHER;
+        $conversionSource->pageview_article_external_id = property_exists($pageView, 'article') ? $pageView->article->id : null;
         $conversionSource->conversion()->associate($conversion);
 
         return $conversionSource;
@@ -219,13 +218,5 @@ class ProcessConversionSources extends Command
     private function getPageViewByTime($pageViewsGroups, string $pageViewTime)
     {
         return collect($pageViewsGroups->pageviews)->where('system.time', $pageViewTime)->first();
-    }
-
-    private function getHostWithPathUrl(string $rawUrl)
-    {
-        $rawUrl = parse_url($rawUrl);
-        $hostWithPathUrl = sprintf("%s://%s%s", $rawUrl['scheme'], $rawUrl['host'], $rawUrl['path']);
-
-        return $hostWithPathUrl;
     }
 }

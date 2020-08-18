@@ -21,11 +21,11 @@ class CreateConversionSourcesTable extends Migration
             $table->string('referer_medium');
             $table->string('referer_source')->nullable();
             $table->string('referer_host_with_path')->nullable();
-            $table->string('pageview_url');
-            $table->string('pageview_type');
+            $table->string('pageview_article_external_id')->nullable();
             $table->timestamps();
 
             $table->foreign('conversion_id')->references('id')->on('conversions');
+            $table->foreign('pageview_article_external_id')->references('external_id')->on('articles');
         });
     }
 

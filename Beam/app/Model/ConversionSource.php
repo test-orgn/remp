@@ -7,17 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class ConversionSource extends Model
 {
-    const PAGEVIEWTYPE_ARTICLE = 'article';
-    const PAGEVIEWTYPE_TITLE_AND_OTHER = 'title and other';
-
     protected $fillable = [
         'conversion_id',
         'type',
         'referer_medium',
         'referer_source',
         'referer_host_with_path',
-        'pageview_url',
-        'pageview_type'
+        'pageview_article_external_id',
     ];
 
     protected $dates = [
