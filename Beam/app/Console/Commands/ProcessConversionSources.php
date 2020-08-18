@@ -180,22 +180,19 @@ class ProcessConversionSources extends Command
             return max(array_pluck($value->pageviews, 'system.time'));
         });
 
-        $firstConversionPageViewsGroup = $this->getPageViewsGroupByPageViewTime($conversionPageViewsGroups, $firstConversionPageViewTime);
-        $lastConversionPageViewsGroup = $this->getPageViewsGroupByPageViewTime($conversionPageViewsGroups, $lastConversionPageViewTime);
+        $firstConversionPageViewsGroup = $this->getPageViewsGroupByTime($conversionPageViewsGroups, $firstConversionPageViewTime);
+        $lastConversionPageViewsGroup = $this->getPageViewsGroupByTime($conversionPageViewsGroups, $lastConversionPageViewTime);
 
-        $firstConversionPageViewUrl = $this->getPageViewUrlByPageViewTime($firstConversionPageViewsGroup, $firstConversionPageViewTime);
-        $lastConversionPageViewUrl = $this->getPageViewUrlByPageViewTime($lastConversionPageViewsGroup, $lastConversionPageViewTime);
+        $firstConversionPageView = $this->getPageViewByTime($firstConversionPageViewsGroup, $firstConversionPageViewTime);
+        $lastConversionPageView = $this->getPageViewByTime($lastConversionPageViewsGroup, $lastConversionPageViewTime);
 
-        $firstConversionPageViewUrl = $this->getHostWithPathUrl($firstConversionPageViewUrl);
-        $lastConversionPageViewUrl = $this->getHostWithPathUrl($lastConversionPageViewUrl);
-
-        $conversionSources[] = $this->createConversionSourceModel($firstConversionPageViewsGroup->tags, $firstConversionPageViewUrl, $conversion, 'first');
-        $conversionSources[] = $this->createConversionSourceModel($lastConversionPageViewsGroup->tags, $lastConversionPageViewUrl, $conversion, 'last');
+        $conversionSources[] = $this->createConversionSourceModel($firstConversionPageViewsGroup->tags, $firstConversionPageView, $conversion, 'first');
+        $conversionSources[] = $this->createConversionSourceModel($lastConversionPageViewsGroup->tags, $lastConversionPageView, $conversion, 'last');
 
         return $conversionSources;
     }
 
-    private function createConversionSourceModel(object $conversionPageViewTags, string $pageviewUrl, Conversion $conversion, string $type)
+    private function createConversionSourceModel(object $conversionPageViewTags, object $pageView, Conversion $conversion, string $type)
     {
         $conversionSource = new ConversionSource();
 
@@ -203,13 +200,14 @@ class ProcessConversionSources extends Command
         $conversionSource->referer_medium = $conversionPageViewTags->derived_referer_medium;
         $conversionSource->referer_source = empty($conversionPageViewTags->derived_referer_source) ? null : $conversionPageViewTags->derived_referer_source;
         $conversionSource->referer_host_with_path = empty($conversionPageViewTags->derived_referer_host_with_path) ? null : $conversionPageViewTags->derived_referer_host_with_path;
-        $conversionSource->pageview_url = $pageviewUrl;
+        $conversionSource->pageview_url = $this->getHostWithPathUrl($pageView->user->url);
+        $conversionSource->pageview_type = property_exists($pageView, 'article') ? ConversionSource::PAGEVIEWTYPE_ARTICLE : ConversionSource::PAGEVIEWTYPE_TITLE_AND_OTHER;
         $conversionSource->conversion()->associate($conversion);
 
         return $conversionSource;
     }
 
-    private function getPageViewsGroupByPageViewTime(Collection $pageViewsGroups, string $pageViewTime)
+    private function getPageViewsGroupByTime(Collection $pageViewsGroups, string $pageViewTime)
     {
         $pageViewsGroup = $pageViewsGroups->filter(function ($conversionPageViewsGroup) use ($pageViewTime) {
             return in_array($pageViewTime, array_pluck($conversionPageViewsGroup->pageviews, 'system.time'));
@@ -218,11 +216,9 @@ class ProcessConversionSources extends Command
         return $pageViewsGroup;
     }
 
-    private function getPageViewUrlByPageViewTime(object $pageViewsGroups, string $pageViewTime)
+    private function getPageViewByTime($pageViewsGroups, string $pageViewTime)
     {
-        $conversionPageViewUrl = collect($pageViewsGroups->pageviews)->where('system.time', $pageViewTime)->first()->user->url;
-
-        return $conversionPageViewUrl;
+        return collect($pageViewsGroups->pageviews)->where('system.time', $pageViewTime)->first();
     }
 
     private function getHostWithPathUrl(string $rawUrl)

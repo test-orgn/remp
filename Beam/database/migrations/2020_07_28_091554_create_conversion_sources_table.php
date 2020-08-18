@@ -22,6 +22,7 @@ class CreateConversionSourcesTable extends Migration
             $table->string('referer_source')->nullable();
             $table->string('referer_host_with_path')->nullable();
             $table->string('pageview_url');
+            $table->string('pageview_type');
             $table->timestamps();
 
             $table->foreign('conversion_id')->references('id')->on('conversions');
