@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Author;
 use App\Conversion;
 use App\Http\Request;
+use App\Http\Resources\ConversionsSankeyDiagramResource;
+use App\Model\Charts\ConversionsSankeyDiagram;
 use App\Model\ConversionCommerceEvent;
 use App\Model\ConversionGeneralEvent;
 use App\Model\ConversionPageviewEvent;
 use App\Model\ConversionSource;
 use App\Section;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class UserPathController extends Controller
@@ -159,74 +160,21 @@ class UserPathController extends Controller
         /*$request->validate([
             'tz' => 'timezone',
             'interval' => 'required|in:7,30',
-            'conversionSourceType' => 'required|in:'.implode(',',[ConversionSource::TYPE_LAST, ConversionSource::TYPE_FIRST])
+            'conversionSourceType' => 'required|in:'.implode(',',[ConversionSource::TYPE_LAST, ConversionSource::TYPE_FIRST]) //todo create static helper method in conversionsource that will return array of types
         ]);*/
 
         $from = Carbon::now()->subDays(30/*$request->get('interval')*/);
         $to = Carbon::now();
 
-        $conversionSources = Conversion::where('paid_at', '>=', $from)
-            ->where('paid_at', '<=', $to)
+        $conversionSources = Conversion::whereBetween('paid_at', [$from, $to])
             ->with('conversionSources')
-            ->whereHas('conversionSources', function ($query) {
-                $query->where('type', ConversionSource::TYPE_LAST);
-            })
+            ->has('conversionSources')
             ->get()
             ->pluck('conversionSources')
             ->flatten();
 
-        $sankeyData = $this->getSankeyNodesAndLinks($conversionSources, ConversionSource::TYPE_LAST);
-        dump($sankeyData);
-        //todo create resource class
-        return;
-    }
+        $conversionsSankeyDiagram = new ConversionsSankeyDiagram($conversionSources, ConversionSource::TYPE_LAST);
 
-    //todo think about helper SankeyData class that will provide all of this logic along with some validation as well or consider to put it into conversionSources class as well
-    private function getSankeyNodesAndLinks(Collection $conversionSources, string $conversionSourceType)
-    {
-        $conversionSourcesByMedium = $conversionSources->where('type', $conversionSourceType)->groupBy('referer_medium');
-
-        $links = [];
-        $nodes [] = ['name' => 'articles'];
-        $nodes [] = ['name' => 'homepage + other'];
-
-        foreach ($conversionSourcesByMedium as $medium => $conversionSources) {
-            $nodes[] = ['name' => $medium];
-            $articlesCount = $conversionSources->filter(function ($conversionSource) {
-                return !empty($conversionSource->pageview_article_external_id);
-            })->count();
-            $titlesCount = $conversionSources->count() - $articlesCount;
-            if ($articlesCount) {
-                $target = 'articles';
-
-                $links[] = [
-                    'source' => $medium,
-                    'target' => $target,
-                    'value' => $articlesCount
-                ];
-
-                if (!in_array($target, $nodes)) {
-                    $nodes [] = ['name' => $target];
-                }
-            }
-            if ($titlesCount) {
-                $target = 'homepage + other';
-
-                $links[] = [
-                    'source' => $medium,
-                    'target' => $target,
-                    'value' => $titlesCount
-                ];
-
-                if (!in_array($target, $nodes)) {
-                    $nodes [] = ['name' => $target];
-                }
-            }
-        }
-
-        $sankeyData['nodes'] = $nodes;
-        $sankeyData['links'] = $links;
-
-        return $sankeyData;
+        return new ConversionsSankeyDiagramResource($conversionsSankeyDiagram);
     }
 }
