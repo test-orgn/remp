@@ -6,6 +6,10 @@ use Illuminate\Support\Collection;
 
 class ConversionsSankeyDiagram
 {
+    const NODE_ARTICLES = 'articles';
+    const NODE_TITLE = 'homepage + other';
+    const NODE_PURCHASE = 'purchase';
+
     private $conversionSources;
     private $conversionSourceType;
 
@@ -23,6 +27,7 @@ class ConversionsSankeyDiagram
     private function retrieveNodesAndLinks()
     {
         $conversionSourcesByMedium = $this->conversionSources->where('type', $this->conversionSourceType)->groupBy('referer_medium');
+        $totalArticlesCount = $totalTitlesCount = 0;
 
         foreach ($conversionSourcesByMedium as $medium => $conversionSources) {
             $articlesCount = $conversionSources->filter(function ($conversionSource) {
@@ -30,9 +35,14 @@ class ConversionsSankeyDiagram
             })->count();
             $titlesCount = $conversionSources->count() - $articlesCount;
 
-            $this->addNodesAndLinks($medium, 'articles', $articlesCount);
-            $this->addNodesAndLinks($medium, 'homepage + other', $titlesCount);
+            $this->addNodesAndLinks($medium, self::NODE_ARTICLES, $articlesCount);
+            $this->addNodesAndLinks($medium, self::NODE_TITLE, $titlesCount);
+            $totalArticlesCount += $articlesCount;
+            $totalTitlesCount += $titlesCount;
         }
+
+        $this->addNodesAndLinks(self::NODE_ARTICLES, self::NODE_PURCHASE, $totalArticlesCount);
+        $this->addNodesAndLinks(self::NODE_TITLE, self::NODE_PURCHASE, $totalTitlesCount);
     }
 
     private function addNodesAndLinks(string $source, string $target, int $connectionCount)

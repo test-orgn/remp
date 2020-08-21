@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### [Beam]
 
 - Fixed ignored explicit `browserId` parameter in JS configuration. remp/remp#690
+- Added endpoint for conversion sankey diagram data retrieval. remp/remp#551
+- Added sankey d3 plugin package. remp/remp#551
 
 ## [0.11.1] - 2020-07-10
 

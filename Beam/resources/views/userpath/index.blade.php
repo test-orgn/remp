@@ -70,6 +70,10 @@
 
             <user-path :stats="stats" :loading="loading" :error="error"></user-path>
         </div>
+        <div id="conversions-diagram-vue" class="card-body card-padding">
+            {{--todo add conversion source type foreach here--}}
+            <conversions-sankey-diagram :data-url="dataUrl" conversion-source-type=last></conversions-sankey-diagram>
+        </div>
     </div>
 
     <script type="text/javascript">
@@ -112,6 +116,16 @@
                         that.loading = false;
                     });
                 }
+            }
+        });
+
+        new Vue({
+            el: "#conversions-diagram-vue",
+            components: {
+                ConversionsSankeyDiagram
+            },
+            data: {
+                dataUrl: "{!! route('userpath.diagramData') !!}"
             }
         });
     </script>
