@@ -2,7 +2,9 @@
 
 namespace App\Model\Charts;
 
+use App\Helpers\Journal\JournalHelpers;
 use Illuminate\Support\Collection;
+use Remp\Journal\JournalContract;
 
 class ConversionsSankeyDiagram
 {
@@ -12,14 +14,16 @@ class ConversionsSankeyDiagram
 
     private $conversionSources;
     private $conversionSourceType;
+    private $journalHelper;
 
     public $nodes = [];
     public $links = [];
 
-    public function __construct(Collection $conversionSources, string $conversionSourceType)
+    public function __construct(JournalContract $journal, Collection $conversionSources, string $conversionSourceType)
     {
         $this->conversionSources = $conversionSources;
         $this->conversionSourceType = $conversionSourceType;
+        $this->journalHelper = new JournalHelpers($journal);
 
         $this->retrieveNodesAndLinks();
     }
@@ -30,6 +34,8 @@ class ConversionsSankeyDiagram
         $totalArticlesCount = $totalTitlesCount = 0;
 
         foreach ($conversionSourcesByMedium as $medium => $conversionSources) {
+            $medium = $this->journalHelper->refererMediumLabel($medium);
+
             $articlesCount = $conversionSources->filter(function ($conversionSource) {
                 return !empty($conversionSource->pageview_article_external_id);
             })->count();

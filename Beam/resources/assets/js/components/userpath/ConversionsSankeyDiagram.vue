@@ -130,6 +130,10 @@
         conversionSourceType: {
             type: String,
             required: true
+        },
+        nodeColors: {
+            type: Array,
+            required: true
         }
     };
 
@@ -178,8 +182,7 @@
                 const f = d3.format(",.0f");
                 const format = d => `${f(d)}`;
 
-                const _color = d3.scaleOrdinal(d3.schemeCategory10);
-                const color = name => _color(name.replace(/ .*!/, ""));
+                const color = name => typeof this.nodeColors[name] !== 'undefined' ? this.nodeColors[name] : 'grey';
 
                 const svg = d3.select('#chart')
                     .attr("viewBox", `0 0 ${width} ${height}`)
@@ -189,12 +192,11 @@
                 const {nodes, links} = sankey(data);
 
                 svg.append("g")
-                    .attr("stroke", "#000")
+                    // .attr("stroke", "#000")
                     .selectAll("rect")
                     .data(nodes)
                     .enter()
                     .append("rect")
-                    // .join("rect")
                     .attr("x", d => d.x0)
                     .attr("y", d => d.y0)
                     .attr("height", d => d.y1 - d.y0)
@@ -210,7 +212,6 @@
                     .data(links)
                     .enter()
                     .append("g")
-                    // .join("g")
                     .style("mix-blend-mode", "multiply");
 
                 const select = document.querySelector('#colorSelect');
@@ -260,7 +261,6 @@
                     .data(nodes)
                     .enter()
                     .append("text")
-                    // .join("text")
                     .attr("x", d => d.x0 < width / 2 ? d.x1 + 6 : d.x0 - 6)
                     .attr("y", d => (d.y1 + d.y0) / 2)
                     .attr("dy", "0.35em")

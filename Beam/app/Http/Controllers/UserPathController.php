@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Author;
 use App\Conversion;
+use App\Helpers\Colors;
+use App\Helpers\Journal\JournalHelpers;
 use App\Http\Request;
 use App\Http\Resources\ConversionsSankeyDiagramResource;
 use App\Model\Charts\ConversionsSankeyDiagram;
@@ -14,20 +16,40 @@ use App\Model\ConversionSource;
 use App\Section;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Remp\Journal\JournalContract;
 
 class UserPathController extends Controller
 {
+    private $journalHelper;
+    private $journal;
+
+    public function __construct(JournalContract $journal)
+    {
+        $this->journal = $journal;
+        $this->journalHelper = new JournalHelpers($journal);
+    }
+
     public function index()
     {
         $authors = Author::all();
         $sections = Section::all();
         $sumCategories = Conversion::select('amount', 'currency')->groupBy('amount', 'currency')->get();
 
+        //todo remove days parameter when task finished
+        $mediums = $this->journalHelper->derivedRefererMediumGroups(3000)->mapWithKeys(function ($item) {
+            return [$item => $this->journalHelper->refererMediumLabel($item)];
+        });
+        $nodeColors = Colors::refererMediumTagsToColors($mediums, true);
+        $nodeColors[ConversionsSankeyDiagram::NODE_TITLE] = '#e05767';
+        $nodeColors[ConversionsSankeyDiagram::NODE_ARTICLES] = '#e05767';
+        $nodeColors[ConversionsSankeyDiagram::NODE_PURCHASE] = '#b71e2d';
+
         return view('userpath.index', [
             'authors' => $authors,
             'sections' => $sections,
             'days' => range(1, 14),
             'sumCategories' => $sumCategories,
+            'nodeColors' => $nodeColors
         ]);
     }
 
@@ -173,7 +195,7 @@ class UserPathController extends Controller
             ->pluck('conversionSources')
             ->flatten();
 
-        $conversionsSankeyDiagram = new ConversionsSankeyDiagram($conversionSources, ConversionSource::TYPE_LAST);
+        $conversionsSankeyDiagram = new ConversionsSankeyDiagram($this->journal, $conversionSources, ConversionSource::TYPE_LAST);
 
         return new ConversionsSankeyDiagramResource($conversionsSankeyDiagram);
     }

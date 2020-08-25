@@ -72,7 +72,7 @@
         </div>
         <div id="conversions-diagram-vue" class="card-body card-padding">
             {{--todo add conversion source type foreach here--}}
-            <conversions-sankey-diagram :data-url="dataUrl" conversion-source-type=last></conversions-sankey-diagram>
+            <conversions-sankey-diagram :data-url="dataUrl" conversion-source-type=last :node-colors="nodeColors"></conversions-sankey-diagram>
         </div>
     </div>
 
@@ -125,7 +125,8 @@
                 ConversionsSankeyDiagram
             },
             data: {
-                dataUrl: "{!! route('userpath.diagramData') !!}"
+                dataUrl: "{!! route('userpath.diagramData') !!}",
+                nodeColors: {!! json_encode($nodeColors) !!}
             }
         });
     </script>
