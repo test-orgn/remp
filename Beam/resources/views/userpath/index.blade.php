@@ -73,6 +73,7 @@
         <div id="conversions-diagram-vue" class="card-body card-padding">
             {{--todo add conversion source type foreach here--}}
             <conversions-sankey-diagram :data-url="dataUrl" conversion-source-type=last :node-colors="nodeColors"></conversions-sankey-diagram>
+            <conversions-sankey-diagram :data-url="dataUrl" conversion-source-type=first :node-colors="nodeColors"></conversions-sankey-diagram>
         </div>
     </div>
 

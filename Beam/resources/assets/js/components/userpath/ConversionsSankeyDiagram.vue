@@ -1,19 +1,14 @@
 <template>
     <div>
-        <select id="colorSelect">
-            <option value=input>Color by input</option>
-            <option value=output>Color by output</option>
-            <option value=path selected>Color by input-output</option>
-        </select>
-        <div id='container'>
-            <svg id='chart' xmlns="http://www.w3.org/2000/svg" ></svg>
+        <div ref="svg-container" id="article-chart">
+            <svg :id="this.conversionSourceType"></svg>
         </div>
     </div>
 </template>
 
 <style scoped>
     #article-chart {
-        height: 200px;
+        height: 300px;
         position: relative;
 
     }
@@ -132,7 +127,7 @@
             required: true
         },
         nodeColors: {
-            type: Array,
+            type: Object,
             required: true
         }
     };
@@ -150,7 +145,7 @@
         methods: {
             loadData() {
                 axios
-                    .get(this.dataUrl, {
+                    .post(this.dataUrl, {
                         tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
                         // interval: this.interval,
                         conversionSourceType: this.conversionSourceType,
@@ -161,8 +156,12 @@
                     })
             },
             createDiagram(data) {
-                const width = 964;
-                const height = 600;
+                const container = this.$refs["svg-container"];
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+
+                // const width = 964;
+                // const height = 600;
 
                 let edgeColor = 'path';
 
@@ -179,12 +178,12 @@
                 });
 
 
-                const f = d3.format(",.0f");
-                const format = d => `${f(d)}`;
+                const f = d3.format(",.2f");
+                const format = d => `${f(d)}%`;
 
                 const color = name => typeof this.nodeColors[name] !== 'undefined' ? this.nodeColors[name] : 'grey';
 
-                const svg = d3.select('#chart')
+                const svg = d3.select('#'+this.conversionSourceType)
                     .attr("viewBox", `0 0 ${width} ${height}`)
                     .style("width", "100%")
                     .style("height", "auto");
@@ -214,49 +213,38 @@
                     .append("g")
                     .style("mix-blend-mode", "multiply");
 
-                const select = document.querySelector('#colorSelect');
-                select.onchange = () => {
-                    edgeColor = select.value;
-                    update();
-                };
+                if (edgeColor === "path") {
+                    const gradient = link.append("linearGradient")
+                        .attr("id", (d,i) => {
+                            //  (d.uid = DOM.uid("link")).id
+                            const id = `link-${i}`;
+                            d.uid = `url(#${id})`;
+                            return id;
+                        })
+                        .attr("gradientUnits", "userSpaceOnUse")
+                        .attr("x1", d => d.source.x1)
+                        .attr("x2", d => d.target.x0);
 
-                function update() {
-                    if (edgeColor === "path") {
-                        const gradient = link.append("linearGradient")
-                            .attr("id", (d,i) => {
-                                //  (d.uid = DOM.uid("link")).id
-                                const id = `link-${i}`;
-                                d.uid = `url(#${id})`;
-                                return id;
-                            })
-                            .attr("gradientUnits", "userSpaceOnUse")
-                            .attr("x1", d => d.source.x1)
-                            .attr("x2", d => d.target.x0);
+                    gradient.append("stop")
+                        .attr("offset", "0%")
+                        .attr("stop-color", d => color(d.source.name));
 
-                        gradient.append("stop")
-                            .attr("offset", "0%")
-                            .attr("stop-color", d => color(d.source.name));
-
-                        gradient.append("stop")
-                            .attr("offset", "100%")
-                            .attr("stop-color", d => color(d.target.name));
-                    }
-
-                    link.append("path")
-                        .attr("d", d3.sankeyLinkHorizontal())
-                        .attr("stroke", d => edgeColor === "path" ? d.uid
-                            : edgeColor === "input" ? color(d.source.name)
-                                : color(d.target.name))
-                        .attr("stroke-width", d => Math.max(1, d.width));
+                    gradient.append("stop")
+                        .attr("offset", "100%")
+                        .attr("stop-color", d => color(d.target.name));
                 }
 
-                update();
+                link.append("path")
+                    .attr("d", d3.sankeyLinkHorizontal())
+                    .attr("stroke", d => edgeColor === "path" ? d.uid
+                        : edgeColor === "input" ? color(d.source.name)
+                            : color(d.target.name))
+                    .attr("stroke-width", d => Math.max(1, d.width));
 
                 link.append("title")
                     .text(d => `${d.source.name} → ${d.target.name}\n${format(d.value)}`);
 
                 svg.append("g")
-                    .style("font", "10px sans-serif")
                     .selectAll("text")
                     .data(nodes)
                     .enter()
@@ -265,7 +253,16 @@
                     .attr("y", d => (d.y1 + d.y0) / 2)
                     .attr("dy", "0.35em")
                     .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
-                    .text(d => d.name);
+                    .append("tspan")
+                    .style("font-size", "15px")
+                    .style("font-weight", "bold")
+                    .text(d => `${format(d.value)}`)
+                    .append("tspan")
+                    .style("font-size", "10px")
+                    .style("font-weight", "normal")
+                    .text(d => `${d.name}`)
+                    .attr("x", d => d.x0 < width / 2 ? d.x1 + 6 : d.x0 - 6)
+                    .attr("dy", "0.9em");
             }
         }
     }

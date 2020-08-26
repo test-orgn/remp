@@ -29,4 +29,12 @@ class ConversionSource extends Model
     {
         return $this->belongsTo(Conversion::class);
     }
+
+    public static function getTypes()
+    {
+        return [
+            self::TYPE_LAST,
+            self::TYPE_FIRST
+        ];
+    }
 }

@@ -179,11 +179,11 @@ class UserPathController extends Controller
 
     public function diagramData(Request $request)
     {
-        /*$request->validate([
-            'tz' => 'timezone',
-            'interval' => 'required|in:7,30',
-            'conversionSourceType' => 'required|in:'.implode(',',[ConversionSource::TYPE_LAST, ConversionSource::TYPE_FIRST]) //todo create static helper method in conversionsource that will return array of types
-        ]);*/
+        $request->validate([
+            'tz' => 'timezone|required',
+//            'interval' => 'required|in:7,30',
+            'conversionSourceType' => 'required|in:'.implode(',', ConversionSource::getTypes())
+        ]);
 
         $from = Carbon::now()->subDays(30/*$request->get('interval')*/);
         $to = Carbon::now();
@@ -195,7 +195,7 @@ class UserPathController extends Controller
             ->pluck('conversionSources')
             ->flatten();
 
-        $conversionsSankeyDiagram = new ConversionsSankeyDiagram($this->journal, $conversionSources, ConversionSource::TYPE_LAST);
+        $conversionsSankeyDiagram = new ConversionsSankeyDiagram($this->journal, $conversionSources, $request->get('conversionSourceType'));
 
         return new ConversionsSankeyDiagramResource($conversionsSankeyDiagram);
     }

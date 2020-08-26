@@ -30,7 +30,9 @@ class ConversionsSankeyDiagram
 
     private function retrieveNodesAndLinks()
     {
-        $conversionSourcesByMedium = $this->conversionSources->where('type', $this->conversionSourceType)->groupBy('referer_medium');
+        $conversionSourcesByType = $this->conversionSources->where('type', $this->conversionSourceType);
+        $conversionSourcesByMedium = $conversionSourcesByType->groupBy('referer_medium');
+        $conversionsCount = $conversionSourcesByType->count();
         $totalArticlesCount = $totalTitlesCount = 0;
 
         foreach ($conversionSourcesByMedium as $medium => $conversionSources) {
@@ -41,19 +43,19 @@ class ConversionsSankeyDiagram
             })->count();
             $titlesCount = $conversionSources->count() - $articlesCount;
 
-            $this->addNodesAndLinks($medium, self::NODE_ARTICLES, $articlesCount);
-            $this->addNodesAndLinks($medium, self::NODE_TITLE, $titlesCount);
+            $this->addNodesAndLinks($medium, self::NODE_ARTICLES, $articlesCount / $conversionsCount * 100);
+            $this->addNodesAndLinks($medium, self::NODE_TITLE, $titlesCount / $conversionsCount * 100);
             $totalArticlesCount += $articlesCount;
             $totalTitlesCount += $titlesCount;
         }
 
-        $this->addNodesAndLinks(self::NODE_ARTICLES, self::NODE_PURCHASE, $totalArticlesCount);
-        $this->addNodesAndLinks(self::NODE_TITLE, self::NODE_PURCHASE, $totalTitlesCount);
+        $this->addNodesAndLinks(self::NODE_ARTICLES, self::NODE_PURCHASE, $totalArticlesCount / $conversionsCount * 100);
+        $this->addNodesAndLinks(self::NODE_TITLE, self::NODE_PURCHASE, $totalTitlesCount / $conversionsCount * 100);
     }
 
-    private function addNodesAndLinks(string $source, string $target, int $connectionCount)
+    private function addNodesAndLinks(string $source, string $target, float $connectionValue)
     {
-        if (!$connectionCount) {
+        if (!$connectionValue) {
             return;
         }
 
@@ -63,7 +65,7 @@ class ConversionsSankeyDiagram
         $this->links[] = [
             'source' => $source,
             'target' => $target,
-            'value' => $connectionCount
+            'value' => $connectionValue
         ];
     }
 
