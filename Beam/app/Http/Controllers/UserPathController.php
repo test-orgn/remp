@@ -49,6 +49,7 @@ class UserPathController extends Controller
             'sections' => $sections,
             'days' => range(1, 14),
             'sumCategories' => $sumCategories,
+            'conversionSourceTypes' => ConversionSource::getTypes(),
             'nodeColors' => $nodeColors
         ]);
     }
@@ -181,11 +182,11 @@ class UserPathController extends Controller
     {
         $request->validate([
             'tz' => 'timezone|required',
-//            'interval' => 'required|in:7,30',
+            'interval' => 'required|in:7,30',
             'conversionSourceType' => 'required|in:'.implode(',', ConversionSource::getTypes())
         ]);
 
-        $from = Carbon::now()->subDays(30/*$request->get('interval')*/);
+        $from = Carbon::now($request->get('tz'))->subDays($request->get('interval'));
         $to = Carbon::now();
 
         $conversionSources = Conversion::whereBetween('paid_at', [$from, $to])

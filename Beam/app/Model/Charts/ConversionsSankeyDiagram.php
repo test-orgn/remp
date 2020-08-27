@@ -49,8 +49,14 @@ class ConversionsSankeyDiagram
             $totalTitlesCount += $titlesCount;
         }
 
-        $this->addNodesAndLinks(self::NODE_ARTICLES, self::NODE_PURCHASE, $totalArticlesCount / $conversionsCount * 100);
-        $this->addNodesAndLinks(self::NODE_TITLE, self::NODE_PURCHASE, $totalTitlesCount / $conversionsCount * 100);
+        if ($conversionsCount > 0) {
+            if ($totalArticlesCount > 0) {
+                $this->addNodesAndLinks(self::NODE_ARTICLES, self::NODE_PURCHASE, $totalArticlesCount / $conversionsCount * 100);
+            }
+            if ($totalTitlesCount > 0) {
+                $this->addNodesAndLinks(self::NODE_TITLE, self::NODE_PURCHASE, $totalTitlesCount / $conversionsCount * 100);
+            }
+        }
     }
 
     private function addNodesAndLinks(string $source, string $target, float $connectionValue)

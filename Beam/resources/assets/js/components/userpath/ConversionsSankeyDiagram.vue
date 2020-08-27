@@ -1,112 +1,45 @@
 <template>
-    <div>
-        <div ref="svg-container" id="article-chart">
-            <svg :id="this.conversionSourceType"></svg>
+    <div class="chartContainer">
+        <h3>Diagram for source type: {{this.conversionSourceType}}</h3>
+        <button-switcher :options="[
+        {text: '7 days', value: '7'},
+        {text: '30 days', value: '30'}]"
+                         :classes="['pull-left']"
+                         v-model="interval">
+        </button-switcher>
+
+        <div v-if="loading" class="preloader pls-purple">
+            <svg class="pl-circular" viewBox="25 25 50 50">
+                <circle class="plc-path" cx="50" cy="50" r="20"></circle>
+            </svg>
+        </div>
+
+        <div ref="svg-container" class="conversion-sources-diagram">
+            <svg :id="`sankey-${this.conversionSourceType}`"></svg>
+            <div v-if="noData" class="alert alert-danger" role="alert" style="text-align: center">
+                No data available
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-    #article-chart {
+    .conversion-sources-diagram {
         height: 300px;
         position: relative;
-
+        margin-top: 50px;
+        margin-bottom: 50px;
     }
 
-    #article-chart .mouse-catch-block {
-        position: absolute;
-        display: block;
-        bottom: -10px;
-        height: 10px;
-        width: 100%;
-        background-color: transparent;
-    }
-
-    .settings-box {
-        display: flex;
-        align-items: center;
-        justify-content: right;
-        padding-right: 30px;
-        padding-left: 30px;
-    }
-
-    .external-events-wrapper {
-        display:inline-block;
-        width: 220px;
-    }
-
-    #chartContainer {
+    .chartContainer {
         position: relative;
     }
 
-    #chartContainerHeader {
-        padding: 20px 30px 0px 30px;
-    }
-
-    #legend-wrapper {
-        position: relative;
-        overflow: visible;
-        height:0;
-    }
-    #article-graph-legend table {
-        width: 100%;
-        background-color: transparent;
-        border-collapse: collapse;
-    }
-    #article-graph-legend table td, th {
-        padding: 3px 6px
-    }
-    #article-graph-legend {
-        position:absolute;
-        white-space:nowrap;
-        z-index: 1000;
-        top:0;
-        left: 0;
-        opacity: 0.95;
-        color: #fff;
-        padding: 2px;
-        background-color: #494949;
-        border-radius: 2px;
-        border: 2px solid #494949;
-        transform: translate(-50%, 0px)
-    }
-
-    .legend-title {
-        text-align: center;
-        font-size: 14px;
-    }
-
-    #chartContainer .preloader {
-        z-index: 2000;
+    .chartContainer .preloader {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%)
-    }
-
-    .events-legend-wrapper {
-        position: relative;
-        height: 0;
-    }
-
-    /* div to correctly wrap transformed .events-legend */
-    .events-legend-wrapper > div {
-        position: absolute;
-        z-index: 1000;
-        bottom:-21px;
-        width: auto;
-    }
-
-    .events-legend {
-        max-width: 220px;
-        opacity: 0.85;
-        color: #fff;
-        padding: 2px;
-        margin-top: 2px;
-        background-color: #00bdf1;
-        border-radius: 2px;
-        border: 2px solid #00bdf1;
-        transform: translate(-50%, 0px)
     }
 </style>
 
@@ -114,6 +47,7 @@
     import axios from 'axios'
     import * as d3Base from 'd3'
     import { sankey, sankeyLinkHorizontal } from 'd3-sankey'
+    import ButtonSwitcher from '../dashboard/ButtonSwitcher.vue'
 
     const d3 = Object.assign(d3Base, { sankey, sankeyLinkHorizontal });
 
@@ -133,8 +67,18 @@
     };
 
     export default {
+        components: {
+            ButtonSwitcher
+        },
         name: 'conversions-sankey-diagram',
         props: props,
+        data() {
+            return {
+                interval: '7',
+                loading: false,
+                noData: false
+            };
+        },
         created() {
             console.log('we are in sankey component');
         },
@@ -142,26 +86,43 @@
             console.log('we are in mounted part of component');
             this.loadData();
         },
+        watch: {
+            interval(value) {
+                this.reload();
+            }
+        },
         methods: {
             loadData() {
+                this.loading = true;
                 axios
                     .post(this.dataUrl, {
                         tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                        // interval: this.interval,
+                        interval: this.interval,
                         conversionSourceType: this.conversionSourceType,
                     })
                     .then(response => {
-                        console.log(response.data);
+                        this.loading = false;
+
+                        if (response.data.links.length === 0) {
+                            this.noData = true;
+                            return;
+                        }
+
+                        this.noData = false;
                         this.createDiagram(response.data);
                     })
+            },
+            reload() {
+                this.noData = false;
+                $(`#sankey-${this.conversionSourceType}`).remove();
+                const container = this.$refs["svg-container"];
+                $(container).prepend(`<svg id="sankey-${this.conversionSourceType}"></svg>`);
+                this.loadData();
             },
             createDiagram(data) {
                 const container = this.$refs["svg-container"];
                 const width = container.clientWidth;
                 const height = container.clientHeight;
-
-                // const width = 964;
-                // const height = 600;
 
                 let edgeColor = 'path';
 
@@ -183,7 +144,7 @@
 
                 const color = name => typeof this.nodeColors[name] !== 'undefined' ? this.nodeColors[name] : 'grey';
 
-                const svg = d3.select('#'+this.conversionSourceType)
+                const svg = d3.select('#sankey-' + this.conversionSourceType)
                     .attr("viewBox", `0 0 ${width} ${height}`)
                     .style("width", "100%")
                     .style("height", "auto");
@@ -191,7 +152,6 @@
                 const {nodes, links} = sankey(data);
 
                 svg.append("g")
-                    // .attr("stroke", "#000")
                     .selectAll("rect")
                     .data(nodes)
                     .enter()
