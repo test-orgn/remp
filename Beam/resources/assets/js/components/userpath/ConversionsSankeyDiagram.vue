@@ -15,7 +15,7 @@
         </div>
 
         <div ref="svg-container" class="conversion-sources-diagram">
-            <svg :id="`sankey-${this.conversionSourceType}`"></svg>
+            <svg :id="`sankey-${this.conversionSourceType}`" xmlns="http://www.w3.org/2000/svg"></svg>
             <div v-if="noData" class="alert alert-danger" role="alert" style="text-align: center">
                 No data available
             </div>
@@ -116,7 +116,7 @@
                 this.noData = false;
                 $(`#sankey-${this.conversionSourceType}`).remove();
                 const container = this.$refs["svg-container"];
-                $(container).prepend(`<svg id="sankey-${this.conversionSourceType}"></svg>`);
+                $(container).prepend(`<svg id="sankey-${this.conversionSourceType}" xmlns="http://www.w3.org/2000/svg"></svg>`);
                 this.loadData();
             },
             createDiagram(data) {
@@ -137,7 +137,6 @@
                     nodes: nodes.map(d => Object.assign({}, d)),
                     links: links.map(d => Object.assign({}, d))
                 });
-
 
                 const f = d3.format(",.2f");
                 const format = d => `${f(d)}%`;
@@ -177,7 +176,7 @@
                     const gradient = link.append("linearGradient")
                         .attr("id", (d,i) => {
                             //  (d.uid = DOM.uid("link")).id
-                            const id = `link-${i}`;
+                            const id = `sankey-${this.conversionSourceType}-link-${i}`;
                             d.uid = `url(#${id})`;
                             return id;
                         })
