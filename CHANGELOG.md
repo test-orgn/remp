@@ -15,7 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Fixed ignored explicit `browserId` parameter in JS configuration. remp/remp#690
 - Added endpoint for conversion sankey diagram data retrieval. remp/remp#551
-- Added sankey d3 plugin package. remp/remp#551
+- Added sankey d3 plugin node package. remp/remp#551
+- Added sankey diagrams into `user path` section. Currently we are tracking 2 types of conversion sources (first/last visit before conversion) therefore there are 2 sankey diagrams. remp/remp#551
 
 ## [0.11.1] - 2020-07-10
 

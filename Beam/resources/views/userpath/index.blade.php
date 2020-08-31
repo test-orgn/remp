@@ -71,7 +71,7 @@
             <user-path :stats="stats" :loading="loading" :error="error"></user-path>
         </div>
         <div id="conversions-diagram-vue" class="card-body card-padding">
-            <conversions-sankey-diagram v-for="conversionSourceType in conversionSourceTypes" :data-url="dataUrl" :conversion-source-type="conversionSourceType" :node-colors="nodeColors"></conversions-sankey-diagram>
+            <conversions-sankey-diagram v-for="conversionSourceType in conversionSourceTypes" :data-url="dataUrl" :conversion-source-type="conversionSourceType"></conversions-sankey-diagram>
         </div>
     </div>
 
@@ -125,7 +125,6 @@
             },
             data: {
                 dataUrl: "{!! route('userpath.diagramData') !!}",
-                nodeColors: {!! json_encode($nodeColors) !!},
                 conversionSourceTypes: {!! json_encode($conversionSourceTypes) !!}
             }
         });

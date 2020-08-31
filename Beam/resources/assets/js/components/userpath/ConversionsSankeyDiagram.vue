@@ -1,6 +1,6 @@
 <template>
     <div class="chartContainer">
-        <h3>Diagram for source type: {{this.conversionSourceType}}</h3>
+        <h3>Diagram for conversion source type: {{this.conversionSourceType}}</h3>
         <button-switcher :options="[
         {text: '7 days', value: '7'},
         {text: '30 days', value: '30'}]"
@@ -59,10 +59,6 @@
         conversionSourceType: {
             type: String,
             required: true
-        },
-        nodeColors: {
-            type: Object,
-            required: true
         }
     };
 
@@ -79,11 +75,7 @@
                 noData: false
             };
         },
-        created() {
-            console.log('we are in sankey component');
-        },
         mounted() {
-            console.log('we are in mounted part of component');
             this.loadData();
         },
         watch: {
@@ -141,7 +133,6 @@
                 const f = d3.format(",.2f");
                 const format = d => `${f(d)}%`;
 
-                const color = name => typeof this.nodeColors[name] !== 'undefined' ? this.nodeColors[name] : 'grey';
 
                 const svg = d3.select('#sankey-' + this.conversionSourceType)
                     .attr("viewBox", `0 0 ${width} ${height}`)
@@ -149,6 +140,9 @@
                     .style("height", "auto");
 
                 const {nodes, links} = sankey(data);
+                const nodeColors = data.nodeColors;
+
+                const color = name => typeof nodeColors[name] !== 'undefined' ? nodeColors[name] : 'grey';
 
                 svg.append("g")
                     .selectAll("rect")

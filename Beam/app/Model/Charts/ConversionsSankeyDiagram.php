@@ -2,6 +2,7 @@
 
 namespace App\Model\Charts;
 
+use App\Helpers\Colors;
 use App\Helpers\Journal\JournalHelpers;
 use Illuminate\Support\Collection;
 use Remp\Journal\JournalContract;
@@ -18,6 +19,7 @@ class ConversionsSankeyDiagram
 
     public $nodes = [];
     public $links = [];
+    public $nodeColors = [];
 
     public function __construct(JournalContract $journal, Collection $conversionSources, string $conversionSourceType)
     {
@@ -26,6 +28,13 @@ class ConversionsSankeyDiagram
         $this->journalHelper = new JournalHelpers($journal);
 
         $this->retrieveNodesAndLinks();
+        if (!empty($this->nodes)) {
+            $nodeNames = array_column($this->nodes, 'name');
+            $this->nodeColors = Colors::refererMediumTagsToColors(array_combine($nodeNames, $nodeNames), true);
+            $this->nodeColors[self::NODE_TITLE] = '#e05767';
+            $this->nodeColors[self::NODE_ARTICLES] = '#e05767';
+            $this->nodeColors[self::NODE_PURCHASE] = '#b71e2d';
+        }
     }
 
     private function retrieveNodesAndLinks()

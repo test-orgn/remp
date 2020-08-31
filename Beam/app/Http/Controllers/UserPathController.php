@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Author;
 use App\Conversion;
-use App\Helpers\Colors;
-use App\Helpers\Journal\JournalHelpers;
 use App\Http\Request;
-use App\Http\Resources\ConversionsSankeyDiagramResource;
+use App\Http\Requests\ConversionsSankeyRequest;
+use App\Http\Resources\ConversionsSankeyResource;
 use App\Model\Charts\ConversionsSankeyDiagram;
 use App\Model\ConversionCommerceEvent;
 use App\Model\ConversionGeneralEvent;
@@ -20,13 +19,11 @@ use Remp\Journal\JournalContract;
 
 class UserPathController extends Controller
 {
-    private $journalHelper;
     private $journal;
 
     public function __construct(JournalContract $journal)
     {
         $this->journal = $journal;
-        $this->journalHelper = new JournalHelpers($journal);
     }
 
     public function index()
@@ -35,22 +32,12 @@ class UserPathController extends Controller
         $sections = Section::all();
         $sumCategories = Conversion::select('amount', 'currency')->groupBy('amount', 'currency')->get();
 
-        //todo remove days parameter when task finished
-        $mediums = $this->journalHelper->derivedRefererMediumGroups(3000)->mapWithKeys(function ($item) {
-            return [$item => $this->journalHelper->refererMediumLabel($item)];
-        });
-        $nodeColors = Colors::refererMediumTagsToColors($mediums, true);
-        $nodeColors[ConversionsSankeyDiagram::NODE_TITLE] = '#e05767';
-        $nodeColors[ConversionsSankeyDiagram::NODE_ARTICLES] = '#e05767';
-        $nodeColors[ConversionsSankeyDiagram::NODE_PURCHASE] = '#b71e2d';
-
         return view('userpath.index', [
             'authors' => $authors,
             'sections' => $sections,
             'days' => range(1, 14),
             'sumCategories' => $sumCategories,
-            'conversionSourceTypes' => ConversionSource::getTypes(),
-            'nodeColors' => $nodeColors
+            'conversionSourceTypes' => ConversionSource::getTypes()
         ]);
     }
 
@@ -178,16 +165,10 @@ class UserPathController extends Controller
         ]);
     }
 
-    public function diagramData(Request $request)
+    public function diagramData(ConversionsSankeyRequest $request)
     {
-        $request->validate([
-            'tz' => 'timezone|required',
-            'interval' => 'required|in:7,30',
-            'conversionSourceType' => 'required|in:'.implode(',', ConversionSource::getTypes())
-        ]);
-
         $from = Carbon::now($request->get('tz'))->subDays($request->get('interval'));
-        $to = Carbon::now();
+        $to = Carbon::now($request->get('tz'));
 
         $conversionSources = Conversion::whereBetween('paid_at', [$from, $to])
             ->with('conversionSources')
@@ -198,6 +179,6 @@ class UserPathController extends Controller
 
         $conversionsSankeyDiagram = new ConversionsSankeyDiagram($this->journal, $conversionSources, $request->get('conversionSourceType'));
 
-        return new ConversionsSankeyDiagramResource($conversionsSankeyDiagram);
+        return new ConversionsSankeyResource($conversionsSankeyDiagram);
     }
 }

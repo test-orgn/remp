@@ -11,7 +11,7 @@ use Remp\LaravelHelpers\Resources\JsonResource;
  * @mixin ConversionsSankeyDiagram
  * @package App\Http\Resources
  */
-class ConversionsSankeyDiagramResource extends JsonResource
+class ConversionsSankeyResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -23,7 +23,8 @@ class ConversionsSankeyDiagramResource extends JsonResource
     {
         return [
             'nodes' => $this->nodes,
-            'links' => $this->links
+            'links' => $this->links,
+            'nodeColors' => $this->nodeColors
         ];
     }
 }
