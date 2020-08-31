@@ -5,7 +5,6 @@ namespace App;
 use App\Helpers\Journal\JournalHelpers;
 use App\Model\ArticleTitle;
 use App\Model\Config\ConversionRateConfig;
-use App\Model\ConversionSource;
 use App\Model\Tag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
