@@ -101,7 +101,7 @@
 
     const optionsModalModule = {
         name: 'options-modal',
-        inject: publicAccess ? ['dashboardOptions'] : ['dashboardOptions', 'dashboardSettingsUrl'],
+        inject: ['dashboardOptions'],
         mounted() {
             let referer = this.dashboardOptions['dashboard_frontpage_referer'];
             let propertyReferers = this.dashboardOptions['dashboard_frontpage_referer_of_properties']
@@ -135,15 +135,12 @@
             },
             close() {
                 this.$emit('close')
+            },
+            navigateToSettings() {
+                window.location.href = route('settings.index') + '#dashboard';
             }
         }
     };
-
-    if (!publicAccess) {
-        optionsModalModule.methods.navigateToSettings = function () {
-            window.location.href = this.dashboardSettingsUrl;
-        };
-    }
 
     export default optionsModalModule;
 </script>

@@ -66,8 +66,7 @@ class DashboardController extends Controller
     {
         $data = [
             'options' => $this->options(),
-            'conversionRateMultiplier' => $this->conversionRateConfig->getMultiplier(),
-            'dashboardSettingsUrl' => ConfigCategory::getSettingsTabUrl(ConfigCategory::CODE_DASHBOARD)
+            'conversionRateMultiplier' => $this->conversionRateConfig->getMultiplier()
         ];
 
         if (!config('beam.disable_token_filtering')) {

@@ -26,8 +26,7 @@
             },
             provide: function() {
                 return {
-                    dashboardOptions: this.options,
-                    dashboardSettingsUrl: "{!! $dashboardSettingsUrl !!}"
+                    dashboardOptions: this.options
                 }
             },
             created: function() {
