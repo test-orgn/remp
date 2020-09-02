@@ -1,10 +1,14 @@
 <template>
     <div class="chartContainer">
         <h3>Diagram for conversion source type: {{this.conversionSourceType}}</h3>
+        <p>
+            <i class="zmdi zmdi-info-outline zmdi-hc-fw"></i>
+            <span>Diagram is based on the {{this.conversionSourceType}} pageview of all user pageviews that led to purchase</span>
+        </p>
         <button-switcher :options="[
         {text: '7 days', value: '7'},
         {text: '30 days', value: '30'}]"
-                         :classes="['pull-left']"
+                         :classes="['bottom-left']"
                          v-model="interval">
         </button-switcher>
 
@@ -27,8 +31,7 @@
     .conversion-sources-diagram {
         height: 300px;
         position: relative;
-        margin-top: 50px;
-        margin-bottom: 50px;
+        margin-top: 20px;
     }
 
     .chartContainer {
