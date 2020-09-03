@@ -14,6 +14,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### [Beam]
 
 - Fixed ignored explicit `browserId` parameter in JS configuration. remp/remp#690
+- **BREAKING:** Added new `conversion_sources` table. remp/remp#464
+- Added command for processing of conversion sources that runs in batch mode or for specific conversion (`php artisan conversions:process-sources [--conversion_id]`). remp/remp#464
+- Processing of conversion sources is being invoked in conversion upsert endpoint right after aggregation of conversion events. remp/remp#464
+- Calling of conversion events aggregation has been moved into separate job class. Another job class has been created for conversion sources command as well. remp/remp#464
+- Added new columns in `articles.show` view into referer stats section - `first conversion source count` and `last conversion source count`. remp/remp#464
 
 ## [0.11.1] - 2020-07-10
 
