@@ -85,11 +85,11 @@ class ProcessConversionSources extends Command
             return;
         }
 
-        if (!$browser_id = $this->getConversionBrowserId($conversion, $paymentEvent)) {
+        if (!$browserId = $this->getConversionBrowserId($conversion, $paymentEvent)) {
             return;
         }
 
-        if (!$conversionSessionId = $this->getConversionSessionId($browser_id, $paymentEvent)) {
+        if (!$conversionSessionId = $this->getConversionSessionId($browserId, $paymentEvent)) {
             return;
         }
 
@@ -123,14 +123,14 @@ class ProcessConversionSources extends Command
         return $paymentJournalEvent[0]->tags->browser_id;
     }
 
-    private function getConversionSessionId(string $browser_id, ConversionCommerceEvent $paymentEvent)
+    private function getConversionSessionId(string $browserId, ConversionCommerceEvent $paymentEvent)
     {
         $from = (clone $paymentEvent->time)->subDay();
         $to = (clone $paymentEvent->time);
 
         $pageViewsListRequest = ListRequest::from('pageviews')
             ->setTime($from, $to)
-            ->addFilter('browser_id', $browser_id);
+            ->addFilter('browser_id', $browserId);
 
         $pageViewsJournalEvents = $this->journal->list($pageViewsListRequest);
         if (empty($pageViewsJournalEvents)) {
@@ -165,12 +165,12 @@ class ProcessConversionSources extends Command
 
         $conversionPageViewsGroups = collect($this->journal->list($latestPageViewsListRequest));
         //filter out the pageviews that contain article url (e.g. refresh or source of checkout pageview (if tracked))
-        $article_url = $conversion->article->url;
-        $conversionPageViewsGroups = $conversionPageViewsGroups->filter(function ($conversionPageView) use ($article_url) {
-            $referer_host_with_path = $conversionPageView->tags->derived_referer_host_with_path;
-            $referer_source = $conversionPageView->tags->derived_referer_source;
+        $articleUrl = $conversion->article->url;
+        $conversionPageViewsGroups = $conversionPageViewsGroups->filter(function ($conversionPageView) use ($articleUrl) {
+            $refererHostWithPath = $conversionPageView->tags->derived_referer_host_with_path;
+            $refererSource = $conversionPageView->tags->derived_referer_source;
 
-            return ($referer_host_with_path !== $article_url && $referer_source !== $article_url);
+            return ($refererHostWithPath !== $articleUrl && $refererSource !== $articleUrl);
         });
 
         $firstConversionPageViewTime = $conversionPageViewsGroups->min(function ($value) {
