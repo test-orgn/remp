@@ -20,7 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
   - Processing of conversion sources is also invoked in conversion upsert endpoint right after aggregation of conversion events. remp/remp#464
 - Calling of conversion events aggregation has been moved into separate job class. Another job class has been created for conversion sources command as well. remp/remp#464
 - Added new columns in `articles.show` view into referer stats section - `first conversion source count` and `last conversion source count`. remp/remp#464
-
+- Added new column `browser_id` into `conversions_commerce_events table`, browser_id is being retrieved right in the aggregate events command. remp/remp#464
 ### [Campaign]
 
 - Fixed change of missing campaign statistics caused by invalid pairing of data with labels due to inconsistent timezone use.

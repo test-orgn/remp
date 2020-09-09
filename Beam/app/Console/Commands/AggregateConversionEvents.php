@@ -259,6 +259,7 @@ class AggregateConversionEvents extends Command
                     $step = $item->step;
 
                     $toSave[] = [
+                        'browser_id' => $item->user->browser_id ?? null,
                         'time' => $time,
                         'minutes_to_conversion' => $timeToConversion,
                         'step' => $step,

@@ -25,6 +25,7 @@ class ConversionCommerceEvent extends Model
         'conversion_id',
         'minutes_to_conversion',
         'event_prior_conversion',
+        'browser_id'
     ];
 
     protected $dates = [

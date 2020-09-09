@@ -85,11 +85,12 @@ class ProcessConversionSources extends Command
             return;
         }
 
-        if (!$browserId = $this->getConversionBrowserId($conversion, $paymentEvent)) {
+        if (!$paymentEvent->browser_id) {
+            $this->warn("No browser_id attached to payment commerce event for conversion with ID $conversion->id, skipping...");
             return;
         }
 
-        if (!$conversionSessionId = $this->getConversionSessionId($browserId, $paymentEvent)) {
+        if (!$conversionSessionId = $this->getConversionSessionId($paymentEvent)) {
             return;
         }
 
@@ -99,34 +100,11 @@ class ProcessConversionSources extends Command
         }
     }
 
-    private function getConversionBrowserId(Conversion $conversion, ConversionCommerceEvent $paymentEvent)
-    {
-        $from = (clone $paymentEvent->time)->subSecond();
-        $to = (clone $paymentEvent->time)->addSecond();
-
-        $paymentListRequest = ListRequest::from('commerce')
-            ->setTime($from, $to)
-            ->addFilter('user_id', $conversion->user_id)
-            ->addFilter('step', 'payment')
-            ->addGroup('browser_id');
-
-        $paymentJournalEvent = $this->journal->list($paymentListRequest);
-        if (empty($paymentJournalEvent)) {
-            $this->warn("No payment event found in journal for conversion with ID $conversion->id, skipping...");
-            return false;
-        }
-        if (empty($paymentJournalEvent[0]->tags->browser_id)) {
-            $this->warn("No identifiable browser found in journal for conversion with ID $conversion->id, skipping...");
-            return false;
-        }
-
-        return $paymentJournalEvent[0]->tags->browser_id;
-    }
-
-    private function getConversionSessionId(string $browserId, ConversionCommerceEvent $paymentEvent)
+    private function getConversionSessionId(ConversionCommerceEvent $paymentEvent)
     {
         $from = (clone $paymentEvent->time)->subDay();
         $to = (clone $paymentEvent->time);
+        $browserId = $paymentEvent->browser_id;
 
         $pageViewsListRequest = ListRequest::from('pageviews')
             ->setTime($from, $to)

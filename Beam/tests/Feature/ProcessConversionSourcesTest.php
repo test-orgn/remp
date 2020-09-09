@@ -22,44 +22,6 @@ class ProcessConversionSourcesTest extends TestCase
 
     public function testCommandCall()
     {
-        $paymentEvent = <<<JSON
-[
-    {
-        "commerces":[
-            {
-                "id":"b2b725ee-9424-4e0a-a869-892a21c04993",
-                "payment":{
-                    "funnel_id":"",
-                    "product_ids":[
-                        "product_1"
-                    ],
-                    "revenue":{
-                        "amount":18.99,
-                        "currency":"EUR"
-                    },
-                    "transaction_id":""
-                },
-                "source":{
-                },
-                "step":"payment",
-                "system":{
-                    "property_token":"dc48299e-55bd-4b7b-89ce-3e410380fe39",
-                    "time":"2020-08-06T14:36:47Z"
-                },
-                "user":{
-                    "id":"26",
-                    "remp_pageview_id":"",
-                    "url":"http://localhost:63342/remp-sample-blog/index.html",
-                    "user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36"
-                }
-            }
-        ],
-        "tags":{
-            "browser_id":"6f3b2834-5bdf-41d2-a9e3-b3a12a588358"
-        }
-    }
-]
-JSON;
         $pageviews1 = <<<JSON
 [
     {
@@ -249,13 +211,21 @@ JSON;
             'external_id' => 10,
             'property_uuid' => $property->uuid,
         ]);
-        $conversion = factory(Conversion::class)->create(['user_id' => 26, 'article_id' => $conversionArticle, 'events_aggregated' => true]);
-        factory(ConversionCommerceEvent::class)->create(['conversion_id' => $conversion,'step' => 'payment', 'time' => Carbon::createFromTimeString('2020-08-06T14:36:47Z')]);
+        $conversion = factory(Conversion::class)->create([
+            'user_id' => 26,
+            'article_id' => $conversionArticle,
+            'events_aggregated' => true
+        ]);
+        factory(ConversionCommerceEvent::class)->create([
+            'conversion_id' => $conversion,
+            'step' => 'payment',
+            'time' => Carbon::createFromTimeString('2020-08-06T14:36:47Z'),
+            'browser_id' => '6f3b2834-5bdf-41d2-a9e3-b3a12a588358'
+        ]);
 
         // Mock Journal data
         $journalMock = Mockery::mock(Journal::class);
         $journalMock->shouldReceive('list')->andReturn(
-            json_decode($paymentEvent),
             json_decode($pageviews1),
             json_decode($pageviews2)
         );
