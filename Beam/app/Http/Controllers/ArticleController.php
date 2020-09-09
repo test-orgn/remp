@@ -9,7 +9,7 @@ use App\Helpers\Misc;
 use App\Http\Requests\ArticleRequest;
 use App\Http\Requests\ArticleUpsertRequest;
 use App\Http\Requests\ArticleUpsertRequestV2;
-use App\Http\Requests\TopArticlesRequest;
+use App\Http\Requests\TopSearchRequest;
 use App\Http\Requests\UnreadArticlesRequest;
 use App\Http\Resources\ArticleResource;
 use App\Model\Config\ConversionRateConfig;
@@ -376,6 +376,7 @@ class ArticleController extends Controller
             // When saving to DB, Eloquent strips timezone information,
             // therefore convert to UTC
             $a['published_at'] = Carbon::parse($a['published_at'])->tz('UTC');
+            $a['content_type'] = $a['content_type'] ?? Article::DEFAULT_CONTENT_TYPE;
             $article = Article::upsert($a);
 
             $article->sections()->detach();
@@ -470,6 +471,7 @@ class ArticleController extends Controller
             // When saving to DB, Eloquent strips timezone information,
             // therefore convert to UTC
             $a['published_at'] = Carbon::parse($a['published_at'])->tz('UTC');
+            $a['content_type'] = $a['content_type'] ?? Article::DEFAULT_CONTENT_TYPE;
             $article = Article::upsert($a);
 
             $article->sections()->detach();
@@ -689,12 +691,23 @@ class ArticleController extends Controller
         return $usersReadArticles;
     }
 
-    public function topArticles(TopArticlesRequest $request, TopSearch $topSearch)
+    public function topArticles(TopSearchRequest $request, TopSearch $topSearch)
     {
-        $sections = $request->json('sections');
         $limit = $request->json('limit');
         $timeFrom = Carbon::parse($request->json('from'));
 
-        return response()->json($topSearch->topArticles($timeFrom, $limit, $sections));
+        $sections = $request->json('sections');
+        $sectionValueType = null;
+        $sectionValues = null;
+        if (isset($sections['external_id'])) {
+            $sectionValueType = 'external_id';
+            $sectionValues = $sections['external_id'];
+        } elseif (isset($sections['name'])) {
+            $sectionValueType = 'name';
+            $sectionValues = $sections['name'];
+        }
+        $contentType = $request->json('content_type');
+
+        return response()->json($topSearch->topArticles($timeFrom, $limit, $sectionValueType, $sectionValues, $contentType));
     }
 }

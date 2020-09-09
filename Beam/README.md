@@ -48,13 +48,13 @@ php artisan db:seed
 After clean installation Beam Admin and Segments API would throw errors because the underlying database wouldn't have inidices for tracked events created. Docker installation handles this for you, but if you use manual installation, please run the following set of commands against your Elasticsearch instance.
 
 ```bash
-curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/commerce -d '{"mappings": {"_doc": {"properties": {"revenue": {"type": "double"}}}}}'
-curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/events -d '{"mappings": {"_doc": {}}}'
-curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/pageviews -d '{"mappings": {"_doc": {}}}'
-curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/pageviews_time_spent -d '{"mappings": {"_doc": {}}}'
-curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/pageviews_progress -d '{"mappings": {"_doc": {}}}'
-curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/concurrents_by_browser -d '{"mappings": {"_doc": {}}}'
-curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/entities -d '{"mappings": {"_doc": {}}}'
+curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/commerce -d '{"mappings": {"properties": {"revenue": {"type": "double"}}}}'
+curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/events -d '{"mappings": {}}'
+curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/pageviews -d '{"mappings": {}}'
+curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/pageviews_time_spent -d '{"mappings": {}}'
+curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/pageviews_progress -d '{"mappings": {}}'
+curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/concurrents_by_browser -d '{"mappings": {}}'
+curl -XPUT -H "Content-Type: application/json" elasticsearch:9200/entities -d '{"mappings": {}}'
 ```
 
 *These commands need to be run just once. Every further execution would result in BadRequest returned by Elasticsearch that inidices or document types are already present.*
@@ -340,6 +340,7 @@ data related to Beam (e.g. A/B testing of titles).
                 "B": "10 things everyone hides from you" // Title of variant being tracked with key "B"
             },
             "url": "http://example.com/74565321", // Public and valid URL of the article,
+            "content_type": "blog", // String; Optional; Content type of the article. Default value "article" used if not provided.
             "authors": [ // Optional
                 "Jon Snow" // Name of the author
             ],
@@ -373,7 +374,8 @@ curl -X POST \
                 "A": "10 things you need to know",
                 "B": "10 things everyone hides from you" 
             },
-            "url": "http://example.com/74565321", 
+            "url": "http://example.com/74565321",
+            "content_type": "blog", 
             "authors": [ 
                 "Jon Snow" 
             ],
@@ -406,6 +408,7 @@ $payload = [
                 "B" => "10 things everyone hides from you"
             ],
             "url" => "http://example.com/74565321",
+            "content_type" => "blog",
             "authors" => [
                 "Jon Snow"
             ],
@@ -448,6 +451,7 @@ $response = file_get_contents("http://beam.remp.press/api/articles/upsert ", fal
             "property_uuid": "1a8feb16-3e30-4f9b-bf74-20037ea8505a",
             "title": "10 things you need to know",
             "url": "http://example.com/74565321",
+            "content_type": "blog",
             "image_url": null,
             "published_at": "2018-06-05 06:03:05",
             "pageviews_all": 0,
@@ -515,6 +519,7 @@ Your CMS should track all article-related changes to Beam so Beam knows about th
                 "B": "10 things everyone hides from you" // Title of variant being tracked with key "B"
             },
             "url": "http://example.com/74565321", // Public and valid URL of the article,
+            "content_type": "blog", // String; Optional; Content type of the article. Default value "article" used if not provided.
             "authors": [ // Optional
                 {
                     "external_id": "1", // String; Required; External id of the author
@@ -560,7 +565,8 @@ curl -X POST \
                 "A": "10 things you need to know",
                 "B": "10 things everyone hides from you" 
             },
-            "url": "http://example.com/74565321", 
+            "url": "http://example.com/74565321",
+            "content_type": "blog",
             "authors": [
                 {
                     "external_id": "1",
@@ -602,6 +608,7 @@ $payload = [
                 "B" => "10 things everyone hides from you"
             ],
             "url" => "http://example.com/74565321",
+            "content_type" => "blog",
             "authors" => [
                 [
                     "external_id" => "1",
@@ -653,6 +660,7 @@ $response = file_get_contents("http://beam.remp.press/api/v2/articles/upsert ", 
             "property_uuid": "1a8feb16-3e30-4f9b-bf74-20037ea8505a",
             "title": "10 things you need to know",
             "url": "http://example.com/74565321",
+            "content_type": "blog",
             "image_url": null,
             "published_at": "2018-06-05 06:03:05",
             "pageviews_all": 0,
@@ -828,11 +836,13 @@ You can filter articles by section and time of pageview.
 
 ```json5
 {
-	"from": "2020-03-15 14:41:58", // start datetime from which to take pageviews to this today 
+	"from": "2020-08-10T08:09:18+00:00", // RFC3339-based start time from which to take pageviews to this today 
 	"limit": 3, // limit how many top articles this endpoint returns
-	"sections": [ // OPTIONAL; filters from which sections take articles
-		"Section title" // String; section title
-	]
+	"content_type": "article", // String; OPTIONAL; filters articles by content_type
+	"sections": { // OPTIONAL; filters from which sections take articles (use either external_id or name arrays, not both)
+		"external_id": ["Section external id"], // String; section external IDs 
+		"name": ["Section title"] // String; section external_id
+	}
 }
 ```
 
@@ -847,11 +857,12 @@ curl --location --request POST 'http://beam.remp.press/api/articles/top' \
 --header 'Accept: application/json' \
 --header 'Authorization: Bearer XXX' \
 --data-raw '{
-	"from": "2020-03-15 14:41:58",
+	"from": "2020-08-10T08:09:18+00:00",
 	"limit": 3,
-	"sections": [
-		"Blog"
-	]
+	"content_type": "article",
+	"sections": {
+		"external_id": ["1"]
+	}
 }'
 ```
 
@@ -862,8 +873,9 @@ curl --location --request POST 'http://beam.remp.press/api/articles/top' \
 
 ```php
 $payload = [
-	"from" => "2020-03-15 14:41:58",
+	"from" => "2020-08-10T08:09:18+00:00",
 	"limit" => 3,
+	"content_type" => "article",
 	"sections" => [
 		"Blog"
 	]
@@ -924,8 +936,13 @@ You can filter authors by time of pageview.
 
 ```json5
 {
-	"from": "2020-03-15 14:41:58", // start datetime from which to take pageviews to this today 
+	"from": "2020-08-10T08:14:09+00:00", // RFC3339-based start datetime from which to take pageviews to this today 
 	"limit": 3, // limit how many top authors this endpoint returns
+	"content_type": "article", // String; OPTIONAL; filters articles by content_type
+	"sections": { // OPTIONAL; filters from which sections take articles (use either external_id or name arrays, not both)
+		"external_id": ["Section external id"], // String; section external IDs 
+		"name": ["Section title"] // String; section external_id
+	}
 }
 ```
 
@@ -940,8 +957,12 @@ curl --location --request POST 'http://beam.remp.press/api/authors/top' \
 --header 'Accept: application/json' \
 --header 'Authorization: Bearer XXX' \
 --data-raw '{
-	"from": "2020-03-15 14:41:58",
-	"limit": 3
+	"from": "2020-08-10T08:14:09+00:00",
+	"limit": 3,
+	"content_type": "article",
+	"sections": {
+	    "external_id": ["22"]
+	}
 }'
 ```
 
@@ -952,8 +973,9 @@ curl --location --request POST 'http://beam.remp.press/api/authors/top' \
 
 ```php
 $payload = [
-	"from" => "2020-03-15 14:41:58",
+	"from" => "2020-08-10T08:14:09+00:00",
 	"limit" => 3,
+	"content_type" => "article"
 ];
 $jsonPayload = json_encode($payload);
 $context = stream_context_create([
@@ -979,18 +1001,8 @@ $response = file_get_contents("http://beam.remp.press/api/authors/top", false, $
 [
     {
         "external_id": 100,
-        "name": "Veronika Folentová",
+        "name": "Example Author",
         "pageviews": 23000
-    },
-    {
-        "external_id": 200,
-        "name": "Jana Čevelová",
-        "pageviews": 15000
-    },
-    {
-        "external_id": 300,
-        "name": "Miro Kern",
-        "pageviews": 10000
     }
 ]
 ```
@@ -1014,8 +1026,13 @@ You can filter tags by time of pageview.
 
 ```json5
 {
-	"from": "2020-03-15 14:41:58", // start datetime from which to take pageviews to this today 
+	"from": "2020-08-10T08:14:09+00:00", // RFC3339-based start datetime from which to take pageviews to this today 
 	"limit": 3, // limit how many top tags this endpoint returns
+	"content_type": "article", // String; OPTIONAL; filters articles by content_type
+	"sections": { // OPTIONAL; filters from which sections take articles (use either external_id or name arrays, not both)
+		"external_id": ["Section external id"], // String; section external IDs 
+		"name": ["Section title"] // String; section external_id
+	}
 }
 ```
 
@@ -1030,8 +1047,9 @@ curl --location --request POST 'http://beam.remp.press/api/tags/top' \
 --header 'Accept: application/json' \
 --header 'Authorization: Bearer XXX' \
 --data-raw '{
-	"from": "2020-03-15 14:41:58",
-	"limit": 3
+	"from": "2020-08-10T08:14:09+00:00",
+	"limit": 3,
+	"content_type": "article"
 }'
 ```
 
@@ -1042,8 +1060,9 @@ curl --location --request POST 'http://beam.remp.press/api/tags/top' \
 
 ```php
 $payload = [
-	"from" => "2020-03-15 14:41:58",
+	"from" => "2020-08-10T08:14:09+00:00",
 	"limit" => 3,
+	"content_type" => "article"
 ];
 $jsonPayload = json_encode($payload);
 $context = stream_context_create([
@@ -1069,15 +1088,18 @@ $response = file_get_contents("http://beam.remp.press/api/tags/top", false, $con
 [
     {
         "name": "ekonomika",
-        "pageviews": 4000
+        "pageviews": 4000,
+        "external_id": "1"
     },
     {
         "name": "covid19",
-        "pageviews": 3000
+        "pageviews": 3000,
+        "external_id": "2"
     },
     {
         "name": "brexit",
-        "pageviews": 2000
+        "pageviews": 2000,
+        "external_id": "3"
     }
 ]
 ```

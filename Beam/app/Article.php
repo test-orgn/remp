@@ -25,6 +25,8 @@ class Article extends Model implements Searchable
 
     private const DEFAULT_IMAGE_VARIANT = 'default';
 
+    public const DEFAULT_CONTENT_TYPE = 'article';
+
     private $journal;
 
     private $journalHelpers;
@@ -39,6 +41,7 @@ class Article extends Model implements Searchable
         'title',
         'author',
         'url',
+        'content_type',
         'section',
         'image_url',
         'published_at',

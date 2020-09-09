@@ -9,16 +9,79 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Docker
 
+- Fixed Elasticsearch index initialization for new installations.
+
+### [Beam]
+
+- Added prevention of overlapping run of SnapshotArticlesViews command, which may have caused incorrect numbers in Beam dashboard concurrents graph.
+- Added `browser_id` to Commerce model to expose it in commerce-related responses of Segments API.
+- Added command for processing of conversion sources that runs in batch mode or for specific conversion (`php artisan conversions:process-sources [--conversion_id]`). remp/remp#464
+  - Added new `conversion_sources` table. remp/remp#464
+  - Processing of conversion sources is also invoked in conversion upsert endpoint right after aggregation of conversion events. remp/remp#464
+- Calling of conversion events aggregation has been moved into separate job class. Another job class has been created for conversion sources command as well. remp/remp#464
+- Added new columns in `articles.show` view into referer stats section - `first conversion source count` and `last conversion source count`. remp/remp#464
+
+### [Campaign]
+
+- Fixed change of missing campaign statistics caused by invalid pairing of data with labels due to inconsistent timezone use.
+- Fixed possibility of zero campaign stats. Bug appeared if campaign included banner with an already removed variant with some stats tracked. remp/remp#628 
+
+### [Mailer]
+
+- Fixed README.md typos, incorrectly linked classes, wording changes, small grammar fixes. remp/remp!390
+- Upgraded nette/application to 2.4.16.
+
+## [0.13.0] - 2020-09-03
+
+### [Beam]
+
+- **BREAKING**: Application now requires Elasticsearch 7. remp/remp#616
+Please follow the upgrade steps:
+  - Rebuild or download new Tracker and Segments binaries (binaries available at https://github.com/remp2020/remp/releases).
+  - Omit `type_name` from Telegraf configuration (see `Docker/telegraf/telegraf.conf` docker configuration file for more details).
+  - If you use default docker appliance to run REMP, please run:
+    ```bash
+    docker-compose stop beam_tracker beam_segments elasticsearch
+    docker-compose build beam_tracker beam_segments elasticsearch
+    docker-compose up -d beam_tracker beam_segments elasticsearch
+    ```
+- Go dep dependencies management system replaced with go modules. remp/remp#616
+- Added ability to optionally specify (Elasticsearch) indexes prefix in `.env` for Tracker and Segments apps. remp/remp#616
+- Added support for Elasticsearch authentication (`auth` parameter) in `ElasticDataRetention` and `ElasticWriteAliasRollover` commands. remp/remp#616
+- Added `content_type` column to `articles` table. remp/remp#695
+- Added optional parameter `content_type` in `/api/v2/articles/upsert` API endpoint. remp/remp#695
+- Added optional parameter `content_type` in `/api/articles/top` API endpoint to filter articles by `content_type`. remp/remp#695
+- Added optional parameter `content_type` in `/api/authors/top` API endpoint to filter articles by `content_type`. remp/remp#695
+- Added optional parameter `content_type` in `/api/tags/top` API endpoint to filter articles by `content_type`. remp/remp#695
+
+### [Campaign]
+
+- Fixed store pageview counts for campaign separately instead of globally. remp/remp#609
+- Refactor campaign form pageview rules to use only `every` rule. remp/remp#609
+- Added display N times and then stop rule to campaign form banner rules. remp/remp#609
+- **BREAKING** Added migration to convert old campaign pageview rules to new format. May pause campaigns with not convertable rules. remp/remp#609
+- Added new banner type – Overlay with Two Buttons and Signature. remp/remp#650
+
+## [0.12.0] - 2020-08-11
+
+### Docker
+
 - Added tzdata installation for remp_segments docker (required by golang).
 
 ### [Beam]
 
+- **BREAKING**: Changed way of specifying `sections` parameter in `/api/articles/top` API endpoint. Now sections can be filtered either using `name` or `external_id` parameters (before, `name` parameter was used implicitely). remp/remp#691
+- Added ability to specify `sections` parameter in `/api/authors/top` and `/api/tags/top/` API endpoints via `name` or `external_id` parameters (in the same fashion as in case of `/api/articles/top`). remp/remp#691
+- Pageviews data for articles are now refreshed every minute instead of every hour. remp/remp#663
 - Fixed ignored explicit `browserId` parameter in JS configuration. remp/remp#690
-- **BREAKING:** Added new `conversion_sources` table. remp/remp#464
-- Added command for processing of conversion sources that runs in batch mode or for specific conversion (`php artisan conversions:process-sources [--conversion_id]`). remp/remp#464
-- Processing of conversion sources is being invoked in conversion upsert endpoint right after aggregation of conversion events. remp/remp#464
-- Calling of conversion events aggregation has been moved into separate job class. Another job class has been created for conversion sources command as well. remp/remp#464
-- Added new columns in `articles.show` view into referer stats section - `first conversion source count` and `last conversion source count`. remp/remp#464
+- Commands `pageviews:aggregate-load` and `pageviews:aggregate-timespent` do not show progress unless `--debug` parameter is specified.
+- [Segments]: Fixed possibility of missing aggregations if Elastic was not able to resolve values for a sub aggregation because there were no records within the sub-aggregation branch.
+- Fixed `remplib.js` generating `undefined` cookies when JS is run on a page with no query parameters. remp2020/remp#81
+
+### [Mailer]
+
+- Added handling for `UserNotFoundException` when confirming user in CRM. remp/remp#685
+- Added notification on the settings screen about settings overridden by local config file. remp/remp#519
 
 ## [0.11.1] - 2020-07-10
 
@@ -285,6 +348,9 @@ _Note: Generated binaries were not changed since 0.7.0, there's no need to redep
 [Segments]: https://github.com/remp2020/remp/tree/master/Beam/go/cmd/segments
 [Tracker]: https://github.com/remp2020/remp/tree/master/Beam/go/cmd/tracker
 
+[0.13.0]: https://github.com/remp2020/remp/compare/0.12.0...0.13.0
+[0.12.0]: https://github.com/remp2020/remp/compare/0.11.1...0.12.0
+[0.11.1]: https://github.com/remp2020/remp/compare/0.10.0...0.11.1
 [0.10.0]: https://github.com/remp2020/remp/compare/0.9.1...0.10.0
 [0.9.0]: https://github.com/remp2020/remp/compare/0.8.0...0.9.1
 [0.8.0]: https://github.com/remp2020/remp/compare/0.7.0...0.8.0
