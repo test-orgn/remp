@@ -605,4 +605,89 @@ class DashboardController extends Controller
             'totalConcurrents' => $totalConcurrents,
         ]);
     }
+
+    //todo move journalinterval into parameters (to ensure same time interval for all articles)
+    private function getOverviewChartData(Article $article)
+    {
+        $tz = new \DateTimeZone('UTC');
+        $journalInterval = new JournalInterval($tz, '1day');
+        $supportedDataSources = ['snapshots', 'journal'];
+        $currentDataSource = config('beam.pageview_graph_data_source');
+
+        if (!in_array($currentDataSource, $supportedDataSources)) {
+            throw new \Exception("unknown pageviews data source {$currentDataSource}");
+        }
+        if ($currentDataSource === 'snapshots') {
+            $data = $this->getOverviewChartDataFromSnapshots($article, $journalInterval);
+        }
+        if ($currentDataSource === 'journal') {
+            $data = $this->getOverviewChartDataFromJournal($article, $journalInterval);
+        }
+
+        return $data;
+    }
+
+    private function getOverviewChartDataFromSnapshots(Article $article, JournalInterval $journalInterval)
+    {
+        $records = $this->snapshotHelpers->concurrentsHistogram($journalInterval, $article->external_id, true);
+        $results = $this->prefillOverviewResults($journalInterval);
+
+        foreach ($records as $item) {
+            $zuluTime = Carbon::parse($item->time)->toIso8601ZuluString();
+            if (!array_key_exists($zuluTime, $results)) {
+                //remove nearest value in the results set if its count is zero
+                $results = array_filter($results, function ($value, $key) use ($item, $journalInterval) {
+                    $timeslot = new Carbon($key);
+                    $nearestTimeslot = $timeslot->between($item->time->copy()->subMinutes($journalInterval->intervalMinutes), $item->time);
+                    return !$nearestTimeslot || ($nearestTimeslot && $value['Count'] !== 0);
+                }, ARRAY_FILTER_USE_BOTH);
+
+                $results[$zuluTime]['Date'] = $zuluTime;
+                $results[$zuluTime]['Count'] = 0;
+            }
+            $results[$zuluTime]['Count'] += $item->count;
+        }
+
+        return array_values($results);
+    }
+
+    private function getOverviewChartDataFromJournal(Article $article, JournalInterval $journalInterval)
+    {
+        $journalRequest = (new AggregateRequest('pageviews', 'load'))
+            ->addFilter('article_id', $article->external_id)
+            ->setTime($journalInterval->timeAfter, $journalInterval->timeBefore)
+            ->setTimeHistogram($journalInterval->intervalText, '0h');
+
+        $currentRecords = collect($this->journal->count($journalRequest));
+
+        $results = $this->prefillOverviewResults($journalInterval);
+
+        foreach ($currentRecords as $records) {
+            if (!isset($records->time_histogram)) {
+                continue;
+            }
+
+            foreach ($records->time_histogram as $timeValue) {
+                $results[$timeValue->time]['Count'] += $timeValue->value;
+            }
+        }
+
+        return array_values($results);
+    }
+
+    private function prefillOverviewResults(JournalInterval $journalInterval)
+    {
+        $timeIterator = JournalHelpers::getTimeIterator($journalInterval->timeAfter, $journalInterval->intervalMinutes);
+        $results = [];
+
+        while ($timeIterator->lessThan($journalInterval->timeBefore)) {
+            $zuluDate = $timeIterator->toIso8601ZuluString();
+            $results[$zuluDate]['Count'] = 0;
+            $results[$zuluDate]['Date'] = $zuluDate;
+
+            $timeIterator->addMinutes($journalInterval->intervalMinutes);
+        }
+
+        return $results;
+    }
 }
