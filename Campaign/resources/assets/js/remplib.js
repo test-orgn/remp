@@ -48,7 +48,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
                     "referer": document.referrer || null,
                     "campaignsSeen": remplib.campaign.getCampaignsSeen(),
                     "campaignsBanners": remplib.campaign.getCampaignsBanners(),
-                    "cache": remplib.getFromStorage(remplib.segmentProviderCacheKey, true),
+                    "cache": remplib.getFromStorage(remplib.segmentProviderCacheKey),
                     "pageviewCounts": remplib.campaign.getCampaignsPageviewCounts(),
                     "userAgent": window.navigator.userAgent,
                     "usingAdblock": remplib.usingAdblock
@@ -178,7 +178,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
         },
 
         getCampaignsSeen: function() {
-            let campaigns = remplib.getFromStorage(this.campaignsSessionStorageKey, false);
+            let campaigns = remplib.getFromStorage(this.campaignsSessionStorageKey);
             if (typeof campaigns !== "undefined" && campaigns !== null && campaigns.seen) {
                 return campaigns.seen;
             }
@@ -186,7 +186,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
         },
 
         getCampaignsBanners: function() {
-            let campaigns = remplib.getFromStorage(this.campaignsStorageKey, true);
+            let campaigns = remplib.getFromStorage(this.campaignsStorageKey);
             if (typeof campaigns !== "undefined" && campaigns !== null && campaigns.values) {
                 return campaigns.values;
             }
@@ -195,7 +195,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
 
         incrementPageviewCountForCampaigns: function (campaignIds)  {
             const now = new Date();
-            let campaigns = remplib.getFromStorage(this.campaignsSessionStorageKey, false);
+            let campaigns = remplib.getFromStorage(this.campaignsSessionStorageKey);
 
             if(typeof campaigns === "undefined" || campaigns === null) {
                 campaigns = {
@@ -229,11 +229,11 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
                 }
             }
 
-            localStorage.setItem(this.campaignsSessionStorageKey, JSON.stringify(campaigns));
+            remplib.setToStorage(this.campaignsSessionStorageKey, campaigns)
         },
 
         getCampaignsPageviewCounts: function() {
-            let campaigns = remplib.getFromStorage(this.campaignsSessionStorageKey, false);
+            let campaigns = remplib.getFromStorage(this.campaignsSessionStorageKey);
             if (typeof campaigns === "undefined" || campaigns === null) {
                 return {};
             }
@@ -255,7 +255,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
         // store persistent campaign details
         storeCampaigns: function(campaignId, bannerId, variantId) {
             const now = new Date();
-            let campaigns = remplib.getFromStorage(this.campaignsStorageKey, true);
+            let campaigns = remplib.getFromStorage(this.campaignsStorageKey);
 
             if (typeof campaigns === "undefined" ||  campaigns === null) {
                 campaigns = {
@@ -276,13 +276,13 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
                 "variantId": variantId,
             };
 
-            localStorage.setItem(this.campaignsStorageKey, JSON.stringify(campaigns));
+            remplib.setToStorage(this.campaignsStorageKey, campaigns);
         },
 
         // store session campaign details
         storeCampaignsSession: function(campaignId) {
             const now = new Date();
-            let campaigns = remplib.getFromStorage(this.campaignsSessionStorageKey, false);
+            let campaigns = remplib.getFromStorage(this.campaignsSessionStorageKey);
 
             if(typeof campaigns === "undefined" || campaigns === null) {
                 campaigns = {
@@ -313,7 +313,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
                 });
             }
 
-            localStorage.setItem(this.campaignsSessionStorageKey, JSON.stringify(campaigns));
+            remplib.setToStorage(this.campaignsSessionStorageKey, campaigns)
         },
     };
 

@@ -202,7 +202,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
             if (!e.detail[remplib.tracker.segmentProvider].hasOwnProperty("cache")) {
                 return;
             }
-            let segmentProviderCache = remplib.getFromStorage(remplib.segmentProviderCacheKey, true);
+            let segmentProviderCache = remplib.getFromStorage(remplib.segmentProviderCacheKey);
             if (!segmentProviderCache) {
                 segmentProviderCache = {};
             }
@@ -241,11 +241,11 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
         },
 
         incrementSegmentRulesCache: function(event) {
-            let cache = remplib.getFromStorage(remplib.segmentProviderCacheKey, true);
+            let cache = remplib.getFromStorage(remplib.segmentProviderCacheKey);
             if (!cache || !cache.hasOwnProperty(remplib.tracker.segmentProvider)) {
                 return;
             }
-            let eventRules = remplib.getFromStorage(remplib.tracker.eventRulesMapKey, true);
+            let eventRules = remplib.getFromStorage(remplib.tracker.eventRulesMapKey);
             if (!eventRules) {
                 return;
             }
@@ -264,7 +264,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
                     continue;
                 }
 
-                const of = remplib.getFromStorage(remplib.tracker.overridableFieldsKey, true) || [];
+                const of = remplib.getFromStorage(remplib.tracker.overridableFieldsKey) || [];
                 if (!of.hasOwnProperty(ruleId)) {
                     console.warn("remplib: missing overridable fields for rule " + ruleId);
                     continue;
@@ -282,7 +282,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
 
         // checks if all flags are matched against provided config
         validateFlags: function(ruleId) {
-            let flags = remplib.getFromStorage(remplib.tracker.flagsKey, true) || [];
+            let flags = remplib.getFromStorage(remplib.tracker.flagsKey) || [];
             if (!flags.hasOwnProperty(ruleId)) {
                 console.warn("remplib: missing flags for rule " + ruleId);
                 return false;
@@ -639,7 +639,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
 
         getParam: function(key, includeStorage = false) {
             // retrieve storage value since it also extends value's lifetime in storage
-            let storageValue = remplib.getFromStorage(key, false, true)
+            let storageValue = remplib.getFromStorage(key)
 
             if (includeStorage && typeof this.uriParams[key] === 'undefined') {
                 return storageValue;

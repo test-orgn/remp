@@ -10,9 +10,18 @@ export default {
 
     browserId: null,
 
-    cacheThreshold: 15 * 60000, // 15 minutes
-
     rempSessionIDKey: "remp_session_id",
+
+    storage: "local_storage", // "cookie", "local_storage"
+
+    storageExpiration: {
+        "default": 15,
+        "keys": {
+            "browser_id": 1051897, // 2 years in minutes
+            "campaigns": 1051897,
+            "campaigns_session": 1051897,
+        }
+    },
 
     cookieDomain: null,
 
@@ -36,7 +45,7 @@ export default {
         }
 
         let storageKey = "browser_id";
-        let browserId = this.getFromStorage(storageKey, true, true);
+        let browserId = this.getFromStorage(storageKey);
         if (browserId) {
             return browserId;
         }
@@ -44,7 +53,7 @@ export default {
         // this section is added for historical reasons and migration of value
         // it will be removed within next couple of weeks
         let deprecatedStorageKey = "anon_id";
-        let anonId = this.getFromStorage(deprecatedStorageKey, true, true);
+        let anonId = this.getFromStorage(deprecatedStorageKey);
         if (anonId) {
             browserId = anonId;
             this.removeFromStorage(deprecatedStorageKey);
@@ -67,7 +76,7 @@ export default {
 
     getRempSessionID: function() {
         const storageKey = this.rempSessionIDKey;
-        let rempSessionID = this.getFromStorage(storageKey, false, true);
+        let rempSessionID = this.getFromStorage(storageKey);
         if (rempSessionID) {
             return rempSessionID;
         }
@@ -109,73 +118,93 @@ export default {
         });
     },
 
-    setToStorage: function(key, item) {
-        localStorage.setItem(key, JSON.stringify(item));
+    setToStorage: function(key, item, browseronly = false) {
+        let now = new Date();
+        let expireInMinutes = this.storageExpiration['default'];
+        if (this.storageExpiration['keys'][key]) {
+            expireInMinutes = this.storageExpiration['keys'][key];
+        }
+        let expireAt = new Date(now.getTime() + (expireInMinutes * 60000));
 
-        // clone value of item also to cookie
-        let value = item;
-        if (item.hasOwnProperty('value')) {
-            value = item.value;
+        item = JSON.stringify(item);
+        if (this.storage === 'local_storage') {
+            localStorage.setItem(key, item);
         }
-        const now = new Date();
-        let cookieExp = new Date();
-        cookieExp.setTime(now.getTime() + this.cacheThreshold);
-        const expires = "; expires=" + cookieExp.toUTCString();
-        let domain = "";
-        if (this.cookieDomain !== null) {
-            domain = "; domain=" + this.cookieDomain;
+
+        if (!browseronly) {
+            this.storeCookie(key, item, expireAt);
         }
-        document.cookie = key + "=" + value + expires + "; path=/"+ domain + ";";
     },
 
     /**
-     * Tries to retrieve key's value from localStorage
+     * Tries to retrieve key's value from strage (local/cookie)
      * Side effect of this function is an extension of key's lifetime in the storage
      * @param key
-     * @param bypassThreshold
-     * @param storeToCookie
      * @returns {*}
      */
-    getFromStorage: function(key, bypassThreshold, storeToCookie) {
+    getFromStorage: function(key) {
         let now = new Date();
-        let data = localStorage.getItem(key);
-        if (data === null) {
+        let expireInMinutes = this.storageExpiration['default'];
+        if (this.storageExpiration['keys'][key]) {
+            expireInMinutes = this.storageExpiration['keys'][key];
+        }
+        let expireAt = new Date(now.getTime() + (expireInMinutes * 60000));
+
+        if (this.storage === 'local_storage') {
+            let data = localStorage.getItem(key);
+            if (data === null) {
+                return null;
+            }
+            let item = JSON.parse(data);
+            if ((new Date(new Date(item.updatedAt).getTime() + (expireInMinutes * 60000))).getTime() > expireAt.getTime()) {
+                localStorage.removeItem(key);
+                return null;
+            }
+            if (item.hasOwnProperty("updatedAt")) {
+                item.updatedAt = now;
+            }
+            if (item.hasOwnProperty('value')) {
+                return item.value;
+            }
             return null;
         }
 
-        let item = JSON.parse(data);
-        let threshold = new Date(now.getTime() - this.cacheThreshold);
-        if (!bypassThreshold && (new Date(item.updatedAt)).getTime() < threshold.getTime()) {
-            localStorage.removeItem(key);
-            return null;
+        let item = this.getCookie(key);
+        if (item) {
+            let expireAt = new Date(now.getTime() + expireInMinutes * 60000);
+            this.storeCookie(key, item, expireAt)
         }
 
-        if (item.hasOwnProperty("updatedAt")) {
-            item.updatedAt = now;
-        }
-
-        if (storeToCookie) {
-            this.setToStorage(key, item);
-        } else {
-            localStorage.setItem(key, JSON.stringify(item));
-        }
-
-        if (item.hasOwnProperty('value')) {
-            return item.value;
-        }
-        return item;
+        return this.getCookie(key) || null;
     },
 
     removeFromStorage: function(key) {
-        localStorage.removeItem(key);
-
-        let cookieExp = new Date();
-        const expires = "; expires=" + cookieExp.toUTCString();
-        let domain = "";
-        if (this.cookieDomain !== null) {
-            domain = "; domain=" + this.cookieDomain;
+        if (this.storage === 'local_storage') {
+            return localStorage.removeItem(key);
         }
-        document.cookie = key + "=" + expires + "; path=/"+ domain + ";";
+        return this.removeCookie(key);
+    },
+
+    getCookie: function(name) {
+        let result = document.cookie.match(new RegExp(name + '=([^;]+)'));
+        result && (result = JSON.parse(result[1]));
+        return result;
+    },
+
+    storeCookie: function(name, value, expires) {
+        document.cookie = [
+            name, '=', JSON.stringify(value),
+            '; expires=', expires.toUTCString(),
+            '; domain=', this.cookieDomain,
+            '; path=/;'
+        ].join('');
+    },
+
+    removeCookie: function(name) {
+        document.cookie = [
+            name, '=; expires=Thu, 01-Jan-1970 00:00:01 GMT; path=/; domain=',
+            this.cookieDomain
+        ].join('');
     },
 
     // jquery extend
