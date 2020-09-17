@@ -534,6 +534,8 @@ class DashboardController extends Controller
         $topPages = [];
         $i = 0;
         $totalConcurrents = 0;
+        $tz = new \DateTimeZone('UTC');
+        $journalInterval = new JournalInterval($tz, '1day');
         foreach ($records as $record) {
             $totalConcurrents += $record->count;
 
@@ -559,6 +561,7 @@ class DashboardController extends Controller
                 $obj->published_at = $article->published_at->toAtomString();
                 $obj->conversions_count = $article->conversions->count();
                 $obj->article = $article;
+                $obj->chartData = $this->getOverviewChartData($article, $journalInterval);
             }
             $topPages[] = $obj;
             $i++;
@@ -606,11 +609,8 @@ class DashboardController extends Controller
         ]);
     }
 
-    //todo move journalinterval into parameters (to ensure same time interval for all articles)
-    private function getOverviewChartData(Article $article)
+    private function getOverviewChartData(Article $article, JournalInterval $journalInterval)
     {
-        $tz = new \DateTimeZone('UTC');
-        $journalInterval = new JournalInterval($tz, '1day');
         $supportedDataSources = ['snapshots', 'journal'];
         $currentDataSource = config('beam.pageview_graph_data_source');
 

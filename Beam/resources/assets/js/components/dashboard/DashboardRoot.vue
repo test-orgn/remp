@@ -42,6 +42,11 @@
                                            class="icon-header zmdi zmdi-accounts zmdi-hc-fw"></i>
                                     </th>
                                     <th style="text-align: left">Article</th>
+                                    <th style="width: 14%; text-align: left">
+                                        <i data-toggle="tooltip"
+                                           data-original-title="Pageviews trend"
+                                           class="icon-header zmdi zmdi-trending-up zmdi-hc-fw"></i>
+                                    </th>
                                     <th style="width: 7%; text-align: left">
                                         <i data-toggle="tooltip"
                                            data-original-title="Engaged Time"
@@ -88,6 +93,10 @@
                                             <small>{{ article.published_at | relativeDate }}</small>
                                         </template>
                                     </td>
+                                    <td v-if="!article.landing_page" :id="`sparkline-${article.article.id}`">
+                                        {{drawSparklineChart(article.article.id, article.chartData)}}
+                                    </td>
+                                    <td v-else></td>
                                     <td>
                                         {{ article.avg_timespent_string || '' }}
                                     </td>
@@ -180,6 +189,7 @@
     import Options from './Options.vue'
     import axios from 'axios'
     import DashboardGraph from "./DashboardGraph";
+    import * as d3 from 'd3'
 
     let props = {
         articlesUrl: {
@@ -331,6 +341,40 @@
                         this.error = error
                         this.loading = false;
                     })
+            },
+            drawSparklineChart(articleId, data) {
+                setTimeout(function () {
+                    const containerId = '#sparkline-' + articleId;
+                    const container = $(containerId)[0];
+                    const width = container.clientWidth;
+                    const height = container.clientHeight;
+
+                    const x = d3.scaleTime().range([0, width]);
+                    const y = d3.scaleLinear().range([height, 0]);
+                    const parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%SZ");
+                    const line = d3.line()
+                        .curve(d3.curveBasis)
+                        .x(function (d) {return x(d.date);})
+                        .y(function (d) {return y(d.count);});
+
+                    data.forEach(function (d) {
+                        d.date = parseDate(d.Date);
+                        d.count = d.Count;
+                    });
+                    x.domain(d3.extent(data, function(d) { return d.date; }));
+                    y.domain(d3.extent(data, function(d) { return d.count; }));
+
+                    d3.select(containerId)
+                        .append('svg')
+                        .attr('width', width)
+                        .attr('height', height)
+                        .append('path')
+                        .datum(data)
+                        .attr('d', line)
+                        .attr('stroke', '#000')
+                        .attr('stroke-width', '0.5px')
+                        .attr('fill', 'none');
+                }, 5000);
             }
         },
         filters: {
