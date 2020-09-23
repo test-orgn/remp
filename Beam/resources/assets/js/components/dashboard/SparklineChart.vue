@@ -20,15 +20,24 @@
     export default {
         props: props,
         name: 'sparklineChart',
+        watch: {
+            chartData(val) {
+                this.drawChart(val);
+            }
+        },
         mounted() {
             this.drawChart(this.chartData);
         },
         methods: {
             drawChart(data) {
-                const container = $(`#${this.chartContainerId}`)[0];
-                const width = container.clientWidth;
-                const height = container.clientHeight;
+                const svgContainer = `#svg-container-${this.chartContainerId}`;
+                if ($(svgContainer).find('svg').length) {
+                    $(svgContainer).find('svg')[0].remove();
+                }
 
+                const mainContainer = $(`#${this.chartContainerId}`);
+                const width = mainContainer.width();
+                const height = mainContainer.height();
                 const x = d3.scaleTime().range([0, width]);
                 const y = d3.scaleLinear().range([height, 0]);
                 const parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%SZ");
@@ -44,7 +53,7 @@
                 x.domain(d3.extent(data, function(d) { return d.date; }));
                 y.domain(d3.extent(data, function(d) { return d.count; }));
 
-                d3.select('#svg-container-' + this.chartContainerId)
+                d3.select(svgContainer)
                     .append('svg')
                     .attr('width', width)
                     .attr('height', height)

@@ -93,8 +93,8 @@
                                             <small>{{ article.published_at | relativeDate }}</small>
                                         </template>
                                     </td>
-                                    <td v-if="!article.landing_page" :id="`sparkline-${article.article.id}`">
-                                        <sparkline-chart :chart-container-id="`sparkline-${article.article.id}`" :chart-data="article.chartData"></sparkline-chart>
+                                    <td v-if="!article.landing_page" :id="`sparkline-${article.external_article_id}`">
+                                        <sparkline-chart :chart-container-id="`sparkline-${article.external_article_id}`" :chart-data="article.chartData"></sparkline-chart>
                                     </td>
                                     <td v-else></td>
                                     <td>
