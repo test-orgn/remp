@@ -382,6 +382,7 @@
                 "phar",
                 "update"
             ],
+            "abandoned": true,
             "time": "2018-02-27T17:29:10+00:00"
         },
         {
@@ -439,6 +440,7 @@
                 "slack",
                 "yarn"
             ],
+            "abandoned": true,
             "time": "2019-06-27T06:47:18+00:00"
         },
         {
@@ -3765,12 +3767,12 @@
             "version": "v1.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nrk/predis.git",
+                "url": "https://github.com/predis/predis.git",
                 "reference": "f0210e38881631afeafb56ab43405a92cafd9fd1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nrk/predis/zipball/f0210e38881631afeafb56ab43405a92cafd9fd1",
+                "url": "https://api.github.com/repos/predis/predis/zipball/f0210e38881631afeafb56ab43405a92cafd9fd1",
                 "reference": "f0210e38881631afeafb56ab43405a92cafd9fd1",
                 "shasum": ""
             },
@@ -6273,12 +6275,12 @@
             "version": "v0.7.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/tightenco/ziggy.git",
+                "url": "https://github.com/tighten/ziggy.git",
                 "reference": "aa4c42aaec9516da892bc2e9f6e992582646af77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/ziggy/zipball/aa4c42aaec9516da892bc2e9f6e992582646af77",
+                "url": "https://api.github.com/repos/tighten/ziggy/zipball/aa4c42aaec9516da892bc2e9f6e992582646af77",
                 "reference": "aa4c42aaec9516da892bc2e9f6e992582646af77",
                 "shasum": ""
             },
@@ -8607,6 +8609,7 @@
             "keywords": [
                 "tokenizer"
             ],
+            "abandoned": true,
             "time": "2019-09-17T06:23:10+00:00"
         },
         {

@@ -21,8 +21,10 @@
         props: props,
         name: 'sparklineChart',
         watch: {
-            chartData(val) {
-                this.drawChart(val);
+            chartData(val, oldVal) {
+                if (JSON.stringify(val) !== JSON.stringify(oldVal)) {
+                    this.drawChart(val);
+                }
             }
         },
         mounted() {
@@ -30,6 +32,7 @@
         },
         methods: {
             drawChart(data) {
+                let parsedData = [];
                 const svgContainer = `#svg-container-${this.chartContainerId}`;
                 if ($(svgContainer).find('svg').length) {
                     $(svgContainer).find('svg')[0].remove();
@@ -46,19 +49,21 @@
                     .x(function (d) {return x(d.date);})
                     .y(function (d) {return y(d.count);});
 
-                data.forEach(function (d) {
-                    d.date = parseDate(d.Date);
-                    d.count = d.Count;
+                data.forEach(function (d, i) {
+                    parsedData[i] = {
+                        date: parseDate(d.Date),
+                        count: d.Count
+                    };
                 });
-                x.domain(d3.extent(data, function(d) { return d.date; }));
-                y.domain(d3.extent(data, function(d) { return d.count; }));
+                x.domain(d3.extent(parsedData, function(d) { return d.date; }));
+                y.domain(d3.extent(parsedData, function(d) { return d.count; }));
 
                 d3.select(svgContainer)
                     .append('svg')
                     .attr('width', width)
                     .attr('height', height)
                     .append('path')
-                    .datum(data)
+                    .datum(parsedData)
                     .attr('d', line)
                     .attr('stroke', '#000')
                     .attr('stroke-width', '0.5px')

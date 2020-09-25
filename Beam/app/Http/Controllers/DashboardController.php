@@ -611,17 +611,17 @@ class DashboardController extends Controller
 
     private function getOverviewChartData(Article $article, JournalInterval $journalInterval)
     {
-        $supportedDataSources = ['snapshots', 'journal'];
         $currentDataSource = config('beam.pageview_graph_data_source');
 
-        if (!in_array($currentDataSource, $supportedDataSources)) {
-            throw new \Exception("unknown pageviews data source {$currentDataSource}");
-        }
-        if ($currentDataSource === 'snapshots') {
-            $data = $this->getOverviewChartDataFromSnapshots($article, $journalInterval);
-        }
-        if ($currentDataSource === 'journal') {
-            $data = $this->getOverviewChartDataFromJournal($article, $journalInterval);
+        switch ($currentDataSource) {
+            case 'snapshots':
+                $data = $this->getOverviewChartDataFromSnapshots($article, $journalInterval);
+                break;
+            case 'journal':
+                $data = $this->getOverviewChartDataFromJournal($article, $journalInterval);
+                break;
+            default:
+                $data = $this->getOverviewChartDataFromJournal($article, $journalInterval);
         }
 
         return $data;
@@ -653,14 +653,16 @@ class DashboardController extends Controller
 
     private function getOverviewChartDataFromJournal(Article $article, JournalInterval $journalInterval)
     {
+        $results = $this->prefillOverviewResults($journalInterval);
+        //use windowed intervals in order to utilize journal/redis cache
+        $timeAfter = new Carbon(reset($results)['Date'], $journalInterval->tz);
+        $timeBefore = new Carbon(end($results)['Date'], $journalInterval->tz);
+
         $journalRequest = (new AggregateRequest('pageviews', 'load'))
             ->addFilter('article_id', $article->external_id)
-            ->setTime($journalInterval->timeAfter, $journalInterval->timeBefore)
+            ->setTime($timeAfter, $timeBefore)
             ->setTimeHistogram($journalInterval->intervalText, '0h');
-
         $currentRecords = collect($this->journal->count($journalRequest));
-
-        $results = $this->prefillOverviewResults($journalInterval);
 
         foreach ($currentRecords as $records) {
             if (!isset($records->time_histogram)) {
