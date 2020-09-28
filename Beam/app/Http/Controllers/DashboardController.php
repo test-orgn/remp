@@ -637,9 +637,9 @@ class DashboardController extends Controller
             if (!array_key_exists($zuluTime, $results)) {
                 //remove nearest value in the results set if its count is zero
                 $results = array_filter($results, function ($value, $key) use ($item, $journalInterval) {
-                    $timeslot = new Carbon($key);
-                    $nearestTimeslot = $timeslot->between($item->time->copy()->subMinutes($journalInterval->intervalMinutes), $item->time);
-                    return !$nearestTimeslot || ($nearestTimeslot && $value['Count'] !== 0);
+                    $timeSlot = new Carbon($key);
+                    $nearestTimeSlot = $timeSlot->between($item->time->copy()->subMinutes($journalInterval->intervalMinutes), $item->time);
+                    return !$nearestTimeSlot || ($nearestTimeSlot && $value['Count'] !== 0);
                 }, ARRAY_FILTER_USE_BOTH);
 
                 $results[$zuluTime]['Date'] = $zuluTime;
@@ -653,23 +653,20 @@ class DashboardController extends Controller
 
     private function getOverviewChartDataFromJournal(Article $article, JournalInterval $journalInterval)
     {
-        $results = $this->prefillOverviewResults($journalInterval);
-        //use windowed intervals in order to utilize journal/redis cache
-        $timeAfter = new Carbon(reset($results)['Date'], $journalInterval->tz);
-        $timeBefore = new Carbon(end($results)['Date'], $journalInterval->tz);
-
         $journalRequest = (new AggregateRequest('pageviews', 'load'))
             ->addFilter('article_id', $article->external_id)
-            ->setTime($timeAfter, $timeBefore)
+            ->setTime($journalInterval->timeAfter, $journalInterval->timeBefore)
             ->setTimeHistogram($journalInterval->intervalText, '0h');
-        $currentRecords = collect($this->journal->count($journalRequest));
+        $pageviewRecords = collect($this->journal->count($journalRequest));
 
-        foreach ($currentRecords as $records) {
-            if (!isset($records->time_histogram)) {
+        $results = $this->prefillOverviewResults($journalInterval);
+
+        foreach ($pageviewRecords as $pageviewRecord) {
+            if (!isset($pageviewRecord->time_histogram)) {
                 continue;
             }
 
-            foreach ($records->time_histogram as $timeValue) {
+            foreach ($pageviewRecord->time_histogram as $timeValue) {
                 $results[$timeValue->time]['Count'] += $timeValue->value;
             }
         }

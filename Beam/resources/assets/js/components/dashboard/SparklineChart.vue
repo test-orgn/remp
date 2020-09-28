@@ -65,8 +65,7 @@
                     .append('path')
                     .datum(parsedData)
                     .attr('d', line)
-                    .attr('stroke', '#000')
-                    .attr('stroke-width', '0.5px')
+                    .attr('stroke', '#626262')
                     .attr('fill', 'none');
             }
         }
