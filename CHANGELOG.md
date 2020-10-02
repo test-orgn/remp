@@ -7,6 +7,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### Project
+
+- **BREAKING**: Minimal version for PHP is now 7.3. Version is enforced by Composer and any older version is not allowed anymore. Please upgrade your PHP accordingly.
+- Docker image now uses PHP 7.3.
+
+### [Beam]
+
+- Updated major portion of dependencies. Laravel was not updated yet.
+- Most read articles endpoint in `DashboardController` now returns data for article pageviews sparkline chart as well. remp/remp#540
+- Added new interval option (1day) into `JournalInterval` helper class. remp/remp#540
+- Pageview sparkline chart data are being retrieved from journal(default) or snapshots, based on `PAGEVIEW_GRAPH_DATA_SOURCE` env variable. remp/remp#540
+- Added new column for pageview charts into dashboard articles overview table. remp/remp#540
+
+### [Sso]
+
+- Updated major portion of dependencies. Laravel was not updated yet.
+
+## [0.14.0] - 2020-09-29
+
+### Project
+
+- PHP CodeSniffer scripts (`phpcbf`, `phpcs`) updated to version 3.5.6 (now supporting PHP 7.3+).
+- Added Gitlab CI `test` stage dependency on `redis:3.2` version (tests now use real Redis instance).
+
 ### Docker
 
 - Fixed Elasticsearch index initialization for new installations.
@@ -15,20 +39,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Added prevention of overlapping run of SnapshotArticlesViews command, which may have caused incorrect numbers in Beam dashboard concurrents graph.
 - Added `browser_id` to Commerce model to expose it in commerce-related responses of Segments API.
-- Most read articles endpoint in `DashboardController` now returns data for article pageviews sparkline chart as well. remp/remp#540
-- Added new interval option (1day) into `JournalInterval` helper class. remp/remp#540
-- Pageview sparkline chart data are being retrieved from journal(default) or snapshots, based on `PAGEVIEW_GRAPH_DATA_SOURCE` env variable. remp/remp#540
-- Added new column for pageview charts into dashboard articles overview table. remp/remp#540
+- Fixed broken functionality of the segments flag `is_article` (available in pageview category). remp/remp#716
 
 ### [Campaign]
 
 - Fixed change of missing campaign statistics caused by invalid pairing of data with labels due to inconsistent timezone use.
 - Fixed possibility of zero campaign stats. Bug appeared if campaign included banner with an already removed variant with some stats tracked. remp/remp#628 
+- Fixed "how often to display" campaign rules, previously broken due to expiration of counter data in local storage. remp/remp#715 
+- Fixed possibility of zero campaign stats. Bug appeared if campaign included banner with an already removed variant with some stats tracked. remp/remp#628
+- Removed redundant Tracker contract and related implementations. It was never used and necessary. Campaign should only consume Journal data, not produce them from backend. 
+- Increased campaigns backend stats fetch timeout to 5 seconds.
+- Fixed listing of banners over API (`/api/banners`).
 
 ### [Mailer]
 
 - Fixed README.md typos, incorrectly linked classes, wording changes, small grammar fixes. remp/remp!390
 - Upgraded nette/application to 2.4.16.
+- Added support for click tracking configuration on mail template level. dn-mofa#50
+
+### [Sso]
+
+- Added initial support for multiple providers. No real providers were actually added yet. remp2020/remp#87
 
 ## [0.13.0] - 2020-09-03
 
@@ -76,6 +107,16 @@ Please follow the upgrade steps:
 - Commands `pageviews:aggregate-load` and `pageviews:aggregate-timespent` do not show progress unless `--debug` parameter is specified.
 - [Segments]: Fixed possibility of missing aggregations if Elastic was not able to resolve values for a sub aggregation because there were no records within the sub-aggregation branch.
 - Fixed `remplib.js` generating `undefined` cookies when JS is run on a page with no query parameters. remp2020/remp#81
+- **BREAKING:** Field `locked` removed from `configs` table. remp/remp#494
+- **BREAKING:** Field `config_category_id` in `configs` table is mandatory and cannot be null anymore. remp/remp#494
+- Added new config category `Author Segments` and paired respective configs with this new category. remp/remp#494
+- Changed settings screen to contain configs grouped by categories in separate linkable tabs. remp/remp#494
+- Added configure button in `more options` modal that navigates to dashboard section of settings remp/remp#494
+- Removed components that are not used anymore, namely: form for author-segments config, methods `saveConfiguration` and `validateConfiguration` of `AuthorSegmentsController` remp/remp#494
+- Removed configs for author segments from config page that was accessible from authors segments page config button, only testing configs remained remp/remp#494
+- Added `more options` dropdown in Author segments index page, dropdown contains redirects to author segments config tab in settings page and to testing configuration (former authors segments config page) remp/remp#494
+- Added/ported validation of author segments configs to respective settings tab, code is prepared to handle validations for other config categories as well, see `SettingsController::update()` remp/remp#494
+- Added button into author segments config tab for testing of author segments config (redirects into testing page). remp/remp#494
 
 ### [Mailer]
 

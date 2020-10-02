@@ -329,6 +329,8 @@ class Sender
         ]));
         $message->setHeader('X-Mailer-Tag', $this->template->code);
         $message->setHeader('X-Mailer-Template-Params', Json::encode($templateParams));
+        // intentional string type-case, integer would be ignored
+        $message->setHeader('X-Mailer-Click-Tracking', (string) $this->template->click_tracking);
     }
 
     /**
