@@ -621,7 +621,7 @@ class DashboardController extends Controller
                 $data = $this->getOverviewChartDataFromJournal($article, $journalInterval);
                 break;
             default:
-                $data = $this->getOverviewChartDataFromJournal($article, $journalInterval);
+                throw new \Exception("unknown pageviews data source {$currentDataSource}");
         }
 
         return $data;
@@ -647,6 +647,7 @@ class DashboardController extends Controller
             }
             $results[$zuluTime]['Count'] += $item->count;
         }
+        ksort($results);
 
         return array_values($results);
     }
