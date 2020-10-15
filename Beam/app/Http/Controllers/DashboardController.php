@@ -636,14 +636,29 @@ class DashboardController extends Controller
             $zuluTime = Carbon::parse($item->time)->toIso8601ZuluString();
             if (!array_key_exists($zuluTime, $results)) {
                 //remove nearest value in the results set if its count is zero
-                $results = array_filter($results, function ($value, $key) use ($item, $journalInterval) {
-                    $timeSlot = new Carbon($key);
-                    $nearestTimeSlot = $timeSlot->between($item->time->copy()->subMinutes($journalInterval->intervalMinutes), $item->time);
-                    return !$nearestTimeSlot || ($nearestTimeSlot && $value['Count'] !== 0);
-                }, ARRAY_FILTER_USE_BOTH);
+                foreach ($results as $time => $result) {
+                    $next = next($results);
+
+                    if ($next) {
+                        $next = Carbon::parse($next['Date'])->toIso8601ZuluString();
+                        if ($zuluTime > $next) {
+                            continue;
+                        }
+                    }
+
+                    if ($result['Count'] !== 0) {
+                        break;
+                    }
+
+                    //if we have reached this point it means that we are in the nearest value with 0 count
+                    unset($results[$time]);
+                    break;
+                }
 
                 $results[$zuluTime]['Date'] = $zuluTime;
                 $results[$zuluTime]['Count'] = 0;
+                //sorts results by keys(times) but resets array pointer as well (needed for proper next() function functionality)
+                ksort($results);
             }
             $results[$zuluTime]['Count'] += $item->count;
         }
