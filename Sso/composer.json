@@ -50,7 +50,8 @@
         "remp/laravel-widgets": "*",
         "tymon/jwt-auth": "^1.0",
         "ukfast/laravel-health-check": "^1.5",
-        "yajra/laravel-datatables-oracle": "v8.13.7"
+        "yajra/laravel-datatables-oracle": "v8.13.7",
+        "ext-json": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.8",

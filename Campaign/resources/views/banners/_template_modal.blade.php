@@ -115,6 +115,21 @@
                             </a>
                         </div>
                     </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <a href="{{ route('banners.create', ['template' => \App\Banner::TEMPLATE_NEWSLETTER_RECTANGLE]) }}">
+                                <div class="card-header">
+                                    <h4 class="text-center">Newsletter Rectangle</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="preview">
+                                        <div class="preview newsletter-rectangle"></div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
