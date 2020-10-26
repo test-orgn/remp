@@ -142,6 +142,26 @@ window.remplib = window.remplib || {};
                 }
             }
 
+            if (banner.template === 'newsletter_rectangle' ) {
+                banner.newsletterRectangleTemplate = {
+                    id: model['newsletter_rectangle_template']['id'] || null,
+                    newsletterId: model['newsletter_rectangle_template']['newsletter_id'] || null,
+                    btnSubmit: model['newsletter_rectangle_template']['btn_submit'] || null,
+                    title: model['newsletter_rectangle_template']['title'] || null,
+                    text: model['newsletter_rectangle_template']['text'] || null,
+                    success: model['newsletter_rectangle_template']['success'] || null,
+                    failure: model['newsletter_rectangle_template']['failure'] || null,
+                    urlTerms: model['newsletter_rectangle_template']['url_terms'] || null,
+                    endpoint: model['newsletter_rectangle_template']['endpoint'] || null,
+                    useXhr: model['newsletter_rectangle_template']['use_xhr'] || null,
+                    requestMethod: model['newsletter_rectangle_template']['request_method'] || null,
+                    requestBody: model['newsletter_rectangle_template']['request_body'] || null,
+                    requestHeaders: model['newsletter_rectangle_template']['request_headers'] || null,
+                    paramsTr: model['newsletter_rectangle_template']['params_tr'] || null,
+                    paramsExtra: model['newsletter_rectangle_template']['params_extra'] || null,
+                }
+            }
+
             return banner;
         },
 

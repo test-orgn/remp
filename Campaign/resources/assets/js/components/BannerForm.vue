@@ -107,6 +107,24 @@
               v-bind:show="show"
             ></short-message-template>
 
+            <newsletter-rectangle-template v-if="template === 'newsletter_rectangle'"
+                                           v-bind:_newsletterId="newsletterRectangleTemplate.newsletterId"
+                                           v-bind:_btnSubmit="newsletterRectangleTemplate.btnSubmit"
+                                           v-bind:_title="newsletterRectangleTemplate.title"
+                                           v-bind:_text="newsletterRectangleTemplate.text"
+                                           v-bind:_success="newsletterRectangleTemplate.success"
+                                           v-bind:_failure="newsletterRectangleTemplate.failure"
+                                           v-bind:_urlTerms="newsletterRectangleTemplate.urlTerms"
+                                           v-bind:_endpoint="newsletterRectangleTemplate.endpoint"
+                                           v-bind:_useXhr="newsletterRectangleTemplate.useXhr"
+                                           v-bind:_requestMethod="newsletterRectangleTemplate.requestMethod"
+                                           v-bind:_requestBody="newsletterRectangleTemplate.requestBody"
+                                           v-bind:_requestHeaders="newsletterRectangleTemplate.requestHeaders"
+                                           v-bind:_paramsTr="newsletterRectangleTemplate.paramsTr"
+                                           v-bind:_paramsExtra="newsletterRectangleTemplate.paramsExtra"
+                                           v-bind:v-show="show"
+            ></newsletter-rectangle-template>
+
             <ul class="tab-nav m-t-30" role="tablist" data-tab-color="teal">
                 <li class="active">
                     <a href="#settings" role="tab" data-toggle="tab" aria-expanded="true">Settings</a>
@@ -376,6 +394,7 @@
                                         :htmlOverlayTemplate="htmlOverlayTemplate"
                                         :shortMessageTemplate="shortMessageTemplate"
                                         :overlayTwoButtonsSignatureTemplate="overlayTwoButtonsSignatureTemplate"
+                                        :newsletterRectangleTemplate="newsletterRectangleTemplate"
 
                                         :position="position"
                                         :offsetVertical="offsetVertical"
@@ -418,6 +437,8 @@
     import FormValidator from "remp/js/components/FormValidator";
     import HtmlOverlayTemplate from "./templates/HtmlOverlay";
     import OverlayTwoButtonsSignatureTemplate from "./templates/OverlayTwoButtonsSignature";
+    import NewsletterRectangleTemplate from './templates/NewsletterRectangle';
+
 
     const props = {
         "_name": String,
@@ -445,6 +466,7 @@
         "_shortMessageTemplate": Object,
         "_overlayRectangleTemplate": Object,
         "_overlayTwoButtonsSignatureTemplate": Object,
+        "_newsletterRectangleTemplate": Object,
 
         "_alignmentOptions": Object,
         "_dimensionOptions": Object,
@@ -471,7 +493,8 @@
             vSelect,
             FormValidator,
             OverlayRectangleTemplate,
-            OverlayTwoButtonsSignatureTemplate
+            OverlayTwoButtonsSignatureTemplate,
+            NewsletterRectangleTemplate
         },
         name: 'banner-form',
         props: props,
@@ -510,6 +533,7 @@
             shortMessageTemplate: null,
             overlayRectangleTemplate: null,
             overlayTwoButtonsSignatureTemplate: null,
+            newsletterRectangleTemplate: null,
 
             alignmentOptions: [],
             dimensionOptions: [],

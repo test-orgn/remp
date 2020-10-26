@@ -10,7 +10,7 @@ return [
     | Endpoint for newsletter subscriptions
     */
 
-    'endpoint' => env('NEWSLETTER_BANNER_API_ENDPOINT', ''),
+    'endpoint' => env('NEWSLETTER_BANNER_API_ENDPOINT', 'test'),
 
     /*
     |--------------------------------------------------------------------------

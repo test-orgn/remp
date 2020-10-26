@@ -200,6 +200,38 @@
 
                                                :adminPreview="adminPreview"
         ></overlay-two-buttons-signature-preview>
+        <newsletter-rectangle-preview v-if="template === 'newsletter_rectangle'"
+                                      :alignmentOptions="alignmentOptions"
+                                      :positionOptions="positionOptions"
+                                      :show="visible"
+                                      :uuid="uuid"
+                                      :campaignUuid="campaignUuid"
+                                      :forcedPosition="forcedPosition"
+
+                                      :newsletterId="newsletterRectangleTemplate.newsletterId"
+                                      :btnSubmit="newsletterRectangleTemplate.btnSubmit"
+                                      :title="newsletterRectangleTemplate.title"
+                                      :text="newsletterRectangleTemplate.text"
+                                      :success="newsletterRectangleTemplate.success"
+                                      :failure="newsletterRectangleTemplate.failure"
+                                      :urlTerms="newsletterRectangleTemplate.urlTerms"
+
+                                      :endpoint="newsletterRectangleTemplate.endpoint"
+                                      :useXhr="newsletterRectangleTemplate.useXhr"
+                                      :requestMethod="newsletterRectangleTemplate.requestMethod"
+                                      :requestBody="newsletterRectangleTemplate.requestBody"
+                                      :requestHeaders="newsletterRectangleTemplate.requestHeaders"
+                                      :paramsTr="newsletterRectangleTemplate.paramsTr"
+                                      :paramsExtra="newsletterRectangleTemplate.paramsExtra"
+
+                                      :position="position"
+                                      :offsetVertical="offsetVertical"
+                                      :offsetHorizontal="offsetHorizontal"
+                                      :closeable="closeable"
+                                      :closeText="closeText"
+                                      :transition="transition"
+                                      :displayType="displayType"
+        ></newsletter-rectangle-preview>
     </div>
 </template>
 
@@ -213,6 +245,7 @@
     import OverlayRectanglePreview from "./previews/OverlayRectangle";
     import HtmlOverlayPreview from "./previews/HtmlOverlay";
     import OverlayTwoButtonsSignaturePreview from "./previews/OverlayTwoButtonsSignature";
+    import NewsletterRectanglePreview from "./previews/NewsletterRectangle";
 
     import lib from "remp/js/remplib.js";
 
@@ -246,6 +279,7 @@
         "overlayRectangleTemplate",
         "htmlOverlayTemplate",
         "overlayTwoButtonsSignatureTemplate",
+        "newsletterRectangleTemplate",
 
         "alignmentOptions",
         "dimensionOptions",
@@ -270,7 +304,8 @@
             ShortMessagePreview,
             OverlayRectanglePreview,
             HtmlOverlayPreview,
-            OverlayTwoButtonsSignaturePreview
+            OverlayTwoButtonsSignaturePreview,
+            NewsletterRectanglePreview,
         },
         name: 'banner-preview',
         props: props,
