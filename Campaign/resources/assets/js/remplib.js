@@ -116,6 +116,10 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
                 remplib.cookieDomain = config.cookieDomain;
             }
 
+            if (typeof config.storage === 'string') {
+                remplib.storage = config.storage;
+            }
+
             if (window.opener && window.location.hash === '#bannerPicker') {
                 remplib.loadScript(this.url + '/assets/lib/js/bannerSelector.js');
             }
@@ -258,20 +262,11 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
             let campaigns = remplib.getFromStorage(this.campaignsStorageKey);
 
             if (typeof campaigns === "undefined" ||  campaigns === null) {
-                campaigns = {
-                    "version": 1,
-                    "createdAt": now,
-                    "updatedAt": now,
-                    "values": {},
-                }
-            }
-
-            if (!campaigns.hasOwnProperty('values')) {
-                campaigns.values = {};
+                campaigns = {}
             }
 
             // always set the new value in case user doesn't have all object properties cached
-            campaigns.values[campaignId] = {
+            campaigns[campaignId] = {
                 "bannerId": bannerId,
                 "variantId": variantId,
             };

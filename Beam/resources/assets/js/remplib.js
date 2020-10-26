@@ -141,6 +141,10 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
                 remplib.cookieDomain = config.cookieDomain;
             }
 
+            if (typeof config.storage === 'string') {
+                remplib.storage = config.storage;
+            }
+
             this.parseUriParams();
 
             this.checkCookiesEnabled();
@@ -207,7 +211,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
                 segmentProviderCache = {};
             }
             segmentProviderCache[remplib.tracker.segmentProvider] = e.detail[remplib.tracker.segmentProvider]["cache"]
-            localStorage.setItem(remplib.segmentProviderCacheKey, JSON.stringify(segmentProviderCache));
+            remplib.setToStorage(remplib.segmentProviderCacheKey, segmentProviderCache);
         },
 
         syncEventRulesMap: function(e) {
@@ -227,7 +231,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
             if (!e.detail[remplib.tracker.segmentProvider].hasOwnProperty("overridable_fields")) {
                 return;
             }
-            localStorage.setItem(remplib.tracker.overridableFieldsKey, JSON.stringify(e.detail[remplib.tracker.segmentProvider]["overridable_fields"]));
+            remplib.setToStorage(remplib.tracker.overridableFieldsKey, e.detail[remplib.tracker.segmentProvider]["overridable_fields"]);
         },
 
         syncFlags: function(e) {
@@ -237,7 +241,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
             if (!e.detail[remplib.tracker.segmentProvider].hasOwnProperty("flags")) {
                 return;
             }
-            localStorage.setItem(remplib.tracker.flagsKey, JSON.stringify(e.detail[remplib.tracker.segmentProvider]["flags"]));
+            remplib.setToStorage(remplib.tracker.flagsKey, e.detail[remplib.tracker.segmentProvider]["flags"], true)
         },
 
         incrementSegmentRulesCache: function(event) {
@@ -264,19 +268,19 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
                     continue;
                 }
 
-                const of = remplib.getFromStorage(remplib.tracker.overridableFieldsKey) || [];
-                if (!of.hasOwnProperty(ruleId)) {
+                const overridableFields = remplib.getFromStorage(remplib.tracker.overridableFieldsKey) || [];
+                if (!overridableFields.hasOwnProperty(ruleId)) {
                     console.warn("remplib: missing overridable fields for rule " + ruleId);
                     continue;
                 }
 
-                const cacheKey = remplib.tracker.segmentRuleKey(ruleId, of[ruleId], params);
+                const cacheKey = remplib.tracker.segmentRuleKey(ruleId, overridableFields[ruleId], params);
                 if (!cache[remplib.tracker.segmentProvider].hasOwnProperty(cacheKey)) {
                     continue;
                 }
                 cache[remplib.tracker.segmentProvider][cacheKey]["c"] += 1;
             }
-            localStorage.setItem(remplib.segmentProviderCacheKey, JSON.stringify(cache));
+            remplib.setToStorage(remplib.segmentProviderCacheKey, cache, true);
 
         },
 
@@ -666,13 +670,7 @@ remplib = typeof(remplib) === 'undefined' ? {} : remplib;
                 let key = decodeURIComponent(pair[0]);
                 this.uriParams[key] = decodeURIComponent(pair[1]);
 
-                let item = {
-                    "version": 1,
-                    "value": this.uriParams[key],
-                    "createdAt": now,
-                    "updatedAt": now,
-                };
-                remplib.setToStorage(key, item);
+                remplib.setToStorage(key, this.uriParams[key]);
             }
         },
 

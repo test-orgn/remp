@@ -19,7 +19,7 @@ export default {
         "keys": {
             "browser_id": 1051897, // 2 years in minutes
             "campaigns": 1051897,
-            "campaigns_session": 1051897,
+            "campaigns_session": 15
         }
     },
 
@@ -50,27 +50,10 @@ export default {
             return browserId;
         }
 
-        // this section is added for historical reasons and migration of value
-        // it will be removed within next couple of weeks
-        let deprecatedStorageKey = "anon_id";
-        let anonId = this.getFromStorage(deprecatedStorageKey);
-        if (anonId) {
-            browserId = anonId;
-            this.removeFromStorage(deprecatedStorageKey);
-        }
-
         if (!browserId) {
             browserId = remplib.uuidv4();
         }
-
-        let now = new Date();
-        let item = {
-            "version": 1,
-            "value": browserId,
-            "createdAt": now,
-            "updatedAt": now,
-        };
-        this.setToStorage(storageKey, item);
+        this.setToStorage(storageKey, browserId);
         return browserId;
     },
 
@@ -81,14 +64,7 @@ export default {
             return rempSessionID;
         }
         rempSessionID = remplib.uuidv4();
-        const now = new Date();
-        let item = {
-            "version": 1,
-            "value": rempSessionID,
-            "createdAt": now,
-            "updatedAt": now,
-        };
-        this.setToStorage(storageKey, item);
+        this.setToStorage(storageKey, rempSessionID);
         return rempSessionID;
     },
 
@@ -126,7 +102,12 @@ export default {
         }
         let expireAt = new Date(now.getTime() + (expireInMinutes * 60000));
 
-        item = JSON.stringify(item);
+        item = JSON.stringify({
+            "version": 1,
+            "value": item,
+            "createdAt": now,
+            "updatedAt": now
+        });
         if (this.storage === 'local_storage') {
             localStorage.setItem(key, item);
         }
@@ -143,6 +124,7 @@ export default {
      * @returns {*}
      */
     getFromStorage: function(key) {
+        console.log('get from storage', key);
         let now = new Date();
         let expireInMinutes = this.storageExpiration['default'];
         if (this.storageExpiration['keys'][key]) {
@@ -153,36 +135,45 @@ export default {
         if (this.storage === 'local_storage') {
             let data = localStorage.getItem(key);
             if (data === null) {
-                return null;
+                data = this.getCookie(key);
+                if (data === null) {
+                    return null;
+                }
             }
             let item = JSON.parse(data);
+            if (!item.hasOwnProperty("updatedAt") || !item.hasOwnProperty('value')) {
+                this.removeFromStorage(key);
+                return null
+            }
             if ((new Date(new Date(item.updatedAt).getTime() + (expireInMinutes * 60000))).getTime() > expireAt.getTime()) {
-                localStorage.removeItem(key);
+                this.removeFromStorage(key);
                 return null;
             }
-            if (item.hasOwnProperty("updatedAt")) {
-                item.updatedAt = now;
-            }
-            if (item.hasOwnProperty('value')) {
-                return item.value;
-            }
-            return null;
+
+            item.updatedAt = now;
+            return item.value;
         }
 
-        let item = this.getCookie(key);
-        if (item) {
+        let data = this.getCookie(key);
+        if (data) {
+            let item = JSON.parse(data);
+            if (!item.hasOwnProperty("updatedAt") || !item.hasOwnProperty('value')) {
+                this.removeFromStorage(key);
+                return null
+            }
+
             let expireAt = new Date(now.getTime() + expireInMinutes * 60000);
-            this.storeCookie(key, item, expireAt)
+            item.updatedAt = now;
+            this.storeCookie(key, JSON.stringify(item), expireAt);
+            return item.value;
         }
 
-        return this.getCookie(key) || null;
+        return null;
     },
 
     removeFromStorage: function(key) {
-        if (this.storage === 'local_storage') {
-            return localStorage.removeItem(key);
-        }
-        return this.removeCookie(key);
+        localStorage.removeItem(key);
+        this.removeCookie(key);
     },
 
     getCookie: function(name) {
