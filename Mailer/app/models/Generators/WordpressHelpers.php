@@ -23,7 +23,7 @@ class WordpressHelpers
             $i = 0;
             foreach ($pee_parts as $pee_part) {
                 $start = strpos($pee_part, '<pre');
-                        // Malformed html?
+                // Malformed html?
                 if ($start === false) {
                     $pee .= $pee_part;
                     continue;
@@ -101,15 +101,15 @@ class WordpressHelpers
         $pee = preg_replace('!(</?' . $allblocks . '[^>]*>)\s*</p>!', "$1", $pee);
         // Optionally insert line breaks.
         if ($br) {
-                // Replace newlines that shouldn't be touched with a placeholder.
+            // Replace newlines that shouldn't be touched with a placeholder.
             $pee = preg_replace_callback('/<(script|style).*?<\/\\1>/s', function ($matches) {
                 return str_replace("\n", "<WPPreserveNewline />", $matches[0]);
             }, $pee);
-                // Normalize <br>
+            // Normalize <br>
             $pee = str_replace(array('<br>', '<br/>'), '<br />', $pee);
-                // Replace any new line characters that aren't preceded by a <br /> with a <br />.
+            // Replace any new line characters that aren't preceded by a <br /> with a <br />.
             $pee = preg_replace('|(?<!<br />)\s*\n|', "<br />\n", $pee);
-                // Replace newline placeholders with newlines.
+            // Replace newline placeholders with newlines.
             $pee = str_replace('<WPPreserveNewline />', "\n", $pee);
         }
         // If a <br /> tag is after an opening or closing block tag, remove it.
@@ -135,7 +135,7 @@ class WordpressHelpers
         $changed = false;
         // Optimize when searching for one item.
         if (1 === count($replace_pairs)) {
-                // Extract $needle and $replace.
+            // Extract $needle and $replace.
             foreach ($replace_pairs as $needle => $replace) {
                 // Loop through delimiters (elements) only.
                 for ($i = 1, $c = count($textarr); $i < $c; $i += 2) {
@@ -146,15 +146,15 @@ class WordpressHelpers
                 }
             }
         } else {
-                // Extract all $needles.
+            // Extract all $needles.
             $needles = array_keys($replace_pairs);
-                // Loop through delimiters (elements) only.
+            // Loop through delimiters (elements) only.
             for ($i = 1, $c = count($textarr); $i < $c; $i += 2) {
                 foreach ($needles as $needle) {
                     if (false !== strpos($textarr[$i], $needle)) {
                         $textarr[$i] = strtr($textarr[$i], $replace_pairs);
                         $changed = true;
-                                        // After one strtr() break out of the foreach loop and look at next element.
+                        // After one strtr() break out of the foreach loop and look at next element.
                         break;
                     }
                 }

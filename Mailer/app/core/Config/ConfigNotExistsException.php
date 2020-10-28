@@ -6,5 +6,4 @@ use Exception;
 
 class ConfigNotExistsException extends Exception
 {
-
 }

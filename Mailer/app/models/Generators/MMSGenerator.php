@@ -177,7 +177,7 @@ class MMSGenerator implements IGenerator
         if (isset($values->image_title) && isset($values->image_url)) {
             $imageHtml = str_replace('$1', $values->image_url, $captionTemplate);
             $imageHtml = str_replace('$2', $values->image_title, $imageHtml);
-        } else if (isset($values->image_url)) {
+        } elseif (isset($values->image_url)) {
             $imageHtml = str_replace('$1', $values->image_url, $imageTemplate);
         }
 

@@ -21,7 +21,6 @@ final class LayoutPresenter extends BasePresenter
         LayoutsRepository $layoutsRepository,
         LayoutFormFactory $layoutFormFactory
     ) {
-
         parent::__construct();
         $this->layoutsRepository = $layoutsRepository;
         $this->layoutFormFactory = $layoutFormFactory;

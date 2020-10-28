@@ -6,5 +6,4 @@ use Tomaj\Hermes\Message;
 
 class HermesMessage extends Message
 {
-
 }

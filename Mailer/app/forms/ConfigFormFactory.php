@@ -2,6 +2,7 @@
 
 namespace Remp\MailerModule\Forms;
 
+use Exception;
 use Nette\Application\UI\Form;
 use Nette\SmartObject;
 use Nette\Utils\ArrayHash;
@@ -131,7 +132,7 @@ class ConfigFormFactory
                             ->addRule(Form::INTEGER);
                         break;
                     default:
-                        throw new \Exception('unhandled config type: ' . $config['type']);
+                        throw new Exception('unhandled config type: ' . $config['type']);
                 endswitch;
             }
         }

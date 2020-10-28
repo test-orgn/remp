@@ -19,7 +19,6 @@ class MailGeneratorPreprocessHandler extends BaseHandler
         GeneratorFactory $generatorFactory,
         SourceTemplatesRepository $sourceTemplatesRepository
     ) {
-
         parent::__construct();
         $this->generatorFactory = $generatorFactory;
         $this->sourceTemplatesRepository = $sourceTemplatesRepository;

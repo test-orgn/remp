@@ -56,7 +56,8 @@ class UtmReplaceTest extends TestCase
         );
     }
 
-    public function testReplaceExistingUTMParametersWhenTheUrlAlreadyContainsTheseUtm() {
+    public function testReplaceExistingUTMParametersWhenTheUrlAlreadyContainsTheseUtm()
+    {
         $content = $this->utmReplace->replace('<a href="https://expresso.pt/html/que-nao-entrou-em-acao?utm_content=apple&amp;feira=terca&modelo=1?a=1&b=2" target="blank"/>', $this->generatorInput);
         $this->assertEquals(
             '<a href="https://expresso.pt/html/que-nao-entrou-em-acao?utm_content=&feira=terca&modelo=1%3Fa%3D1&b=2&utm_source=demo-weekly-newsletter&utm_medium=email&utm_campaign=impresa_mail_20190903103350" target="blank"/>',
@@ -104,5 +105,4 @@ class UtmReplaceTest extends TestCase
         $url = $this->utmReplace->replaceUrl('https://predplatne.dennikn.sk/email-settings?%recipient.autologin%', $this->generatorInput);
         $this->assertEquals('https://predplatne.dennikn.sk/email-settings?%recipient.autologin%&utm_source=demo-weekly-newsletter&utm_medium=email&utm_campaign=impresa_mail_20190903103350&utm_content=', $url);
     }
-
 }

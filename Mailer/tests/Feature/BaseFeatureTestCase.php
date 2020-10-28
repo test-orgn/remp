@@ -77,7 +77,7 @@ class BaseFeatureTestCase extends TestCase
 
     protected function tearDown(): void
     {
-        $truncateTables = implode(' ', array_map(function ($repo){
+        $truncateTables = implode(' ', array_map(function ($repo) {
             $property = (new \ReflectionClass($repo))->getProperty('tableName');
             $property->setAccessible(true);
             return "TRUNCATE `{$property->getValue($repo)}`;";
@@ -103,9 +103,7 @@ SET FOREIGN_KEY_CHECKS=1;
 ";
         try {
             $db->exec($sql);
-        }
-        catch (PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo $e->getMessage();
         }
     }

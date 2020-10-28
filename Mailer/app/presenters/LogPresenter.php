@@ -15,7 +15,6 @@ final class LogPresenter extends BasePresenter
     public function __construct(
         LogsRepository $logsRepository
     ) {
-
         parent::__construct();
         $this->logsRepository = $logsRepository;
     }

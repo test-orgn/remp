@@ -20,7 +20,6 @@ class GeneratorFactory
         Container $container,
         GeneratorWidgetsManager $generatorWidgetsManager
     ) {
-    
         $this->generatorWidgetsManager = $generatorWidgetsManager;
         $this->container = $container;
     }

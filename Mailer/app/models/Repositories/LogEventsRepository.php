@@ -8,7 +8,6 @@ use Remp\MailerModule\Repository;
 
 class LogEventsRepository extends Repository
 {
-
     protected $tableName = 'mail_logs_events';
 
     public function addLog(ActiveRow $log, DateTime $eventTime, $type)
