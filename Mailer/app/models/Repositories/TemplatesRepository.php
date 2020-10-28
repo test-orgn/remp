@@ -166,7 +166,7 @@ class TemplatesRepository extends Repository
         return $selection;
     }
 
-    public function search(string $term, int $limit): \Nette\Database\Table\Selection
+    public function search(string $term, int $limit): Selection
     {
         $searchable = ['code', 'name', 'subject', 'description'];
         foreach ($searchable as $column) {

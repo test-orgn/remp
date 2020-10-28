@@ -3,6 +3,7 @@
 namespace Remp\MailerModule\Commands;
 
 use League\Event\EventDispatcher;
+use Exception;
 use Nette\DI\Container;
 use Nette\Mail\SmtpException;
 use Nette\Utils\DateTime;
@@ -266,7 +267,7 @@ class MailWorkerCommand extends Command
                         }
 
                         $this->smtpErrors = 0;
-                    } catch (SmtpException | Sender\MailerBatchException | \Exception $exception) {
+                    } catch (SmtpException | Sender\MailerBatchException | Exception $exception) {
                         $this->smtpErrors++;
                         $output->writeln("<error>Sending error: {$exception->getMessage()}</error>");
                         Debugger::log($exception, ILogger::WARNING);

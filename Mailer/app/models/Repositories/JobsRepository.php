@@ -2,6 +2,7 @@
 
 namespace Remp\MailerModule\Repository;
 
+use Exception;
 use Nette\Utils\DateTime;
 use Nette\Caching\IStorage;
 use Nette\Database\Context;
@@ -93,7 +94,7 @@ class JobsRepository extends Repository
 
         if (!$this->isEditable($row->id)) {
             $this->getDatabase()->rollBack();
-            throw new \Exception("Job can't be updated. One or more Mail Job Batches were already started.");
+            throw new Exception("Job can't be updated. One or more Mail Job Batches were already started.");
         }
 
         $result = parent::update($row, $data);

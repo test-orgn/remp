@@ -2,7 +2,9 @@
 
 namespace Remp\MailerModule\Repository;
 
-class TemplatesCodeNotUniqueException extends \Exception
+use Exception;
+
+class TemplatesCodeNotUniqueException extends Exception
 {
 
 }

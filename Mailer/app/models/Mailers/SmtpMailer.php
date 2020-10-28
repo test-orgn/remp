@@ -6,6 +6,7 @@ use Nette\Mail\IMailer;
 use Nette\Mail\Message;
 use Remp\MailerModule\Config\Config;
 use Remp\MailerModule\Repository\ConfigsRepository;
+use Nette\Mail\SmtpMailer as NetteSmtpMailer;
 
 class SmtpMailer extends Mailer implements IMailer
 {
@@ -53,7 +54,7 @@ class SmtpMailer extends Mailer implements IMailer
             }
         }
 
-        $this->mailer = new \Nette\Mail\SmtpMailer($options);
+        $this->mailer = new NetteSmtpMailer($options);
     }
 
     public function send(Message $message): void

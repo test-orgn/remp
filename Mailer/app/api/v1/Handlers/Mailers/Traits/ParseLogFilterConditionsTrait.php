@@ -2,6 +2,7 @@
 
 namespace Remp\MailerModule\Api\v1\Handlers\Mailers\Traits;
 
+use Exception;
 use Nette\Utils\DateTime;
 
 trait ParseLogFilterConditionsTrait
@@ -33,7 +34,7 @@ trait ParseLogFilterConditionsTrait
         ];
 
         if (!array_key_exists($field, $availableColumns)) {
-            throw new \Exception("Property $field is not allowed in log filter.");
+            throw new Exception("Property $field is not allowed in log filter.");
         }
         $column = $availableColumns[$field];
 
