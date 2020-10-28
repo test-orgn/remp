@@ -2,7 +2,7 @@
 
 namespace Remp\MailerModule\Commands;
 
-use Nette\Database\Table\ActiveRow;
+use Remp\MailerModule\ActiveRow;
 use Remp\MailerModule\Repository\ListsRepository;
 use Remp\MailerModule\Repository\UserSubscriptionsRepository;
 use Remp\MailerModule\User\IUser;

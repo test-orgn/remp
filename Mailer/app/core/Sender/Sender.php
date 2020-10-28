@@ -2,11 +2,10 @@
 
 namespace Remp\MailerModule;
 
-use Nette\Database\IRow;
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
 use Nette\Utils\AssertionException;
-use Nette\Database\Table\ActiveRow;
+use Remp\MailerModule\ActiveRow;
 use Nette\Utils\Json;
 use Psr\Log\LoggerInterface;
 use Remp\MailerModule\Auth\AutoLogin;
@@ -95,7 +94,7 @@ class Sender
         return $this;
     }
 
-    public function setTemplate(IRow $template): self
+    public function setTemplate(ActiveRow $template): self
     {
         $this->template = $template;
 

@@ -2,9 +2,10 @@
 
 namespace Remp\MailerModule\Presenters;
 
+use DateTimeZone;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
-use Nette\Database\Table\ActiveRow;
+use Remp\MailerModule\ActiveRow;
 use Nette\Utils\Json;
 use Remp\MailerModule\Components\DataTable;
 use Remp\MailerModule\Components\IDataTableFactory;
@@ -18,7 +19,7 @@ use Remp\MailerModule\Repository\MailTypeStatsRepository;
 use Remp\MailerModule\Repository\TemplatesRepository;
 use Remp\MailerModule\Repository\UserSubscriptionsRepository;
 use Tomaj\Hermes\Emitter;
-use DateTime;
+use Nette\Utils\DateTime;
 use DateInterval;
 use IntlDateFormatter;
 use Remp\MailerModule\Formatters\DateFormatterFactory;
@@ -454,7 +455,7 @@ final class ListPresenter extends BasePresenter
     {
         $labels = [];
         if ($tz !== null) {
-            $tz = new \DateTimeZone($tz);
+            $tz = new DateTimeZone($tz);
         }
 
         $from = new DateTime($from, $tz);

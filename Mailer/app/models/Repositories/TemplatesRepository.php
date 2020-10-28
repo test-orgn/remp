@@ -2,8 +2,8 @@
 
 namespace Remp\MailerModule\Repository;
 
-use DateTime;
-use Nette\Database\Table\IRow;
+use Nette\Utils\DateTime;
+use Remp\MailerModule\ActiveRow;
 use Remp\MailerModule\Repository;
 use Remp\MailerModule\Selection;
 
@@ -76,17 +76,17 @@ class TemplatesRepository extends Repository
         return $result;
     }
 
-    public function update(IRow &$row, array $data): bool
+    public function update(ActiveRow &$row, array $data): bool
     {
         // if code changed, check if it's unique
         if (isset($data['code']) && $row['code'] != $data['code'] && $this->exists($data['code'])) {
             throw new TemplatesCodeNotUniqueException("Template code [" . $data['code'] . "] is already used.");
         }
-        $data['updated_at'] = new \DateTime();
+        $data['updated_at'] = new DateTime();
         return parent::update($row, $data);
     }
 
-    public function duplicate(IRow $template)
+    public function duplicate(ActiveRow $template)
     {
         return $this->insert([
             'name' => $template->name . ' (copy)',
@@ -99,8 +99,8 @@ class TemplatesRepository extends Repository
             'mail_layout_id' => $template->mail_layout_id,
             'mail_type_id' => $template->mail_type_id,
             'copy_from' => $template->id,
-            'created_at' => new \DateTime(),
-            'updated_at' => new \DateTime(),
+            'created_at' => new DateTime(),
+            'updated_at' => new DateTime(),
             'extras' => $template->extras
         ]);
     }

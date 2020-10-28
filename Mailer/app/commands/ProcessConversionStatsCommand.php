@@ -2,7 +2,7 @@
 
 namespace Remp\MailerModule\Commands;
 
-use Nette\Database\Table\ActiveRow;
+use Remp\MailerModule\ActiveRow;
 use Nette\Utils\DateTime;
 use Remp\MailerModule\Repository\BatchTemplatesRepository;
 use Remp\MailerModule\Repository\IConversionsRepository;

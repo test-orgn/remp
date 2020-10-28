@@ -2,8 +2,7 @@
 
 namespace Remp\MailerModule\Repository;
 
-use DateTime;
-use Remp\MailerModule\ActiveRow;
+use Nette\Utils\DateTime;
 use Remp\MailerModule\Repository;
 
 class BatchTemplatesRepository extends Repository
@@ -38,7 +37,7 @@ class BatchTemplatesRepository extends Repository
             'mail_job_batch_id' => $batchId,
             'mail_template_id' => $templateId,
             'weight' => $weight,
-            'created_at' => new \DateTime(),
+            'created_at' => new DateTime(),
         ]);
 
         if (is_numeric($result)) {

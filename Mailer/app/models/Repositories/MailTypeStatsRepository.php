@@ -2,7 +2,7 @@
 
 namespace Remp\MailerModule\Repository;
 
-use DateTime;
+use Nette\Utils\DateTime;
 use Remp\MailerModule\Repository;
 
 class MailTypeStatsRepository extends Repository

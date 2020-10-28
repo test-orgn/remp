@@ -2,7 +2,7 @@
 
 namespace Remp\MailerModule\Presenters;
 
-use DateTime;
+use Nette\Utils\DateTime;
 use DateInterval;
 use IntlDateFormatter;
 use Remp\MailerModule\Formatters\DateFormatterFactory;

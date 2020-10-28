@@ -4,8 +4,6 @@ namespace Remp\MailerModule;
 
 use Nette\Caching\IStorage;
 use Nette\Database\Context;
-use Nette\Database\Table\IRow;
-use Nette\Database\Table\ActiveRow;
 use Remp\MailerModule\Repository\AuditLogRepository;
 
 class Repository
@@ -59,13 +57,13 @@ class Repository
      * Update updates provided record with given $data array and mutates the provided instance. Operation is logged
      * to audit log.
      *
-     * @param IRow $row
+     * @param ActiveRow $row
      * @param array $data values to update
      * @return bool
      *
      * @throws \Exception
      */
-    public function update(IRow &$row, array $data): bool
+    public function update(ActiveRow &$row, array $data): bool
     {
         $oldValues = [];
         if ($row instanceof ActiveRow) {
@@ -105,10 +103,10 @@ class Repository
     /**
      * Delete deletes provided record from repository and mutates the provided instance. Operation is logged to audit log.
      *
-     * @param IRow $row
+     * @param ActiveRow $row
      * @return bool
      */
-    public function delete(IRow &$row): bool
+    public function delete(ActiveRow &$row): bool
     {
         $res = $this->getTable()->wherePrimary($row->getPrimary())->delete();
         $oldValues = [];
@@ -133,15 +131,15 @@ class Repository
     }
 
     /**
-     * Insert inserts data to the repository. If single IRow is returned, it attempts to log audit information.
+     * Insert inserts data to the repository. If single ActiveRow is returned, it attempts to log audit information.
      *
      * @param $data
-     * @return bool|int|IRow
+     * @return bool|int|ActiveRow
      */
     public function insert(array $data)
     {
         $row = $this->getTable()->insert($data);
-        if (!$row instanceof IRow) {
+        if (!$row instanceof ActiveRow) {
             return $row;
         }
 
@@ -162,7 +160,7 @@ class Repository
         foreach ($values as $i => $field) {
             if (is_bool($field)) {
                 $values[$i] = (int) $field;
-            } elseif ($field instanceof \DateTime) {
+            } elseif ($field instanceof DateTime) {
                 $values[$i] = $field->format('Y-m-d H:i:s');
             } elseif (!is_scalar($field)) {
                 unset($values[$i]);

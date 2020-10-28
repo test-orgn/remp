@@ -2,8 +2,9 @@
 
 namespace Remp\MailerModule\Forms;
 
+use Nette\Utils\DateTime;
 use Nette\Application\UI\Form;
-use Nette\Database\Table\ActiveRow;
+use Remp\MailerModule\ActiveRow;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\SmartObject;
 use Nette\Utils\ArrayHash;
@@ -94,7 +95,7 @@ class EditBatchFormFactory implements IFormFactory
         $this->batchesRepository->update($batch, array_filter([
             'method' => $values['method'],
             'max_emails' => $values['max_emails'],
-            'start_at' => new \DateTime($values['start_at']),
+            'start_at' => new DateTime($values['start_at']),
         ]));
 
         // decide if user wants to save or save and leave

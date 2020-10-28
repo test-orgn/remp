@@ -2,7 +2,8 @@
 
 namespace Remp\MailerModule\Commands;
 
-use Nette\Database\Table\ActiveRow;
+use Nette\Utils\DateTime;
+use Remp\MailerModule\ActiveRow;
 use Remp\MailerModule\Repository\LayoutsRepository;
 use Remp\MailerModule\Repository\ListCategoriesRepository;
 use Remp\MailerModule\Repository\ListsRepository;
@@ -59,7 +60,7 @@ class DemoSeedCommand extends Command
             $category = $this->listCategoriesRepository->insert([
                 'title' => 'Newsletters',
                 'sorting' => 100,
-                'created_at' => new \DateTime(),
+                'created_at' => new DateTime(),
             ]);
         }
         $output->writeln('<info>OK!</info>');

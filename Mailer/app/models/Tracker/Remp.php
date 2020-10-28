@@ -2,7 +2,7 @@
 
 namespace Remp\MailerModule\Tracker;
 
-use DateTime;
+use Nette\Utils\DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Ramsey\Uuid\Uuid;

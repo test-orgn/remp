@@ -2,7 +2,7 @@
 
 namespace Remp\MailerModule\Commands;
 
-use DateTime;
+use Nette\Utils\DateTime;
 use Remp\MailerModule\Repository\LogsRepository;
 use Remp\MailerModule\Repository\MailTemplateStatsRepository;
 use Remp\MailerModule\Repository\TemplatesRepository;

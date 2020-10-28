@@ -2,7 +2,7 @@
 
 namespace Remp\MailerModule\Repository;
 
-use Nette\Database\Table\ActiveRow;
+use Remp\MailerModule\ActiveRow;
 use Nette\Utils\DateTime;
 use Remp\MailerModule\Repository;
 
@@ -35,9 +35,9 @@ class BatchesRepository extends Repository
             'mail_job_id' => $jobId,
             'method' => $method,
             'max_emails' => $emailCount,
-            'start_at' => new \DateTime($startAt),
-            'created_at' => new \DateTime(),
-            'updated_at' => new \DateTime(),
+            'start_at' => new DateTime($startAt),
+            'created_at' => new DateTime(),
+            'updated_at' => new DateTime(),
         ]);
 
         if (is_numeric($result)) {

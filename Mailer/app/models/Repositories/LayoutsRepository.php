@@ -2,8 +2,8 @@
 
 namespace Remp\MailerModule\Repository;
 
-use DateTime;
-use Nette\Database\Table\IRow;
+use Nette\Utils\DateTime;
+use Remp\MailerModule\ActiveRow;
 use Remp\MailerModule\Repository;
 use Remp\MailerModule\Selection;
 
@@ -22,8 +22,8 @@ class LayoutsRepository extends Repository
     {
         $result = $this->insert([
             'name' => $name,
-            'created_at' => new \DateTime(),
-            'updated_at' => new \DateTime(),
+            'created_at' => new DateTime(),
+            'updated_at' => new DateTime(),
             'layout_html' => $layoutHtml,
             'layout_text' => $layoutText,
         ]);
@@ -35,7 +35,7 @@ class LayoutsRepository extends Repository
         return $result;
     }
 
-    public function update(IRow &$row, array $data): bool
+    public function update(ActiveRow &$row, array $data): bool
     {
         $params['updated_at'] = new DateTime();
         return parent::update($row, $data);

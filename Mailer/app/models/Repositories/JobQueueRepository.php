@@ -3,10 +3,8 @@
 namespace Remp\MailerModule\Repository;
 
 use Nette\Database\Table\Selection;
-use PDOException;
 use Remp\MailerModule\ActiveRow;
 use Remp\MailerModule\Repository;
-use Nette\Database\Table\IRow;
 
 class JobQueueRepository extends Repository
 {
@@ -52,13 +50,13 @@ class JobQueueRepository extends Repository
         }
     }
 
-    public function removeAlreadySent(IRow $batch): void
+    public function removeAlreadySent(ActiveRow $batch): void
     {
         $job = $batch->job;
         $this->getDatabase()->query("DELETE FROM {$this->tableName} WHERE mail_batch_id={$batch->id} AND email IN (SELECT email FROM mail_logs WHERE mail_job_id = {$job->id})");
     }
 
-    public function removeAlreadyQueued(IRow $batch): void
+    public function removeAlreadyQueued(ActiveRow $batch): void
     {
         $job = $batch->job;
         $this->getDatabase()->query("DELETE mjq1.* FROM mail_job_queue mjq1 JOIN mail_job_queue mjq2 ON mjq1.email = mjq2.email
@@ -66,7 +64,7 @@ class JobQueueRepository extends Repository
 ");
     }
 
-    public function removeUnsubscribed(IRow $batch): void
+    public function removeUnsubscribed(ActiveRow $batch): void
     {
         $q = $this->getTable()
             ->select('mail_template_id')
@@ -100,7 +98,7 @@ SQL;
         }
     }
 
-    public function removeOtherVariants(IRow $batch, int $variantId)
+    public function removeOtherVariants(ActiveRow $batch, int $variantId)
     {
         $sql = <<<SQL
 
@@ -126,7 +124,7 @@ SQL;
         $this->getDatabase()->query($sql);
     }
 
-    public function removeAlreadySentContext(IRow $batch, string $context): void
+    public function removeAlreadySentContext(ActiveRow $batch, string $context): void
     {
         $query = "DELETE FROM mail_job_queue WHERE mail_job_queue.mail_batch_id = {$batch->id} AND mail_job_queue.email IN (
   SELECT email FROM mail_logs WHERE context = '$context')";
@@ -142,7 +140,7 @@ SQL;
         $this->getDatabase()->query($query);
     }
 
-    public function getBatchEmails(IRow $mailBatch, $lastId, $count = null): Selection
+    public function getBatchEmails(ActiveRow $mailBatch, $lastId, $count = null): Selection
     {
         $selection = $this->getTable()->where(['id > ?' => $lastId, 'mail_batch_id' => $mailBatch->id])->order('id ASC');
         if ($count !== null) {

@@ -2,11 +2,11 @@
 
 namespace Remp\MailerModule\Repository;
 
+use Nette\Utils\DateTime;
 use Nette\Caching\IStorage;
 use Nette\Database\Context;
-use Nette\Database\Table\IRow;
-use Nette\Database\Table\Selection;
 use Remp\MailerModule\ActiveRow;
+use Nette\Database\Table\Selection;
 use Remp\MailerModule\Repository;
 
 class JobsRepository extends Repository
@@ -43,8 +43,8 @@ class JobsRepository extends Repository
             'segment_provider' => $segmentProvider,
             'context' => $context,
             'status' => static::STATUS_NEW,
-            'created_at' => new \DateTime(),
-            'updated_at' => new \DateTime(),
+            'created_at' => new DateTime(),
+            'updated_at' => new DateTime(),
             'mail_type_variant_id' => $mailTypeVariant ? $mailTypeVariant->id : null
         ];
 
@@ -87,7 +87,7 @@ class JobsRepository extends Repository
         return $selection;
     }
 
-    public function update(IRow &$row, array $data): bool
+    public function update(ActiveRow &$row, array $data): bool
     {
         $this->getDatabase()->beginTransaction();
 

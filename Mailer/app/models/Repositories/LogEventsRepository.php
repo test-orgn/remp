@@ -2,7 +2,7 @@
 
 namespace Remp\MailerModule\Repository;
 
-use Nette\Database\Table\IRow;
+use Remp\MailerModule\ActiveRow;
 use Nette\Utils\DateTime;
 use Remp\MailerModule\Repository;
 
@@ -11,7 +11,7 @@ class LogEventsRepository extends Repository
 
     protected $tableName = 'mail_logs_events';
 
-    public function addLog(IRow $log, DateTime $eventTime, $type)
+    public function addLog(ActiveRow $log, DateTime $eventTime, $type)
     {
         return $this->insert([
             'mail_log_id' => $log->id,

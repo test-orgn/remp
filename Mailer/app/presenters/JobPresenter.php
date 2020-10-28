@@ -5,7 +5,7 @@ namespace Remp\MailerModule\Presenters;
 use Nette\Application\LinkGenerator;
 use Nette\Application\UI\Multiplier;
 use Nette\Bridges\ApplicationLatte\ILatteFactory;
-use Nette\Database\Table\ActiveRow;
+use Remp\MailerModule\ActiveRow;
 use Nette\Utils\Json;
 use Remp\MailerModule\Components\IBatchExperimentEvaluationFactory;
 use Remp\MailerModule\Components\IDataTableFactory;

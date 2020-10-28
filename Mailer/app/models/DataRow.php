@@ -4,10 +4,10 @@ namespace Remp\MailerModule\Components\GeneratorWidgets\Widgets;
 
 use IteratorAggregate;
 use ArrayIterator;
-use Nette\Database\Table\IRow;
+use Remp\MailerModule\ActiveRow;
 use Nette\Database\Table\Selection;
 
-class DataRow implements IteratorAggregate, IRow
+class DataRow implements IteratorAggregate, ActiveRow
 {
     private $data;
 

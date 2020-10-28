@@ -2,7 +2,7 @@
 
 namespace Remp\MailerModule\Repository;
 
-use DateTime;
+use Nette\Utils\DateTime;
 use Remp\MailerModule\Repository;
 
 class MailTemplateStatsRepository extends Repository
@@ -10,9 +10,9 @@ class MailTemplateStatsRepository extends Repository
     protected $tableName = 'mail_template_stats';
 
     /**
-     * @param \DateTime $date
+     * @param DateTime $date
      * @param $id
-     * @return false|\Nette\Database\Table\ActiveRow
+     * @return false|\Remp\MailerModule\ActiveRow
      */
     public function byDateAndMailTemplateId(DateTime $date, int $id)
     {

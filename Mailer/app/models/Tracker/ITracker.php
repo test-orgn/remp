@@ -2,7 +2,7 @@
 
 namespace Remp\MailerModule\Tracker;
 
-use DateTime;
+use Nette\Utils\DateTime;
 
 interface ITracker
 {

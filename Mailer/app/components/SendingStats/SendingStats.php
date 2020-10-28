@@ -3,7 +3,7 @@
 namespace Remp\MailerModule\Components;
 
 use Nette\Application\UI\Control;
-use Nette\Database\Table\ActiveRow;
+use Remp\MailerModule\ActiveRow;
 use Remp\MailerModule\Repository\BatchesRepository;
 use Remp\MailerModule\Repository\LogsRepository;
 use Remp\MailerModule\Repository\TemplatesRepository;

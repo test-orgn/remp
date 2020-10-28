@@ -2,9 +2,10 @@
 
 namespace Remp\MailerModule\ContentGenerator;
 
+use Remp\MailerModule\ActiveRow;
 use Remp\MailerModule\ContentGenerator\Engine\EngineFactory;
 use Remp\MailerModule\ContentGenerator\Replace\IReplace;
-use Nette\Database\IRow;
+
 
 class ContentGenerator
 {
@@ -21,7 +22,6 @@ class ContentGenerator
 
         $this->time = new \DateTime();
     }
-
 
     public function register(IReplace $replace): void
     {
@@ -65,7 +65,7 @@ class ContentGenerator
         return $this->engineFactory->engine()->render($bodyTemplate, $params);
     }
 
-    private function wrapLayout(IRow $template, string $renderedTemplateContent, string $layoutContent, array $params): string
+    private function wrapLayout(ActiveRow $template, string $renderedTemplateContent, string $layoutContent, array $params): string
     {
         if (!$layoutContent) {
             return $renderedTemplateContent;

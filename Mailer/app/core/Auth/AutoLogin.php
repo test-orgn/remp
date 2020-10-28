@@ -2,8 +2,7 @@
 
 namespace Remp\MailerModule\Auth;
 
-use Nette\Database\Table\ActiveRow;
-use Nette\Database\Table\IRow;
+use Remp\MailerModule\ActiveRow;
 use Nette\Utils\DateTime;
 use Remp\MailerModule\Repository\AutoLoginTokensRepository;
 
@@ -22,7 +21,7 @@ class AutoLogin
         return $this->autoLoginTokensRepository->findBy('token', $token);
     }
 
-    public function useToken(IRow $token): bool
+    public function useToken(ActiveRow $token): bool
     {
         return $this->autoLoginTokensRepository->update($token, ['used_count+=' => 1]);
     }

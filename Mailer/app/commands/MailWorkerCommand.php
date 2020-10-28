@@ -58,7 +58,7 @@ class MailWorkerCommand extends Command
     /** @var RestartInterface */
     private $restart;
 
-    /** @var \DateTime */
+    /** @var DateTime */
     private $startTime;
 
     public function __construct(
@@ -116,7 +116,7 @@ class MailWorkerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // store when command was started
-        $this->startTime = new \DateTime();
+        $this->startTime = new DateTime();
 
         $sendAsBatch = $input->getOption('batch');
 
@@ -129,7 +129,7 @@ class MailWorkerCommand extends Command
         while (true) {
             // graceful shutdown check
             if ($this->restart && $this->restart->shouldRestart($this->startTime)) {
-                $now = (new \DateTime())->format(DATE_RFC3339);
+                $now = (new DateTime())->format(DATE_RFC3339);
                 $msg = "Exiting mail worker: restart instruction received '{$now}'.";
                 $output->write("\n<comment>{$msg}</comment>\n");
                 $this->logger->info($msg);

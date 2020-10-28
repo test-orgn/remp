@@ -2,8 +2,8 @@
 
 namespace Remp\MailerModule\Repository;
 
-use DateTime;
-use Nette\Database\Table\ActiveRow;
+use Nette\Utils\DateTime;
+use Remp\MailerModule\ActiveRow;
 use Remp\MailerModule\Repository;
 
 class LogConversionsRepository extends Repository

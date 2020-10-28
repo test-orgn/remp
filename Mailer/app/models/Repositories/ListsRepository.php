@@ -2,7 +2,7 @@
 
 namespace Remp\MailerModule\Repository;
 
-use Nette\Database\Table\IRow;
+use Remp\MailerModule\ActiveRow;
 use Nette\Utils\DateTime;
 use Remp\MailerModule\Repository;
 use Remp\MailerModule\Selection;
@@ -56,7 +56,7 @@ class ListsRepository extends Repository
         return $result;
     }
 
-    public function update(IRow &$row, array $data): bool
+    public function update(ActiveRow &$row, array $data): bool
     {
         unset($data['id']);
         $data['updated_at'] = new DateTime();

@@ -4,8 +4,7 @@ namespace Remp\MailerModule\Repository;
 
 use Nette\Caching\IStorage;
 use Nette\Database\Context;
-use Nette\Database\Table\ActiveRow;
-use Nette\Database\Table\IRow;
+use Remp\MailerModule\ActiveRow;
 use Nette\Utils\DateTime;
 use Remp\MailerModule\Repository;
 
@@ -24,7 +23,7 @@ class UserSubscriptionsRepository extends Repository
         $this->userSubscriptionVariantsRepository = $userSubscriptionVariantsRepository;
     }
 
-    public function update(IRow &$row, array $data): bool
+    public function update(ActiveRow &$row, array $data): bool
     {
         $params['updated_at'] = new DateTime();
         return parent::update($row, $data);
