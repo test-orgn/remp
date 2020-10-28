@@ -1,3 +1,12 @@
+<style type="text/css">
+    span.color {
+        width: 20px;
+        height: 20px;
+        border-radius: 2px;
+        position: absolute;
+        right: 45px;
+    }
+</style>
 <template>
     <div>
         <ul class="tab-nav" role="tablist" data-tab-color="teal">
@@ -66,6 +75,17 @@
                         </div><!-- .input-group -->
 
                         <div class="input-group fg-float m-t-30">
+                            <span class="input-group-addon"><i class="zmdi zmdi-format-subject"></i></span>
+                            <div class="fg-line">
+                                <label for="terms" class="fg-label">Terms text</label>
+                                <textarea v-model="terms" class="form-control fg-input remp-banner-text-input"
+                                          rows="2" name="terms" cols="50" id="terms"></textarea>
+                            </div>
+                            <div><small>To make any part of this text linked to URL address below, make sure to
+                                include <code>&lt;a src="${url}"&gt;link text&lt;/a&gt;</code></small></div>
+                        </div><!-- .input-group -->
+
+                        <div class="input-group fg-float m-t-30">
                             <span class="input-group-addon"><i class="zmdi zmdi-link"></i></span>
                             <div class="fg-line">
                                 <label for="url_terms" class="fg-label">Terms & Conditions Link</label>
@@ -74,16 +94,63 @@
                             </div>
                         </div><!-- .input-group -->
 
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="zmdi zmdi-swap-alt"></i></span>
+                            <div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="color_scheme" class="fg-label">Color scheme</label>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <v-select v-model="colorScheme"
+                                                  id="color_scheme"
+                                                  :value="colorScheme"
+                                                  :options.sync="colorSchemeOptions"
+                                                  :required="true"
+                                        ></v-select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- .input-group -->
+
+                        <div class="input-group v-select">
+                            <span class="input-group-addon"><i class="zmdi zmdi-swap-alt"></i></span>
+                            <div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="dimensions" class="fg-label">Dimensions</label>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <v-select v-model="dimensions"
+                                                  id="dimensions"
+                                                  :value="dimensions"
+                                                  :options.sync="dimensionOptions"
+                                                  :required="true"
+                                        ></v-select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- .input-group -->
+
+                        <input type="hidden" name="background_color" v-bind:value="_backgroundColor" />
+                        <input type="hidden" name="text_color" v-bind:value="_textColor" />
+                        <input type="hidden" name="button_background_color" v-bind:value="_buttonBackgroundColor" />
+                        <input type="hidden" name="button_text_color" v-bind:value="_buttonTextColor" />
+                        <input type="hidden" name="width" v-bind:value="_width" />
+                        <input type="hidden" name="height" v-bind:value="_height" />
+
                     </div>
                 </div>
             </div>
         </div>
 
-        <input type="hidden" name="template" value="newsletter_rectangle_template" />
+        <input type="hidden" name="template" value="newsletter_rectangle" />
     </div>
 </template>
 
 <script type="text/javascript">
+import vSelect from "remp/js/components/vSelect";
+
 let props = [
     '_templateId',
     '_newsletterId',
@@ -93,6 +160,12 @@ let props = [
     '_success',
     '_failure',
     '_urlTerms',
+    '_backgroundColor',
+    '_buttonBackgroundColor',
+    '_buttonTextColor',
+    '_width',
+    '_height',
+    '_terms',
     '_endpoint',
     '_useXhr',
     '_requestMethod',
@@ -100,10 +173,12 @@ let props = [
     '_requestHeaders',
     '_paramsTr',
     '_paramsExtra',
+    '_textColor'
+
 ];
 export default {
     name: "newsletter-rectangle",
-    components: {},
+    components: { vSelect },
     props: props,
     created: function () {
         props.forEach((prop) => {
@@ -118,8 +193,11 @@ export default {
             this.success = 'Newsletter subscription successful. Thank you and welcome on board!';
             this.failure = 'Unfortunately subscription was not successful. Please find error message below.';
             this.urlTerms = 'https://example.com';
+            this.terms = 'By clicking <em>Subscribe</em>, you agree with <a href="${url}">Terms & Conditions</a>';
         }
 
+        this.colorScheme = this.colorSchemeByBackground(this._backgroundColor) || this.colorScheme;
+        this.dimensions = this.dimensionsByWidthHeight(this._width, this._height) || this.dimensions;
         this.emitValuesChanged();
     },
     data: () => ({
@@ -130,42 +208,174 @@ export default {
         success: null,
         failure: null,
         urlTerms: null,
+        backgroundColor: null,
+        buttonBackgroundColor: null,
+        buttonTextColor: null,
+        width: null,
+        height: null,
+        terms: null,
         endpoint: null,
         useXhr: null,
         requestMethod: null,
         requestBody: null,
         requestHeaders: null,
         paramsTr: null,
-        paramsExtra: null
+        paramsExtra: null,
+
+        colorScheme: "green",
+        colorSchemes: {
+            "grey": {
+                "label": "Grey",
+                "textColor": "#000000", "backgroundColor": "#ededed",
+                "buttonTextColor": "#ffffff", "buttonBackgroundColor": "#000000",
+            },
+            "yellow": {
+                "label": "Yellow",
+                "backgroundColor": "#f7bc1e", "textColor": "#000000",
+                "buttonTextColor": "#ffffff", "buttonBackgroundColor": "#000000",
+            },
+            "blue": {
+                "label": "Blue",
+                "textColor": "#ffffff", "backgroundColor": "#00b7db",
+                "buttonTextColor": "#ffffff", "buttonBackgroundColor": "#000000",
+            },
+            "dark_blue": {
+                "label": "Dark Blue",
+                "textColor": "#ffffff", "backgroundColor": "#1f3f82",
+                "buttonTextColor": "#000000", "buttonBackgroundColor": "#ffffff",
+            },
+            "green": {
+                "label": "Green",
+                "textColor": "#ffffff", "backgroundColor": "#009688",
+                "buttonTextColor": "#ffffff", "buttonBackgroundColor": "#000000",
+            },
+            "violet": {
+                "label": "Violet",
+                "textColor": "#ffffff", "backgroundColor": "#9c27b0",
+                "buttonTextColor": "#ffffff", "buttonBackgroundColor": "#000000",
+            },
+            "red": {
+                "label": "Red",
+                "backgroundColor": "#e91e63", "textColor": "#ffffff",
+                "buttonTextColor": "#ffffff", "buttonBackgroundColor": "#000000",
+            },
+            "darkRed": {
+                "label": "Dark red",
+                "backgroundColor": "#b00c28", "textColor": "#ffffff",
+                "buttonTextColor": "#ffffff", "buttonBackgroundColor": "#000000",
+            },
+            "black": {
+                "label": "Black",
+                "textColor": "#ffffff", "backgroundColor": "#262325",
+                "buttonTextColor": "#000000", "buttonBackgroundColor": "#ffffff",
+            },
+        },
+
+        dimensions: "dynamic",
+        availableDimensions: {
+            "dynamic": {
+                "label": "Dynamic",
+                "width": null,
+                "height": null,
+            },
+            "300x300": {
+                "label": "300x250",
+                "width": "300px",
+                "height": "250px",
+            },
+        }
+
     }),
+    computed: {
+        colorSchemeOptions: function() {
+            let options = [];
+            for (let idx in this.colorSchemes) {
+                if (!this.colorSchemes.hasOwnProperty(idx)) {
+                    continue;
+                }
+                options.push({
+                    "label": this.colorSchemes[idx].label,
+                    "sublabel": '<span class="color" style="background-color: ' + this.colorSchemes[idx].backgroundColor + '">',
+                    "value": idx,
+                });
+            }
+            return options
+        },
+        dimensionOptions: function() {
+            let options = [];
+            for (let idx in this.availableDimensions) {
+                if (!this.availableDimensions.hasOwnProperty(idx)) {
+                    continue;
+                }
+                options.push({
+                    "label": this.availableDimensions[idx].label,
+                    "value": idx,
+                });
+            }
+            return options
+        }
+    },
     updated: function () {
         this.emitValuesChanged();
     },
     methods: {
-        emitValuesChanged: function () {
-            this.$parent.$emit("values-changed", [
-                {
-                    key: "newsletterRectangleTemplate",
-                    val: {
-                        newsletterId: this.newsletterId,
-                        btnSubmit: this.btnSubmit,
-                        title: this.title,
-                        text: this.text,
-                        success: this.success,
-                        failure: this.failure,
-                        urlTerms: this.urlTerms,
-                        endpoint: this.endpoint,
-                        useXhr: this.useXhr,
-                        requestMethod: this.requestMethod,
-                        requestBody: this.requestBody,
-                        requestHeaders: this.requestHeaders,
-                        paramsTr: this.paramsTr,
-                        paramsExtra: this.paramsExtra
-                    }
-                },
-            ]);
-        }
+        emitValuesChanged: function() {
+            let val = {
+                newsletterId: this.newsletterId,
+                btnSubmit: this.btnSubmit,
+                title: this.title,
+                text: this.text,
+                success: this.success,
+                failure: this.failure,
+                urlTerms: this.urlTerms,
+                terms: this.terms,
+                endpoint: this.endpoint,
+                useXhr: this.useXhr,
+                requestMethod: this.requestMethod,
+                requestBody: this.requestBody,
+                requestHeaders: this.requestHeaders,
+                paramsTr: this.paramsTr,
+                paramsExtra: this.paramsExtra
+            };
+            if (this.colorSchemes[this.colorScheme]) {
+                let cs = this.colorSchemes[this.colorScheme];
+                val.backgroundColor = cs.backgroundColor;
+                val.textColor = cs.textColor;
+                val.buttonBackgroundColor = cs.buttonBackgroundColor;
+                val.buttonTextColor = cs.buttonTextColor;
+            }
+            if (this.availableDimensions[this.dimensions]) {
+                let d = this.availableDimensions[this.dimensions];
+                val.width = d.width;
+                val.height = d.height;
+            }
+            this.$parent.$emit("values-changed", [{
+                key: "newsletterRectangleTemplate",
+                val: val,
+            }]);
+        },
+        colorSchemeByBackground: function(bgColor) {
+            for (let idx in this.colorSchemes) {
+                if (!this.colorSchemes.hasOwnProperty(idx)) {
+                    continue;
+                }
+                if (this.colorSchemes[idx].backgroundColor === bgColor) {
+                    return idx;
+                }
+            }
+            return null;
+        },
+        dimensionsByWidthHeight: function(width, height) {
+            for (let idx in this.availableDimensions) {
+                if (!this.availableDimensions.hasOwnProperty(idx)) {
+                    continue;
+                }
+                if (this.availableDimensions[idx].width === width && this.availableDimensions[idx].width === height) {
+                    return idx;
+                }
+            }
+            return null;
+        },
     },
-    computed: {}
 }
 </script>

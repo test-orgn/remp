@@ -10,7 +10,7 @@ return [
     | Endpoint for newsletter subscriptions
     */
 
-    'endpoint' => env('NEWSLETTER_BANNER_API_ENDPOINT', 'test'),
+    'endpoint' => env('NEWSLETTER_BANNER_API_ENDPOINT', ''),
 
     /*
     |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ return [
     | API ENDPOINT can be requested by XHR (1) or regular form submission (2)
     */
 
-    'use_xhr' => !!env('NEWSLETTER_BANNER_USE_XHR', '1'),
+    'use_xhr' => !!env('NEWSLETTER_BANNER_USE_XHR', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -82,7 +82,7 @@ return [
     |
     */
 
-    'params_extra' => json_decode(env('NEWSLETTER_BANNER_PARAMS_TR', /** @lang JSON */ '
+    'params_extra' => json_decode(env('NEWSLETTER_BANNER_PARAMS_EXTRA', /** @lang JSON */ '
         {         
         }
     ')),

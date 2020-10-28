@@ -23,7 +23,14 @@ class NewsletterRectangleTemplate extends Migration
             $table->text('text')->nullable(true);
             $table->text('success')->nullable(true);
             $table->text('failure')->nullable(true);
+            $table->text('terms')->nullable(true);
             $table->string('url_terms')->nullable(true);
+            $table->string('text_color')->nullable(true);
+            $table->string('background_color')->nullable(true);
+            $table->string('button_background_color')->nullable(true);
+            $table->string('button_text_color')->nullable(true);
+            $table->string('width')->nullable(true);
+            $table->string('height')->nullable(true);
 
             $table->foreign('banner_id')->references('id')->on('banners');
             $table->timestamps();

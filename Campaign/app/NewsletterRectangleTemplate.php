@@ -11,7 +11,14 @@ class NewsletterRectangleTemplate extends AbstractTemplate
         'text',
         'success',
         'failure',
-        'url_terms'
+        'terms',
+        'url_terms',
+        'text_color',
+        'background_color',
+        'button_background_color',
+        'button_text_color',
+        'width',
+        'height'
     ];
 
     protected $appends = [

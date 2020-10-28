@@ -145,6 +145,7 @@ class BannerRequest extends FormRequest
                         'text' => 'string|nullable',
                         'success' => 'string|nullable',
                         'failure' => 'string|nullable',
+                        'terms' => 'string|nullable',
                         'url_terms'=> 'string|nullable',
                     ]);
                     break;

@@ -108,6 +108,7 @@
             ></short-message-template>
 
             <newsletter-rectangle-template v-if="template === 'newsletter_rectangle'"
+                                           v-bind:_templateId="newsletterRectangleTemplate.id"
                                            v-bind:_newsletterId="newsletterRectangleTemplate.newsletterId"
                                            v-bind:_btnSubmit="newsletterRectangleTemplate.btnSubmit"
                                            v-bind:_title="newsletterRectangleTemplate.title"
@@ -115,6 +116,13 @@
                                            v-bind:_success="newsletterRectangleTemplate.success"
                                            v-bind:_failure="newsletterRectangleTemplate.failure"
                                            v-bind:_urlTerms="newsletterRectangleTemplate.urlTerms"
+                                           v-bind:_textColor="newsletterRectangleTemplate.textColor"
+                                           v-bind:_backgroundColor="newsletterRectangleTemplate.backgroundColor"
+                                           v-bind:_buttonBackgroundColor="newsletterRectangleTemplate.buttonBackgroundColor"
+                                           v-bind:_buttonTextColor="newsletterRectangleTemplate.buttonTextColor"
+                                           v-bind:_width="newsletterRectangleTemplate.width"
+                                           v-bind:_height="newsletterRectangleTemplate.height"
+                                           v-bind:_terms="newsletterRectangleTemplate.terms"
                                            v-bind:_endpoint="newsletterRectangleTemplate.endpoint"
                                            v-bind:_useXhr="newsletterRectangleTemplate.useXhr"
                                            v-bind:_requestMethod="newsletterRectangleTemplate.requestMethod"
