@@ -31,25 +31,38 @@ class NewsletterRectangleTemplate extends AbstractTemplate
         'params_extra'
     ];
 
-    public function getEndpointAttribute(){
+    public function getEndpointAttribute()
+    {
         return config('newsletterBanners.endpoint');
     }
-    public function getUseXhrAttribute(){
+
+    public function getUseXhrAttribute()
+    {
         return config('newsletterBanners.use_xhr');
     }
-    public function getRequestMethodAttribute(){
+
+    public function getRequestMethodAttribute()
+    {
         return config('newsletterBanners.request_method');
     }
-    public function getRequestBodyAttribute(){
+
+    public function getRequestBodyAttribute()
+    {
         return config('newsletterBanners.request_body');
     }
-    public function getRequestHeadersAttribute(){
+
+    public function getRequestHeadersAttribute()
+    {
         return config('newsletterBanners.request_headers');
     }
-    public function getParamsTrAttribute(){
+
+    public function getParamsTrAttribute()
+    {
         return config('newsletterBanners.params_tr');
     }
-    public function getParamsExtraAttribute(){
+
+    public function getParamsExtraAttribute()
+    {
         return config('newsletterBanners.params_extra');
     }
 
