@@ -47,7 +47,7 @@ class BatchesRepository extends Repository
         return $result;
     }
 
-    public function addTemplate(ActiveRow $batch, string $template, int $weight = 100)
+    public function addTemplate(ActiveRow $batch, ActiveRow $template, int $weight = 100)
     {
         $this->database->table('mail_job_batch_templates')->insert([
             'mail_job_id' => $batch->mail_job_id,

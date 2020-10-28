@@ -54,7 +54,7 @@ TEMPLATE;
     {
         $transport = new class() implements TransportInterface
         {
-            public function getContent($url)
+            public function getContent(string $url): ?string
             {
                 return <<<HTML
 <!DOCTYPE html>
@@ -79,9 +79,9 @@ HTML;
 
         $generator = new GenericBestPerformingArticlesGenerator($this->sourceTemplateRepository, new GenericPageContent($transport), $this->engineFactory);
 
-        $testObj = new \stdClass();
-        $testObj->source_template_id = 1;
-        $testObj->articles = "http://someurl.com";
+        $testObj = [];
+        $testObj['source_template_id'] = 1;
+        $testObj['articles'] = "http://someurl.com";
 
         $output = $generator->process($testObj);
 

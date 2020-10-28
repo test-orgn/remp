@@ -49,7 +49,7 @@ class EnvironmentConfig
             ';port=' . $port;
     }
 
-    public function setParam(string $key, string $value): void
+    public function setParam(string $key, ?string $value): void
     {
         $this->params[$key] = $value;
     }

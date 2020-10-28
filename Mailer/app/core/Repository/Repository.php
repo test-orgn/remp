@@ -2,6 +2,7 @@
 
 namespace Remp\MailerModule;
 
+use Nette\Utils\DateTime;
 use Nette\Caching\IStorage;
 use Nette\Database\Context;
 use Remp\MailerModule\Repository\AuditLogRepository;

@@ -69,17 +69,17 @@ class GenericBestPerformingArticlesGenerator implements IGenerator
 
     public function process(array $values): array
     {
-        $sourceTemplate = $this->sourceTemplatesRepository->find($values->source_template_id);
-        $dynamic = filter_var($values->dynamic ?? null, FILTER_VALIDATE_BOOLEAN);
+        $sourceTemplate = $this->sourceTemplatesRepository->find($values['source_template_id']);
+        $dynamic = filter_var($values['dynamic'] ?? null, FILTER_VALIDATE_BOOLEAN);
 
         $items = [];
 
         if ($dynamic) {
-            if (!isset($values->articles_count)) {
+            if (!isset($values['articles_count'])) {
                 throw new ProcessException("Dynamic email requires 'articles_count' parameter");
             }
 
-            $articlesCount = (int) $values->articles_count;
+            $articlesCount = (int) $values['articles_count'];
             for ($i = 1; $i <= $articlesCount; $i++) {
                 // Insert Twig variables that will be replaced later
                 $meta = new \stdClass();
@@ -89,11 +89,11 @@ class GenericBestPerformingArticlesGenerator implements IGenerator
                 $items["{{article_{$i}_url}}"] = $meta;
             }
         } else {
-            if (!isset($values->articles)) {
+            if (!isset($values['articles'])) {
                 throw new ProcessException("Missing 'articles' parameter");
             }
 
-            $urls = explode("\n", trim($values->articles));
+            $urls = explode("\n", trim($values['articles']));
             foreach ($urls as $url) {
                 $meta = $this->content->fetchUrlMeta($url);
                 if ($meta) {
