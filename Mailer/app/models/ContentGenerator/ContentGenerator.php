@@ -6,7 +6,6 @@ use Remp\MailerModule\ActiveRow;
 use Remp\MailerModule\ContentGenerator\Engine\EngineFactory;
 use Remp\MailerModule\ContentGenerator\Replace\IReplace;
 
-
 class ContentGenerator
 {
     private $engineFactory;
