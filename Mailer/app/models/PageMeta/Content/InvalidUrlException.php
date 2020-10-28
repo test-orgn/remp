@@ -2,6 +2,8 @@
 
 namespace Remp\MailerModule\PageMeta;
 
-class InvalidUrlException extends \Exception
+use Exception;
+
+class InvalidUrlException extends Exception
 {
 }

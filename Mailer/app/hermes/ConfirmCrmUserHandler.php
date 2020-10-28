@@ -51,7 +51,6 @@ class ConfirmCrmUserHandler implements HandlerInterface
             return false;
         }
 
-
         return true;
     }
 }

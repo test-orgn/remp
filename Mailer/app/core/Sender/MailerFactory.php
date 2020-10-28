@@ -22,7 +22,7 @@ class MailerFactory
     /**
      * @param IMailer $mailer
      */
-    public function addMailer(IMailer $mailer)
+    public function addMailer(IMailer $mailer): void
     {
         $this->availableMailers[$mailer->getAlias()] = $mailer;
     }
@@ -30,9 +30,9 @@ class MailerFactory
     /**
      * @param null|string $alias - If $alias is null, default mailer is returned.
      * @return IMailer|Mailer
-     * @throws MailerNotExistsException
+     * @throws MailerNotExistsException|\Remp\MailerModule\Config\ConfigNotExistsException
      */
-    public function getMailer($alias = null)
+    public function getMailer(?string $alias = null): IMailer
     {
         if ($alias === null) {
             $alias = $this->config->get('default_mailer');
@@ -48,7 +48,7 @@ class MailerFactory
     /**
      * @return IMailer[]
      */
-    public function getAvailableMailers()
+    public function getAvailableMailers(): array
     {
         return $this->availableMailers;
     }

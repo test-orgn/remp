@@ -2,6 +2,7 @@
 
 namespace Remp\MailerModule\Repository;
 
+use DateTime;
 use Nette\Database\Table\IRow;
 use Remp\MailerModule\Repository;
 use Remp\MailerModule\Selection;
@@ -22,7 +23,7 @@ class TemplatesRepository extends Repository
         return $this->all()->select('id, name')->where(['mail_type_id' => $listId])->fetchPairs('id', 'name');
     }
 
-    public function triples()
+    public function triples(): array
     {
         $result = [];
         foreach ($this->all()->select('id, name, mail_type_id') as $template) {
@@ -35,19 +36,18 @@ class TemplatesRepository extends Repository
     }
 
     public function add(
-        $name,
-        $code,
-        $description,
-        $from,
-        $subject,
-        $templateText,
-        $templateHtml,
-        $layoutId,
-        $typeId,
+        string $name,
+        string $code,
+        string $description,
+        string $from,
+        string $subject,
+        string $templateText,
+        string $templateHtml,
+        int $layoutId,
+        int $typeId,
         ?bool $clickTracking = null,
-        $extras = null
+        ?string $extras = null
     ) {
-
         if ($this->exists($code)) {
             throw new TemplatesCodeNotUniqueException("Template code [$code] is already used.");
         }
@@ -64,8 +64,8 @@ class TemplatesRepository extends Repository
             'mail_body_html' => $templateHtml,
             'mail_layout_id' => $layoutId,
             'mail_type_id' => $typeId,
-            'created_at' => new \DateTime(),
-            'updated_at' => new \DateTime(),
+            'created_at' => new DateTime(),
+            'updated_at' => new DateTime(),
             'extras' => $extras
         ]);
 
@@ -76,13 +76,13 @@ class TemplatesRepository extends Repository
         return $result;
     }
 
-    public function update(IRow &$row, $data)
+    public function update(IRow &$row, array $data): bool
     {
         // if code changed, check if it's unique
         if (isset($data['code']) && $row['code'] != $data['code'] && $this->exists($data['code'])) {
             throw new TemplatesCodeNotUniqueException("Template code [" . $data['code'] . "] is already used.");
         }
-        $params['updated_at'] = new \DateTime();
+        $data['updated_at'] = new \DateTime();
         return parent::update($row, $data);
     }
 

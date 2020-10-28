@@ -5,7 +5,6 @@ namespace Remp\MailerModule\ContentGenerator;
 use Remp\MailerModule\ContentGenerator\Engine\EngineFactory;
 use Remp\MailerModule\ContentGenerator\Replace\IReplace;
 use Nette\Database\IRow;
-use Nette\Utils\Strings;
 
 class ContentGenerator
 {
@@ -23,7 +22,8 @@ class ContentGenerator
         $this->time = new \DateTime();
     }
 
-    public function register(IReplace $replace)
+
+    public function register(IReplace $replace): void
     {
         $this->replaceList[] = $replace;
     }
@@ -44,7 +44,7 @@ class ContentGenerator
         return new MailContent($html, $text);
     }
 
-    public function getEmailParams(GeneratorInput $generatorInput, array $emailParams)
+    public function getEmailParams(GeneratorInput $generatorInput, array $emailParams): array
     {
         $outputParams = [];
 
@@ -58,14 +58,14 @@ class ContentGenerator
         return $outputParams;
     }
 
-    private function generate(string $bodyTemplate, array $params)
+    private function generate(string $bodyTemplate, array $params): string
     {
         $params['time'] = $this->time;
 
         return $this->engineFactory->engine()->render($bodyTemplate, $params);
     }
 
-    private function wrapLayout(IRow $template, $renderedTemplateContent, $layoutContent, $params)
+    private function wrapLayout(IRow $template, string $renderedTemplateContent, string $layoutContent, array $params): string
     {
         if (!$layoutContent) {
             return $renderedTemplateContent;

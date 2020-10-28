@@ -9,7 +9,7 @@ class ArticleLocker
     private $linkUrl;
     private $text;
 
-    public function getLockedPost($post)
+    public function getLockedPost(string $post): string
     {
         if (stripos($post, '[lock newsletter]') !== false) {
             $lock = '[lock newsletter]';
@@ -24,7 +24,7 @@ class ArticleLocker
         return $parts[0] . $this->placeholder;
     }
 
-    public function putLockedMessage($post)
+    public function putLockedMessage(string $post): string
     {
         $lockedHtml = <<< HTML
 <h2 style="color:#181818;padding:0;margin:0;Margin:0;line-height:1.3;font-weight:bold;text-align:left;margin-bottom:30px;Margin-bottom:30px;font-size:24px;">{$this->text}</h2>
@@ -59,7 +59,7 @@ HTML;
      * @param $linkUrl
      * @return $this
      */
-    public function setupLockLink($linkText, $linkUrl)
+    public function setupLockLink(string $linkText, string $linkUrl): self
     {
         $this->linkText = $linkText;
         $this->linkUrl = $linkUrl;
@@ -70,7 +70,7 @@ HTML;
      * @param mixed $text
      * @return ArticleLocker
      */
-    public function setLockText($text)
+    public function setLockText(string $text): ArticleLocker
     {
         $this->text = $text;
         return $this;

@@ -4,6 +4,7 @@ namespace Remp\MailerModule\Forms;
 
 use Nette\Application\UI\Form;
 use Nette\SmartObject;
+use Nette\Utils\ArrayHash;
 use Remp\MailerModule\Form\Rendering\MaterialRenderer;
 use Remp\MailerModule\Repository\BatchesRepository;
 use Remp\MailerModule\Repository\JobsRepository;
@@ -33,9 +34,8 @@ class JobFormFactory
         $this->segmentAggregator = $segmentAggregator;
     }
 
-    public function create($jobId)
+    public function create(int $jobId): Form
     {
-
         $form = new Form();
         $form->addProtection();
         $form->setRenderer(new MaterialRenderer());
@@ -77,7 +77,7 @@ class JobFormFactory
         return $form;
     }
 
-    public function formSucceeded($form, $values)
+    public function formSucceeded(Form $form, ArrayHash $values): void
     {
         $job = $this->jobsRepository->find($values['job_id']);
 

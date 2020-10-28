@@ -4,6 +4,7 @@ namespace Remp\MailerModule\Forms;
 
 use Nette\Application\UI\Form;
 use Nette\SmartObject;
+use Nette\Utils\ArrayHash;
 use Remp\MailerModule\Repository\ListCategoriesRepository;
 use Remp\MailerModule\Repository\ListsRepository;
 
@@ -28,7 +29,7 @@ class ListFormFactory
         $this->listCategoriesRepository = $listCategoriesRepository;
     }
 
-    public function create($id)
+    public function create(?int $id = null): Form
     {
         $list = null;
         $defaults = [];
@@ -36,7 +37,7 @@ class ListFormFactory
         $form = new Form;
         $form->addProtection();
 
-        if (isset($id)) {
+        if ($id !== null) {
             $list = $this->listsRepository->find($id);
             $defaults = $list->toArray();
         };
@@ -130,10 +131,10 @@ class ListFormFactory
 
     /**
      * @param Form $form
-     * @param $values
+     * @param ArrayHash $values
      * @throws \Exception
      */
-    public function formSucceeded($form, $values)
+    public function formSucceeded(Form $form, ArrayHash $values): void
     {
         $list = null;
         if (isset($values['id'])) {
@@ -191,7 +192,7 @@ class ListFormFactory
         unset($values['sorting_after']);
 
         if ($list) {
-            $this->listsRepository->update($list, $values);
+            $this->listsRepository->update($list, (array) $values);
             $list = $this->listsRepository->find($list->id);
             ($this->onUpdate)($list);
         } else {

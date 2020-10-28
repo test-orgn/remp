@@ -29,7 +29,7 @@ class Authenticator implements IAuthenticator
         $this->linkGenerator = $linkGenerator;
     }
 
-    public function authenticate(array $credentials)
+    public function authenticate(array $credentials): Identity
     {
         if (empty(array_filter($credentials))) {
             $link = $this->linkGenerator->link('Mailer:Sign:In');

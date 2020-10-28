@@ -1,6 +1,8 @@
 <?php
 namespace Remp\MailerModule\Segment;
 
+use Remp\MailerModule\ActiveRow;
+
 class Dummy implements ISegment
 {
     const PROVIDER_ALIAS = 'dummy-segment';
@@ -10,7 +12,7 @@ class Dummy implements ISegment
         return static::PROVIDER_ALIAS;
     }
 
-    public function list()
+    public function list(): array
     {
         return [
             [
@@ -26,7 +28,7 @@ class Dummy implements ISegment
         ];
     }
 
-    public function users($segment)
+    public function users(array $segment): array
     {
         return [1,2];
     }

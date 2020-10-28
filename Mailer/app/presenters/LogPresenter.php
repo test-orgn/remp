@@ -3,6 +3,7 @@
 namespace Remp\MailerModule\Presenters;
 
 use Nette\Utils\Json;
+use Remp\MailerModule\Components\DataTable;
 use Remp\MailerModule\Components\IDataTableFactory;
 use Remp\MailerModule\Repository\LogsRepository;
 
@@ -19,7 +20,7 @@ final class LogPresenter extends BasePresenter
         $this->logsRepository = $logsRepository;
     }
 
-    public function createComponentDataTableDefault(IDataTableFactory $dataTableFactory)
+    public function createComponentDataTableDefault(IDataTableFactory $dataTableFactory): DataTable
     {
         $dataTable = $dataTableFactory->create();
         $dataTable
@@ -56,7 +57,7 @@ final class LogPresenter extends BasePresenter
         return $dataTable;
     }
 
-    public function renderDefaultJsonData()
+    public function renderDefaultJsonData(): void
     {
         $request = $this->request->getParameters();
 

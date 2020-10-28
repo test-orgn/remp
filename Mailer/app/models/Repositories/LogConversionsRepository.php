@@ -2,6 +2,7 @@
 
 namespace Remp\MailerModule\Repository;
 
+use DateTime;
 use Nette\Database\Table\ActiveRow;
 use Remp\MailerModule\Repository;
 
@@ -9,7 +10,7 @@ class LogConversionsRepository extends Repository
 {
     protected $tableName = 'mail_log_conversions';
 
-    public function upsert(ActiveRow $mailLog, \DateTime $convertedAt)
+    public function upsert(ActiveRow $mailLog, DateTime $convertedAt)
     {
         $conversion = $this->getTable()->where([
             'mail_log_id' => $mailLog->id,

@@ -4,6 +4,7 @@ namespace Remp\MailerModule\Forms;
 
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
+use Nette\Utils\ArrayHash;
 use Remp\MailerModule\Generators\GeneratorFactory;
 use Remp\MailerModule\Repository\SourceTemplatesRepository;
 
@@ -22,14 +23,13 @@ class SourceTemplateFormFactory implements IFormFactory
         GeneratorFactory $mailGeneratorFactory
     ) {
         $this->mailSourceTemplateRepository = $mailSourceTemplateRepository;
-
         $this->mailGeneratorFactory = $mailGeneratorFactory;
     }
 
-    public function create($id = null)
+    public function create(?int $id = null): Form
     {
         $defaults = [];
-        if (isset($id)) {
+        if ($id !== null) {
             $mailTemplate = $this->mailSourceTemplateRepository->find($id);
             $defaults = $mailTemplate->toArray();
         }
@@ -75,7 +75,7 @@ class SourceTemplateFormFactory implements IFormFactory
         return $form;
     }
 
-    public function formSucceeded(Form $form, $values)
+    public function formSucceeded(Form $form, ArrayHash $values): void
     {
         // decide if user wants to save or save and leave
         $buttonSubmitted = self::FORM_ACTION_SAVE;
@@ -90,7 +90,7 @@ class SourceTemplateFormFactory implements IFormFactory
             unset($values['id']);
 
             $row = $this->mailSourceTemplateRepository->find($id);
-            $this->mailSourceTemplateRepository->update($row, $values);
+            $this->mailSourceTemplateRepository->update($row, (array) $values);
             $this->onUpdate->__invoke($form, $row, $buttonSubmitted);
         } else {
             $template = $this->mailSourceTemplateRepository->findLast()->fetch();

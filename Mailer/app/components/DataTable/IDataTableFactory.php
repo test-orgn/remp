@@ -6,5 +6,5 @@ interface IDataTableFactory
     /**
      * @return DataTable
      */
-    public function create();
+    public function create(): DataTable;
 }

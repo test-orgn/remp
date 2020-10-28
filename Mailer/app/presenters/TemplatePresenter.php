@@ -3,8 +3,11 @@
 namespace Remp\MailerModule\Presenters;
 
 use Nette\Application\BadRequestException;
+use Nette\Application\UI\Control;
+use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Json;
+use Remp\MailerModule\Components\DataTable;
 use Remp\MailerModule\Components\IDataTableFactory;
 use Remp\MailerModule\Components\ISendingStatsFactory;
 use Remp\MailerModule\ContentGenerator\ContentGenerator;
@@ -51,7 +54,7 @@ final class TemplatePresenter extends BasePresenter
         $this->contentGenerator = $contentGenerator;
     }
 
-    public function createComponentDataTableDefault(IDataTableFactory $dataTableFactory)
+    public function createComponentDataTableDefault(IDataTableFactory $dataTableFactory): DataTable
     {
         $mailTypePairs = $this->listsRepository->all()->fetchPairs('id', 'title');
 
@@ -92,7 +95,7 @@ final class TemplatePresenter extends BasePresenter
         return $dataTable;
     }
 
-    public function renderDefaultJsonData()
+    public function renderDefaultJsonData(): void
     {
         $request = $this->request->getParameters();
 
@@ -141,7 +144,7 @@ final class TemplatePresenter extends BasePresenter
         $this->presenter->sendJson($result);
     }
 
-    public function renderShow($id)
+    public function renderShow($id): void
     {
         $template = $this->templatesRepository->find($id);
         if (!$template) {
@@ -151,7 +154,7 @@ final class TemplatePresenter extends BasePresenter
         $this->template->mailTemplate = $template;
     }
 
-    public function createComponentDataTableLogs(IDataTableFactory $dataTableFactory)
+    public function createComponentDataTableLogs(IDataTableFactory $dataTableFactory): DataTable
     {
         $dataTable = $dataTableFactory->create();
         $dataTable
@@ -181,7 +184,7 @@ final class TemplatePresenter extends BasePresenter
         return $dataTable;
     }
 
-    public function renderLogJsonData()
+    public function renderLogJsonData(): void
     {
         $request = $this->request->getParameters();
 
@@ -218,14 +221,14 @@ final class TemplatePresenter extends BasePresenter
         $this->presenter->sendJson($result);
     }
 
-    public function renderNew()
+    public function renderNew(): void
     {
         $layouts = $this->layoutsRepository->getTable()->fetchPairs('id', 'layout_html');
         $this->template->layouts = $layouts;
         $this->template->templateEditor = $this->environmentConfig->getParam('template_editor', 'codemirror');
     }
 
-    public function renderEdit($id)
+    public function renderEdit($id): void
     {
         $template = $this->templatesRepository->find($id);
         if (!$template) {
@@ -238,7 +241,7 @@ final class TemplatePresenter extends BasePresenter
         $this->template->templateEditor = $this->environmentConfig->getParam('template_editor', 'codemirror');
     }
 
-    public function renderPreview($id, $type = 'html')
+    public function renderPreview($id, $type = 'html'): void
     {
         $template = $this->templatesRepository->find($id);
         if (!$template) {
@@ -253,7 +256,7 @@ final class TemplatePresenter extends BasePresenter
         }
     }
 
-    public function handleDuplicate($id)
+    public function handleDuplicate($id): void
     {
         $template = $this->templatesRepository->find($id);
         $newTemplate = $this->templatesRepository->duplicate($template);
@@ -261,7 +264,7 @@ final class TemplatePresenter extends BasePresenter
         $this->redirect('edit', $newTemplate->id);
     }
 
-    public function createComponentTemplateForm()
+    public function createComponentTemplateForm(): Form
     {
         $id = null;
         if (isset($this->params['id'])) {
@@ -283,7 +286,7 @@ final class TemplatePresenter extends BasePresenter
         return $form;
     }
 
-    public function createComponentTemplateTestForm()
+    public function createComponentTemplateTestForm(): Form
     {
         $form = $this->templateTestFormFactory->create($this->params['id']);
 
@@ -296,7 +299,7 @@ final class TemplatePresenter extends BasePresenter
         return $form;
     }
 
-    protected function createComponentTemplateStats(ISendingStatsFactory $factory)
+    protected function createComponentTemplateStats(ISendingStatsFactory $factory): Control
     {
         $templateStats = $factory->create();
 

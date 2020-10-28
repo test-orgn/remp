@@ -4,6 +4,7 @@ namespace Remp\MailerModule\Forms;
 
 use Nette\Application\UI\Form;
 use Nette\SmartObject;
+use Nette\Utils\ArrayHash;
 use Remp\MailerModule\Config\Config;
 use Remp\MailerModule\Config\LocalConfig;
 use Remp\MailerModule\Mailer\Mailer;
@@ -36,7 +37,7 @@ class ConfigFormFactory
         $this->localConfig = $localConfig;
     }
 
-    public function create()
+    public function create(): Form
     {
         $form = new Form;
         $form->addProtection();
@@ -144,7 +145,7 @@ class ConfigFormFactory
         return $form;
     }
 
-    public function formSucceeded($form, $values)
+    public function formSucceeded(Form $form, ArrayHash $values): void
     {
         foreach ($values['settings'] as $category => $configs) {
             foreach ($configs as $name => $value) {

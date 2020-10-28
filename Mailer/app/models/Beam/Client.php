@@ -12,7 +12,7 @@ class Client
 {
     private $client;
 
-    public function __construct($baseUrl, $token)
+    public function __construct(string $baseUrl, string $token)
     {
         if ($baseUrl) {
             $this->client = new \GuzzleHttp\Client([

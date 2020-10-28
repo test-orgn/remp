@@ -3,6 +3,7 @@
 namespace Remp\MailerModule\Components\GeneratorWidgets\Widgets;
 
 use Nette\Application\Responses\JsonResponse;
+use Nette\Application\UI\Form;
 use Nette\Http\Session;
 use Remp\MailerModule\Components\BaseControl;
 use Remp\MailerModule\ContentGenerator\ContentGenerator;
@@ -42,12 +43,12 @@ class DennikeWidget extends BaseControl implements IGeneratorWidget
         $this->contentGenerator = $contentGenerator;
     }
 
-    public function identifier()
+    public function identifier(): string
     {
         return "dennikewidget";
     }
 
-    public function render($params)
+    public function render($params): void
     {
         if (!isset($params['addonParams'])) {
             return;
@@ -61,7 +62,7 @@ class DennikeWidget extends BaseControl implements IGeneratorWidget
         $this->template->render();
     }
 
-    public function createComponentDennikeTemplateForm(DennikeTemplateFormFactory $dennikeTemplateFormFactory)
+    public function createComponentDennikeTemplateForm(DennikeTemplateFormFactory $dennikeTemplateFormFactory): Form
     {
         $form = $dennikeTemplateFormFactory->create();
         $dennikeTemplateFormFactory->onSave = function () {
@@ -72,7 +73,7 @@ class DennikeWidget extends BaseControl implements IGeneratorWidget
         return $form;
     }
 
-    public function handleDennikePreview()
+    public function handleDennikePreview(): void
     {
         $request = $this->getPresenter()->getRequest();
 

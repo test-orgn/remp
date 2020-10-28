@@ -13,7 +13,7 @@ class RemoteBearerTokenRepository implements BearerTokenRepositoryInterface
 
     private $client;
 
-    public function __construct($baseUrl)
+    public function __construct(string $baseUrl)
     {
         $this->client = new Client([
             'base_uri' => $baseUrl

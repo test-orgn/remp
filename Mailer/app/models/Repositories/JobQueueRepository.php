@@ -4,6 +4,7 @@ namespace Remp\MailerModule\Repository;
 
 use Nette\Database\Table\Selection;
 use PDOException;
+use Remp\MailerModule\ActiveRow;
 use Remp\MailerModule\Repository;
 use Nette\Database\Table\IRow;
 
@@ -15,7 +16,7 @@ class JobQueueRepository extends Repository
     const STATUS_DONE = 'done';
     const STATUS_ERROR = 'error';
 
-    public function multiInsert($rows)
+    public function multiInsert(array $rows): void
     {
         $status = JobQueueRepository::STATUS_NEW;
         $insertLogsData = [];
@@ -33,12 +34,12 @@ class JobQueueRepository extends Repository
         $this->database->query("INSERT INTO {$this->tableName}", $insertLogsData);
     }
 
-    public function clearBatch($batch)
+    public function clearBatch(ActiveRow $batch): int
     {
-        $this->getTable()->where(['mail_batch_id' => $batch->id])->delete();
+        return $this->getTable()->where(['mail_batch_id' => $batch->id])->delete();
     }
 
-    public function stripEmails($batch, $leaveEmails)
+    public function stripEmails(ActiveRow $batch, $leaveEmails)
     {
         if (!$leaveEmails) {
             return;
@@ -51,13 +52,13 @@ class JobQueueRepository extends Repository
         }
     }
 
-    public function removeAlreadySent(IRow $batch)
+    public function removeAlreadySent(IRow $batch): void
     {
         $job = $batch->job;
         $this->getDatabase()->query("DELETE FROM {$this->tableName} WHERE mail_batch_id={$batch->id} AND email IN (SELECT email FROM mail_logs WHERE mail_job_id = {$job->id})");
     }
 
-    public function removeAlreadyQueued(IRow $batch)
+    public function removeAlreadyQueued(IRow $batch): void
     {
         $job = $batch->job;
         $this->getDatabase()->query("DELETE mjq1.* FROM mail_job_queue mjq1 JOIN mail_job_queue mjq2 ON mjq1.email = mjq2.email
@@ -65,7 +66,7 @@ class JobQueueRepository extends Repository
 ");
     }
 
-    public function removeUnsubscribed(IRow $batch)
+    public function removeUnsubscribed(IRow $batch): void
     {
         $q = $this->getTable()
             ->select('mail_template_id')
@@ -99,7 +100,7 @@ SQL;
         }
     }
 
-    public function removeOtherVariants(IRow $batch, $variantId)
+    public function removeOtherVariants(IRow $batch, int $variantId)
     {
         $sql = <<<SQL
 
@@ -115,7 +116,7 @@ WHERE mail_job_queue.id IN (
           FROM mail_user_subscriptions
           INNER JOIN mail_user_subscription_variants
             ON mail_user_subscription_variants.mail_user_subscription_id = mail_user_subscriptions.id
-            AND mail_user_subscription_variants.mail_type_variant_id = '{$variantId}'
+            AND mail_user_subscription_variants.mail_type_variant_id = {$variantId}
             AND mail_user_subscriptions.subscribed = 1
         )
   ) t1
@@ -125,7 +126,7 @@ SQL;
         $this->getDatabase()->query($sql);
     }
 
-    public function removeAlreadySentContext(IRow $batch, $context)
+    public function removeAlreadySentContext(IRow $batch, string $context): void
     {
         $query = "DELETE FROM mail_job_queue WHERE mail_job_queue.mail_batch_id = {$batch->id} AND mail_job_queue.email IN (
   SELECT email FROM mail_logs WHERE context = '$context')";
@@ -151,12 +152,12 @@ SQL;
         return $selection;
     }
 
-    public function getJob($email, $batchId)
+    public function getJob(string $email, int $batchId)
     {
         return $this->getTable()->where(['email' => $email, 'mail_batch_id' => $batchId])->limit(1)->fetch();
     }
 
-    public function deleteJobsByBatch($batchId, $newOnly = false)
+    public function deleteJobsByBatch(int $batchId, bool $newOnly = false): int
     {
         $table = $this->getTable()->where(['mail_batch_id' => $batchId]);
         if ($newOnly) {

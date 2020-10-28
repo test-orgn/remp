@@ -5,5 +5,5 @@ namespace Remp\MailerModule\Components;
 interface IMissingConfigurationFactory
 {
     /** @return MissingConfiguration */
-    public function create();
+    public function create(): MissingConfiguration;
 }

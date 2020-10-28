@@ -23,7 +23,7 @@ class MissingConfiguration extends Control
         $this->mailerFactory = $mailerFactory;
     }
 
-    public function render()
+    public function render(): void
     {
         $defaultMailerSetting = $this->configsRepository->loadByName('default_mailer');
         $mailerConfigured = false;

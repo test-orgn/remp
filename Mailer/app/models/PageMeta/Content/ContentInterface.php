@@ -4,5 +4,5 @@ namespace Remp\MailerModule\PageMeta;
 
 interface ContentInterface
 {
-    public function fetchUrlMeta($url): ?Meta;
+    public function fetchUrlMeta(string $url): ?Meta;
 }

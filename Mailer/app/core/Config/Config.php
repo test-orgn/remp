@@ -36,7 +36,7 @@ class Config
         $this->cacheStorage = $cacheStorage;
     }
 
-    public function get($name)
+    public function get(string $name)
     {
         if (!$this->loaded) {
             $this->initAutoload();
@@ -63,7 +63,7 @@ class Config
         throw new ConfigNotExistsException("Setting {$name} does not exists.");
     }
 
-    private function initAutoload()
+    private function initAutoload(): void
     {
         $cacheData = $this->cacheStorage->read('application_autoload_cache');
         if ($cacheData) {

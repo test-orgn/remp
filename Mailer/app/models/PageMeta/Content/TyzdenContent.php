@@ -13,12 +13,12 @@ class TyzdenContent implements ContentInterface
         $this->transport = $transport;
     }
 
-    public function fetchUrlMeta($url): ?Meta
+    public function fetchUrlMeta(string $url): ?Meta
     {
         $url = preg_replace('/\\?ref=(.*)/', '', $url);
         try {
             $content = $this->transport->getContent($url);
-            if (!$content) {
+            if ($content === null) {
                 return null;
             }
             $meta = $this->parseMeta($content);
@@ -31,10 +31,10 @@ class TyzdenContent implements ContentInterface
         return $meta;
     }
 
-    public function parseMeta($content)
+    public function parseMeta(string $content): Meta
     {
         // author
-        $authors = false;
+        $authors = [];
         $matches = [];
         preg_match_all('/<meta name=\"author\" content=\"(.+)\">/U', $content, $matches);
         if ($matches) {
@@ -44,7 +44,7 @@ class TyzdenContent implements ContentInterface
         }
 
         // title
-        $title = false;
+        $title = null;
         $matches = [];
         preg_match('/<meta property=\"og:title\" content=\"(.+)\">/U', $content, $matches);
         if ($matches) {
@@ -52,7 +52,7 @@ class TyzdenContent implements ContentInterface
         }
 
         // description
-        $description = false;
+        $description = null;
         $matches = [];
         preg_match('/<meta property=\"og:description\" content=\"(.+)\">/Us', $content, $matches);
         if ($matches) {
@@ -60,7 +60,7 @@ class TyzdenContent implements ContentInterface
         }
 
         // image
-        $image = false;
+        $image = null;
         $matches = [];
         preg_match('/<meta property=\"og:image\" content=\"(.+)\">/U', $content, $matches);
         if ($matches) {

@@ -5,5 +5,5 @@ namespace Remp\MailerModule\Components;
 interface IBatchExperimentEvaluationFactory
 {
     /** @return BatchExperimentEvaluation */
-    public function create();
+    public function create(): BatchExperimentEvaluation;
 }

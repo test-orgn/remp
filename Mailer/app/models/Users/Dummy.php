@@ -4,7 +4,7 @@ namespace Remp\MailerModule\User;
 
 class Dummy implements IUser
 {
-    public function list(array $userIds, $page)
+    public function list(array $userIds, int $page): array
     {
         if ($page > 1) {
             return [];

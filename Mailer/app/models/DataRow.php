@@ -2,36 +2,38 @@
 
 namespace Remp\MailerModule\Components\GeneratorWidgets\Widgets;
 
+use IteratorAggregate;
+use ArrayIterator;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 
-class DataRow implements \IteratorAggregate, IRow
+class DataRow implements IteratorAggregate, IRow
 {
     private $data;
 
-    public function __construct($data)
+    public function __construct(array $data)
     {
         $this->data = $data;
     }
 
-    public function __set($column, $value)
+    public function __set(string $column, $value): void
     {
         throw new \Exception('Not supported');
     }
 
-    public function __isset($key)
+    public function __isset(string $key): bool
     {
         return isset($this->data[$key]);
     }
 
-    public function &__get($key)
+    public function &__get(string $key)
     {
         return $this->data[$key];
     }
 
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
-        return new \ArrayIterator($this->data);
+        return new ArrayIterator($this->data);
     }
 
     public function offsetExists($offset)

@@ -5,6 +5,7 @@ namespace Remp\MailerModule\Presenters;
 use Nette;
 use Nette\Application\Responses;
 use Remp\MailerModule\Components\IMissingConfigurationFactory;
+use Remp\MailerModule\Components\MissingConfiguration;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
@@ -38,7 +39,7 @@ class ErrorPresenter implements Nette\Application\IPresenter
 
     public function createComponentMissingConfiguration(
         IMissingConfigurationFactory $missingConfigurationFactory
-    ) {
+    ): MissingConfiguration {
         return $missingConfigurationFactory->create();
     }
 }

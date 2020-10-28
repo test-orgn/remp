@@ -4,7 +4,7 @@ namespace Remp\MailerModule\Generators;
 
 class WordpressHelpers
 {
-    public function wpautop($pee, $br = true)
+    public function wpautop(string $pee, bool $br = true): string
     {
         $pre_tags = array();
         if (trim($pee) === '') {
@@ -127,7 +127,8 @@ class WordpressHelpers
         }
         return $pee;
     }
-    public function wpReplaceInHTMLTags($haystack, $replace_pairs)
+
+    public function wpReplaceInHTMLTags(string $haystack, array $replace_pairs): string
     {
         // Find all elements.
         $textarr = $this->wpHTMLSplit($haystack);
@@ -165,12 +166,12 @@ class WordpressHelpers
         return $haystack;
     }
 
-    public function wpHTMLSplit($input)
+    public function wpHTMLSplit(string $input): string
     {
         return preg_split($this->getHTMLSplitRegex(), $input, -1, PREG_SPLIT_DELIM_CAPTURE);
     }
 
-    public function getHTMLSplitRegex()
+    public function getHTMLSplitRegex(): string
     {
         static $regex;
 

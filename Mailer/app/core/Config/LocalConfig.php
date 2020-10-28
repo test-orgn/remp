@@ -11,7 +11,7 @@ class LocalConfig
         $this->data = $data;
     }
 
-    public function value($key)
+    public function value(string $key)
     {
         if ($this->exists($key)) {
             return $this->data[$key];
@@ -19,7 +19,7 @@ class LocalConfig
         return false;
     }
 
-    public function exists($key)
+    public function exists(string $key): bool
     {
         return isset($this->data[$key]);
     }

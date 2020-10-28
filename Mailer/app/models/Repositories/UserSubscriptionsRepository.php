@@ -24,9 +24,9 @@ class UserSubscriptionsRepository extends Repository
         $this->userSubscriptionVariantsRepository = $userSubscriptionVariantsRepository;
     }
 
-    public function update(IRow &$row, $data)
+    public function update(IRow &$row, array $data): bool
     {
-        $params['updated_at'] = new \DateTime();
+        $params['updated_at'] = new DateTime();
         return parent::update($row, $data);
     }
 

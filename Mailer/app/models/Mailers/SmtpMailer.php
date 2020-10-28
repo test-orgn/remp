@@ -56,7 +56,7 @@ class SmtpMailer extends Mailer implements IMailer
         $this->mailer = new \Nette\Mail\SmtpMailer($options);
     }
 
-    public function send(Message $message)
+    public function send(Message $message): void
     {
         $this->mailer->send($message);
     }

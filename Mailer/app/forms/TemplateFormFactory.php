@@ -5,6 +5,7 @@ namespace Remp\MailerModule\Forms;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\SmartObject;
+use Nette\Utils\ArrayHash;
 use Remp\MailerModule\Forms\Rules\FormRules;
 use Remp\MailerModule\Repository\LayoutsRepository;
 use Remp\MailerModule\Repository\ListsRepository;
@@ -38,7 +39,7 @@ class TemplateFormFactory implements IFormFactory
         $this->listsRepository = $listsRepository;
     }
 
-    public function create($id)
+    public function create(?int $id = null): Form
     {
         $count = 0;
         $defaults = [];
@@ -111,7 +112,7 @@ class TemplateFormFactory implements IFormFactory
         return $form;
     }
 
-    public function formSucceeded($form, $values)
+    public function formSucceeded(Form $form, ArrayHash $values): void
     {
         // decide if user wants to save or save and leave
         $buttonSubmitted = self::FORM_ACTION_SAVE;
@@ -129,7 +130,7 @@ class TemplateFormFactory implements IFormFactory
         try {
             if (!empty($values['id'])) {
                 $row = $this->templatesRepository->find($values['id']);
-                $this->templatesRepository->update($row, $values);
+                $this->templatesRepository->update($row, (array) $values);
                 ($this->onUpdate)($row, $buttonSubmitted);
             } else {
                 $row = $this->templatesRepository->add(

@@ -5,13 +5,14 @@ namespace Remp\MailerModule;
 use Nette\Caching\IStorage;
 use Nette\Database\Context;
 use Nette\Database\IConventions;
+use Nette\Database\Table\Selection as NetteSelection;
 
-class Selection extends \Nette\Database\Table\Selection
+class Selection extends NetteSelection
 {
     /**
      * @inheritdoc
      */
-    public function __construct(Context $context, IConventions $conventions, $tableName, IStorage $cacheStorage = null)
+    final public function __construct(Context $context, IConventions $conventions, $tableName, IStorage $cacheStorage = null)
     {
         parent::__construct($context, $conventions, $tableName, $cacheStorage);
     }
@@ -27,7 +28,7 @@ class Selection extends \Nette\Database\Table\Selection
     /**
      * @inheritdoc
      */
-    public function createRow(array $row)
+    public function createRow(array $row): ActiveRow
     {
         return new ActiveRow($row, $this);
     }

@@ -48,7 +48,7 @@ class MMSGenerator implements IGenerator
         $this->engineFactory = $engineFactory;
     }
 
-    public function apiParams()
+    public function apiParams(): array
     {
         return [
             new InputParam(InputParam::TYPE_POST, 'source_template_id', InputParam::REQUIRED),
@@ -62,12 +62,12 @@ class MMSGenerator implements IGenerator
         ];
     }
 
-    public function getWidgets()
+    public function getWidgets(): array
     {
         return [MMSWidget::class];
     }
 
-    public function process($values)
+    public function process(array $values): array
     {
         $sourceTemplate = $this->mailSourceTemplateRepository->find($values->source_template_id);
         $content = $this->content;
@@ -220,9 +220,9 @@ class MMSGenerator implements IGenerator
         ];
     }
 
-    public function formSucceeded($form, $values)
+    public function formSucceeded(Form $form, ArrayHash $values): void
     {
-        $output = $this->process($values);
+        $output = $this->process((array)$values);
 
         $addonParams = [
             'lockedHtmlContent' => $output['lockedHtmlContent'],
@@ -236,7 +236,7 @@ class MMSGenerator implements IGenerator
         $this->onSubmit->__invoke($output['htmlContent'], $output['textContent'], $addonParams);
     }
 
-    public function generateForm(Form $form)
+    public function generateForm(Form $form): void
     {
         // disable CSRF protection as external sources could post the params here
         $form->offsetUnset(Form::PROTECTOR_ID);
@@ -268,7 +268,7 @@ class MMSGenerator implements IGenerator
         $form->onSuccess[] = [$this, 'formSucceeded'];
     }
 
-    public function onSubmit(callable $onSubmit)
+    public function onSubmit(callable $onSubmit): void
     {
         $this->onSubmit = $onSubmit;
     }

@@ -4,6 +4,7 @@ namespace Remp\MailerModule\Segment;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use Nette\Utils\Json;
+use Remp\MailerModule\ActiveRow;
 
 class Pythia implements ISegment
 {
@@ -15,7 +16,7 @@ class Pythia implements ISegment
 
     private $baseUrl;
 
-    public function __construct($baseUrl)
+    public function __construct(string $baseUrl)
     {
         $this->baseUrl = $baseUrl;
     }
@@ -25,7 +26,7 @@ class Pythia implements ISegment
         return static::PROVIDER_ALIAS;
     }
 
-    public function list()
+    public function list(): array
     {
         $response = $this->request(static::ENDPOINT_LIST);
         $segments = [];
@@ -42,13 +43,13 @@ class Pythia implements ISegment
         return $segments;
     }
 
-    public function users($segment)
+    public function users(array $segment): array
     {
         $response = $this->request(sprintf(static::ENDPOINT_USERS, $segment['code']));
         return $response;
     }
 
-    private function request($url, $query = [])
+    private function request(string $url, array $query = [])
     {
         $client = new Client([
             'base_uri' => $this->baseUrl

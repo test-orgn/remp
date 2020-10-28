@@ -21,7 +21,7 @@ class LogEventsRepository extends Repository
         ]);
     }
 
-    public function findByLogType($logId, $type)
+    public function findByLogType(int $logId, string $type)
     {
         return $this->getTable()->where([
             'mail_log_id' => $logId,
@@ -29,7 +29,7 @@ class LogEventsRepository extends Repository
         ])->fetch();
     }
 
-    public function latestEventTime(): \DateTime
+    public function latestEventTime(): DateTime
     {
         return $this->getTable()->max('event_at');
     }

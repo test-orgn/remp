@@ -2,6 +2,7 @@
 
 namespace Remp\MailerModule\Presenters;
 
+use Nette\Application\UI\Form;
 use Remp\MailerModule\Forms\ConfigFormFactory;
 use Remp\MailerModule\Mailer\Mailer;
 use Remp\MailerModule\Sender\MailerFactory;
@@ -17,7 +18,7 @@ final class SettingsPresenter extends BasePresenter
         $this->mailerFactory = $mailerFactory;
     }
 
-    public function renderDefault()
+    public function renderDefault(): void
     {
         $availableMailers =  $this->mailerFactory->getAvailableMailers();
 
@@ -30,7 +31,7 @@ final class SettingsPresenter extends BasePresenter
         $this->template->requiredFields = $requiredFields;
     }
 
-    public function createComponentConfigForm(ConfigFormFactory $configFormFactory)
+    public function createComponentConfigForm(ConfigFormFactory $configFormFactory): Form
     {
         $form = $configFormFactory->create();
 

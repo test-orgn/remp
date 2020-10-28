@@ -11,7 +11,7 @@ class FormRules
 
     const ADVANCED_EMAIL = 'Remp\MailerModule\Forms\Rules\FormRules::validateAdvancedEmail';
 
-    public static function validateAdvancedEmail(IControl $control)
+    public static function validateAdvancedEmail(IControl $control): bool
     {
         $value = $control->getValue();
 

@@ -90,6 +90,7 @@ class MailWorkerCommand extends Command
 
     /**
      * Set implementation of RestartInterface which should handle graceful shutdowns.
+     * @param RestartInterface $restart
      */
     public function setRestartInterface(RestartInterface $restart): void
     {
@@ -229,7 +230,9 @@ class MailWorkerCommand extends Command
                         $output->writeln(" * sending <info>{$job->templateCode}</info> from batch <info>{$batch->id}</info> to <info>{$job->email}</info>");
                         $recipientParams = $job->params ? get_object_vars($job->params) : [];
                         $email->addRecipient($job->email, null, $recipientParams);
-                        $email->setContext($job->context);
+                        if ($job->context) {
+                            $email->setContext($job->context);
+                        }
                     }
 
                     $sentCount = 0;

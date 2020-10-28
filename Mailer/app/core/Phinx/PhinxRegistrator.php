@@ -43,7 +43,7 @@ class PhinxRegistrator
      * Build phinx config from config.local.neon
      * @return array
      */
-    private function buildConfig()
+    private function buildConfig(): array
     {
         $env = $_ENV['ENV'];
 

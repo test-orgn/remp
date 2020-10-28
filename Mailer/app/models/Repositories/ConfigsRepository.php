@@ -43,7 +43,7 @@ class ConfigsRepository extends Repository
         return $this->getTable()->where('name', $name)->fetch();
     }
 
-    public function update(IRow &$row, $data)
+    public function update(IRow &$row, array $data): bool
     {
         $data['updated_at'] = new \DateTime();
         return parent::update($row, $data);

@@ -2,7 +2,9 @@
 
 namespace Remp\MailerModule\User;
 
-class UserException extends \Exception
+use Exception;
+
+class UserException extends Exception
 {
 
 }

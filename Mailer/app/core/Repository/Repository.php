@@ -5,6 +5,7 @@ namespace Remp\MailerModule;
 use Nette\Caching\IStorage;
 use Nette\Database\Context;
 use Nette\Database\Table\IRow;
+use Nette\Database\Table\ActiveRow;
 use Remp\MailerModule\Repository\AuditLogRepository;
 
 class Repository
@@ -29,36 +30,27 @@ class Repository
         $this->cacheStorage = $cacheStorage;
     }
 
-    /**
-     * @return Selection
-     */
-    public function getTable()
+    public function getTable(): Selection
     {
         return new Selection($this->database, $this->database->getConventions(), $this->tableName, $this->cacheStorage);
     }
 
-    /**
-     * @return \Nette\Database\Table\ActiveRow
-     */
     public function find($id)
     {
         return $this->getTable()->where(['id' => $id])->fetch();
     }
 
-    /**
-     * @return \Nette\Database\Table\ActiveRow
-     */
-    public function findBy($column, $value)
+    public function findBy(string $column, string $value)
     {
         return $this->getTable()->where([$column => $value])->fetch();
     }
 
-    public function totalCount()
+    public function totalCount(): int
     {
         return $this->getTable()->count('*');
     }
 
-    public function getDatabase()
+    public function getDatabase(): Context
     {
         return $this->database;
     }
@@ -73,7 +65,7 @@ class Repository
      *
      * @throws \Exception
      */
-    public function update(IRow &$row, $data)
+    public function update(IRow &$row, array $data): bool
     {
         $oldValues = [];
         if ($row instanceof ActiveRow) {
@@ -116,7 +108,7 @@ class Repository
      * @param IRow $row
      * @return bool
      */
-    public function delete(IRow &$row)
+    public function delete(IRow &$row): bool
     {
         $res = $this->getTable()->wherePrimary($row->getPrimary())->delete();
         $oldValues = [];
@@ -146,7 +138,7 @@ class Repository
      * @param $data
      * @return bool|int|IRow
      */
-    public function insert($data)
+    public function insert(array $data)
     {
         $row = $this->getTable()->insert($data);
         if (!$row instanceof IRow) {
@@ -165,7 +157,7 @@ class Repository
         return $row;
     }
 
-    private function filterValues(array $values)
+    private function filterValues(array $values): array
     {
         foreach ($values as $i => $field) {
             if (is_bool($field)) {

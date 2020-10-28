@@ -6,6 +6,7 @@ use Nette\Caching\IStorage;
 use Nette\Database\Context;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
+use Remp\MailerModule\ActiveRow;
 use Remp\MailerModule\Repository;
 
 class JobsRepository extends Repository
@@ -35,7 +36,7 @@ class JobsRepository extends Repository
         return $this->getTable()->order('mail_jobs.created_at DESC');
     }
 
-    public function add($segmentCode, $segmentProvider, $context = null, $mailTypeVariant = null)
+    public function add(string $segmentCode, string $segmentProvider, ?string $context = null, ?ActiveRow $mailTypeVariant = null)
     {
         $data = [
             'segment_code' => $segmentCode,
@@ -51,14 +52,15 @@ class JobsRepository extends Repository
     }
 
     /**
-     * @param $query
-     * @param $order
-     * @param $orderDirection
-     * @param null $limit
-     * @param null $offset
+     * @param string $query
+     * @param string $order
+     * @param string $orderDirection
+     * @param array $listIds
+     * @param int|null $limit
+     * @param int|null $offset
      * @return Selection
      */
-    public function tableFilter($query, $order, $orderDirection, $listIds = null, $limit = null, $offset = null)
+    public function tableFilter(string $query, string $order, string $orderDirection, array $listIds = [], ?int $limit = null, ?int $offset = null)
     {
         $selection = $this->getTable()
             ->order($order . ' ' . strtoupper($orderDirection));
@@ -85,7 +87,7 @@ class JobsRepository extends Repository
         return $selection;
     }
 
-    public function update(IRow &$row, $data)
+    public function update(IRow &$row, array $data): bool
     {
         $this->getDatabase()->beginTransaction();
 
@@ -100,7 +102,7 @@ class JobsRepository extends Repository
         return $result;
     }
 
-    public function isEditable($jobId)
+    public function isEditable(int $jobId): bool
     {
         if ($this->batchesRepository->notEditableBatches($jobId)->count() > 0) {
             return false;

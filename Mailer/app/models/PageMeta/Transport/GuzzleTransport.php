@@ -8,16 +8,16 @@ use GuzzleHttp\Exception\ServerException;
 
 class GuzzleTransport implements TransportInterface
 {
-    public function getContent($url)
+    public function getContent(string $url): ?string
     {
         $client = new Client();
         try {
             $res = $client->get($url);
-            return $res->getBody();
+            return (string) $res->getBody();
         } catch (ConnectException $e) {
-            return false;
+            return null;
         } catch (ServerException $e) {
-            return false;
+            return null;
         }
     }
 }

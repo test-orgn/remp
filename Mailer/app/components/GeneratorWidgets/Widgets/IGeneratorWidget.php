@@ -4,5 +4,5 @@ namespace Remp\MailerModule\Components\GeneratorWidgets\Widgets;
 
 interface IGeneratorWidget
 {
-    public function identifier();
+    public function identifier(): string;
 }

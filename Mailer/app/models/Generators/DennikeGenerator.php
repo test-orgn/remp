@@ -44,7 +44,7 @@ class DennikeGenerator implements IGenerator
         $this->engineFactory = $engineFactory;
     }
 
-    public function apiParams()
+    public function apiParams(): array
     {
         return [
             new InputParam(InputParam::TYPE_POST, 'source_template_id', InputParam::REQUIRED),
@@ -59,12 +59,12 @@ class DennikeGenerator implements IGenerator
         ];
     }
 
-    public function getWidgets()
+    public function getWidgets(): array
     {
         return [DennikeWidget::class];
     }
 
-    public function process($values)
+    public function process(array $values): array
     {
         $this->articleLocker->setLockText('Predplaťte si Denník E a tento newsletter dostanete každé ráno celý.');
         $this->articleLocker->setupLockLink('Pridajte sa k predplatiteľom', 'https://predplatne.dennikn.sk/ecko');
@@ -220,9 +220,9 @@ class DennikeGenerator implements IGenerator
         ];
     }
 
-    public function formSucceeded($form, $values)
+    public function formSucceeded(Form $form, ArrayHash $values): void
     {
-        $output = $this->process($values);
+        $output = $this->process((array) $values);
 
         $addonParams = [
             'lockedHtmlContent' => $output['lockedHtmlContent'],
@@ -236,7 +236,7 @@ class DennikeGenerator implements IGenerator
         $this->onSubmit->__invoke($output['htmlContent'], $output['textContent'], $addonParams);
     }
 
-    public function generateForm(Form $form)
+    public function generateForm(Form $form): void
     {
         // disable CSRF protection as external sources could post the params here
         $form->offsetUnset(Form::PROTECTOR_ID);
@@ -270,7 +270,7 @@ class DennikeGenerator implements IGenerator
         $form->onSuccess[] = [$this, 'formSucceeded'];
     }
 
-    public function onSubmit(callable $onSubmit)
+    public function onSubmit(callable $onSubmit): void
     {
         $this->onSubmit = $onSubmit;
     }
@@ -331,7 +331,7 @@ class DennikeGenerator implements IGenerator
         return $output;
     }
 
-    public function parseEmbed($matches)
+    public function parseEmbed(array $matches): string
     {
         $link = trim($matches[0]);
 
@@ -346,7 +346,7 @@ class DennikeGenerator implements IGenerator
         return "<a href=\"{$link}\" target=\"_blank\" style=\"color:#181818;padding:0;margin:0;Margin:0;line-height:1.3;color:#1F3F83;text-decoration:underline;\">$link</a><br><br>";
     }
 
-    public function getTemplates()
+    public function getTemplates(): array
     {
         $captionTemplate = <<< HTML
     <img src="$1" alt="" style="outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;width:auto;max-width:100%;clear:both;display:block;margin-bottom:20px;"><p style="margin:0 0 0 26px;Margin:0 0 0 26px;color:#181818;padding:0;margin:0;Margin:0;line-height:1.3;font-size:18px;line-height:1.6;margin-bottom:26px;Margin-bottom:26px;line-height:160%;text-align:left;font-weight:normal;word-wrap:break-word;-webkit-hyphens:auto;-moz-hyphens:auto;hyphens:auto;border-collapse:collapse !important;"><small class="text-gray" style="font-size:13px;line-height:18px;display:block;color:#9B9B9B;">$2</small></p>

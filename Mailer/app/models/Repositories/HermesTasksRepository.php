@@ -14,7 +14,7 @@ class HermesTasksRepository extends Repository
 
     protected $tableName = 'hermes_tasks';
 
-    public function add(MessageInterface $message, $state)
+    public function add(MessageInterface $message, string $state)
     {
         $createdAt = DateTime::from(strtotime($message->getCreated()));
 

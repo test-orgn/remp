@@ -29,7 +29,7 @@ class EventOptions
     /**
      * @return mixed
      */
-    public function getValue()
+    public function getValue(): float
     {
         return $this->value;
     }
@@ -42,7 +42,7 @@ class EventOptions
     /**
      * @param User $user
      */
-    public function setUser(User $user)
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }
@@ -50,7 +50,7 @@ class EventOptions
     /**
      * @param array $fields
      */
-    public function setFields(array $fields)
+    public function setFields(array $fields): void
     {
         $this->fields = $fields;
     }
@@ -58,7 +58,7 @@ class EventOptions
     /**
      * @param float $value
      */
-    public function setValue($value)
+    public function setValue(float $value): void
     {
         $this->value = $value;
     }

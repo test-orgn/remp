@@ -20,7 +20,7 @@ final class PreviewPresenter extends Presenter
     /** @var ContentGenerator @inject */
     public $contentGenerator;
 
-    public function renderPreview($code)
+    public function renderPreview($code): void
     {
         $template = $this->templatesRepository->getByCode($code);
         if (!$template) {

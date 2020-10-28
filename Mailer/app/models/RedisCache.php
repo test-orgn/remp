@@ -15,7 +15,7 @@ class RedisCache
     /** @var Client */
     private $client;
 
-    public function __construct($host = '127.0.0.1', $port = 6379, $db = 0)
+    public function __construct(string $host = '127.0.0.1', int $port = 6379, int $db = 0)
     {
         $this->host = $host;
         $this->port = $port;

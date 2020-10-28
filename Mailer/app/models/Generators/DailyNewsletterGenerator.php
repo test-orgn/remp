@@ -31,7 +31,7 @@ class DailyNewsletterGenerator implements IGenerator
         $this->engineFactory = $engineFactory;
     }
 
-    public function generateForm(Form $form)
+    public function generateForm(Form $form): void
     {
         $form->addTextArea('posts', 'List of posts')
             ->setAttribute('rows', 4)
@@ -42,22 +42,22 @@ class DailyNewsletterGenerator implements IGenerator
         $form->onSuccess[] = [$this, 'formSucceeded'];
     }
 
-    public function onSubmit(callable $onSubmit)
+    public function onSubmit(callable $onSubmit): void
     {
         $this->onSubmit = $onSubmit;
     }
 
-    public function formSucceeded($form, $values)
+    public function formSucceeded(Form $form, ArrayHash $values): void
     {
         try {
-            $output = $this->process($values);
+            $output = $this->process((array)$values);
             $this->onSubmit->__invoke($output['htmlContent'], $output['textContent']);
         } catch (InvalidUrlException $e) {
             $form->addError($e->getMessage());
         }
     }
 
-    public function process($values)
+    public function process(array $values): array
     {
         $sourceTemplate = $this->sourceTemplatesRepository->find($values->source_template_id);
 
@@ -81,12 +81,12 @@ class DailyNewsletterGenerator implements IGenerator
         ];
     }
 
-    public function getWidgets()
+    public function getWidgets(): array
     {
         return [];
     }
 
-    public function apiParams()
+    public function apiParams(): array
     {
         return [
             new InputParam(InputParam::TYPE_POST, 'source_template_id', InputParam::REQUIRED),

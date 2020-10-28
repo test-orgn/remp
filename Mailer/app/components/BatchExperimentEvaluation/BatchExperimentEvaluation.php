@@ -19,7 +19,7 @@ class BatchExperimentEvaluation extends Control
         $this->batchesRepository = $batchesRepository;
     }
 
-    public function render($batchId)
+    public function render($batchId): void
     {
         $batch = $this->batchesRepository->find($batchId);
         $jobBatchTemplates = $batch->related('mail_job_batch_templates');

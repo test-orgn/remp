@@ -6,7 +6,7 @@ use Nette\DI\CompilerExtension;
 
 class ConfigExtension extends CompilerExtension
 {
-    public function loadConfiguration()
+    public function loadConfiguration(): void
     {
         $config = $this->getConfig();
 

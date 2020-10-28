@@ -37,7 +37,7 @@ class UserSubscriptionVariantsRepository extends Repository
             ->delete();
     }
 
-    public function removeSubscribedVariant(IRow $userSubscription, $variantId)
+    public function removeSubscribedVariant(IRow $userSubscription, int $variantId)
     {
         return $this->getTable()->where([
             'mail_user_subscription_id' => $userSubscription->id,
@@ -45,7 +45,7 @@ class UserSubscriptionVariantsRepository extends Repository
         ])->delete();
     }
 
-    public function addVariantSubscription(IRow $userSubscription, $variantId)
+    public function addVariantSubscription(IRow $userSubscription, int $variantId)
     {
         return $this->getTable()->insert([
             'mail_user_subscription_id' => $userSubscription->id,

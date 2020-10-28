@@ -35,14 +35,14 @@ class MinutaAlertGenerator implements IGenerator
         $this->engineFactory = $engineFactory;
     }
 
-    public function generateForm(Form $form)
+    public function generateForm(Form $form): void
     {
         $form->addText('post', 'Url of post');
 
         $form->onSuccess[] = [$this, 'formSucceeded'];
     }
 
-    public function apiParams()
+    public function apiParams(): array
     {
         return [
             new InputParam(InputParam::TYPE_POST, 'source_template_id', InputParam::REQUIRED),
@@ -50,27 +50,27 @@ class MinutaAlertGenerator implements IGenerator
         ];
     }
 
-    public function onSubmit(callable $onSubmit)
+    public function onSubmit(callable $onSubmit): void
     {
         $this->onSubmit = $onSubmit;
     }
 
-    public function formSucceeded($form, $values)
+    public function formSucceeded(Form $form, ArrayHash $values): void
     {
         try {
-            $output = $this->process($values);
+            $output = $this->process((array) $values);
             $this->onSubmit->__invoke($output['htmlContent'], $output['textContent']);
         } catch (InvalidUrlException $e) {
             $form->addError($e->getMessage());
         }
     }
 
-    public function getWidgets()
+    public function getWidgets(): array
     {
         return [];
     }
 
-    public function process($values)
+    public function process(array $values): array
     {
         $sourceTemplate = $this->sourceTemplatesRepository->find($values->source_template_id);
 

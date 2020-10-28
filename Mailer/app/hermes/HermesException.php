@@ -2,7 +2,9 @@
 
 namespace Remp\MailerModule\Hermes;
 
-class HermesException extends \Exception
+use Exception;
+
+class HermesException extends Exception
 {
 
 }

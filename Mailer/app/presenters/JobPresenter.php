@@ -154,7 +154,7 @@ final class JobPresenter extends BasePresenter
     {
         $request = $this->request->getParameters();
 
-        $listIds = null;
+        $listIds = [];
         foreach ($request['columns'] as $column) {
             if ($column['name'] !== 'batches') {
                 continue;

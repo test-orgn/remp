@@ -50,7 +50,7 @@ final class DashboardPresenter extends BasePresenter
         $this->listsRepository = $listsRepository;
     }
 
-    public function renderDefault()
+    public function renderDefault(): void
     {
         $numOfDays = 30;
         $graphLabels = [];

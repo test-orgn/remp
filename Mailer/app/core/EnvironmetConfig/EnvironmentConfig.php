@@ -8,7 +8,7 @@ class EnvironmentConfig
 
     private $params = [];
 
-    public function linkService($code, $url, $icon)
+    public function linkService(string $code, ?string $url, ?string $icon): void
     {
         if (empty($url)) {
             return;
@@ -19,12 +19,12 @@ class EnvironmentConfig
         ];
     }
 
-    public function getLinkedServices()
+    public function getLinkedServices(): array
     {
         return $this->linkedServices;
     }
 
-    public function get($key)
+    public function get(string $key): ?string
     {
         if (!isset($_ENV[$key])) {
             return null;
@@ -36,7 +36,7 @@ class EnvironmentConfig
         return $val;
     }
 
-    public function getDsn()
+    public function getDsn(): string
     {
         $port = $this->get('DB_PORT');
         if (!$port) {
@@ -49,12 +49,12 @@ class EnvironmentConfig
             ';port=' . $port;
     }
 
-    public function setParam($key, $value)
+    public function setParam(string $key, string $value): void
     {
         $this->params[$key] = $value;
     }
 
-    public function getParam($key, $default = null)
+    public function getParam(string $key, $default = null): ?string
     {
         return $this->params[$key] ?? $default;
     }

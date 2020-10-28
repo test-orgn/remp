@@ -6,6 +6,7 @@ use Kdyby\Autowired\AutowireComponentFactories;
 use Kdyby\Autowired\AutowireProperties;
 use Nette\Application\UI\Presenter;
 use Remp\MailerModule\Components\IMissingConfigurationFactory;
+use Remp\MailerModule\Components\MissingConfiguration;
 use Remp\MailerModule\EnvironmentConfig;
 use Remp\MailerModule\Forms\IFormFactory;
 
@@ -17,12 +18,8 @@ abstract class BasePresenter extends Presenter
     /** @var EnvironmentConfig @inject */
     public $environmentConfig;
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
-    public function startup()
+    public function startup(): void
     {
         parent::startup();
 
@@ -43,7 +40,7 @@ abstract class BasePresenter extends Presenter
      *                         (if null, redirected to Default view ignoring button)
      * @throws \Nette\Application\AbortException
      */
-    protected function redirectBasedOnButtonSubmitted(string $buttonSubmitted, int $itemID = null)
+    protected function redirectBasedOnButtonSubmitted(string $buttonSubmitted, int $itemID = null): void
     {
         if ($buttonSubmitted === IFormFactory::FORM_ACTION_SAVE_CLOSE || is_null($itemID)) {
             $this->redirect('Default');
@@ -54,7 +51,7 @@ abstract class BasePresenter extends Presenter
 
     public function createComponentMissingConfiguration(
         IMissingConfigurationFactory $missingConfigurationFactory
-    ) {
+    ): MissingConfiguration {
         return $missingConfigurationFactory->create();
     }
 }

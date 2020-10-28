@@ -2,6 +2,8 @@
 
 namespace Remp\MailerModule\Api\v1\Handlers\Mailers;
 
-class ProcessException extends \Exception
+use Exception;
+
+class ProcessException extends Exception
 {
 }

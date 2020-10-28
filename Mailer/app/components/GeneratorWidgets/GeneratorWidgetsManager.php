@@ -16,7 +16,7 @@ class GeneratorWidgetsManager
         return $this->widgets[$generator];
     }
 
-    public function getAllWidgets()
+    public function getAllWidgets(): array
     {
         return $this->widgets;
     }

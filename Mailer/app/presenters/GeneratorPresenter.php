@@ -3,8 +3,10 @@
 namespace Remp\MailerModule\Presenters;
 
 use Nette\Application\BadRequestException;
+use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Json;
+use Remp\MailerModule\Components\DataTable;
 use Remp\MailerModule\Components\IDataTableFactory;
 use Remp\MailerModule\Forms\SourceTemplateFormFactory;
 use Remp\MailerModule\Repository\SourceTemplatesRepository;
@@ -24,7 +26,7 @@ final class GeneratorPresenter extends BasePresenter
         $this->sourceTemplateFormFactory = $sourceTemplateFormFactory;
     }
 
-    public function createComponentDataTableDefault(IDataTableFactory $dataTableFactory)
+    public function createComponentDataTableDefault(IDataTableFactory $dataTableFactory): DataTable
     {
         $dataTable = $dataTableFactory->create();
         $dataTable
@@ -49,7 +51,7 @@ final class GeneratorPresenter extends BasePresenter
         return $dataTable;
     }
 
-    public function renderDefaultJsonData()
+    public function renderDefaultJsonData(): void
     {
         $request = $this->request->getParameters();
 
@@ -85,7 +87,7 @@ final class GeneratorPresenter extends BasePresenter
         $this->presenter->sendJson($result);
     }
 
-    public function renderEdit($id)
+    public function renderEdit($id): void
     {
         $generator = $this->sourceTemplatesRepository->find($id);
         if (!$generator) {
@@ -94,16 +96,12 @@ final class GeneratorPresenter extends BasePresenter
         $this->template->generator = $generator;
     }
 
-    public function renderDefault()
-    {
-    }
-
-    public function renderGenerate($id)
+    public function renderGenerate($id): void
     {
         $this->redirect("MailGenerator:default", ['source_template_id' => $id]);
     }
 
-    public function createComponentMailSourceTemplateForm()
+    public function createComponentMailSourceTemplateForm(): Form
     {
         $form = $this->sourceTemplateFormFactory->create(isset($this->params['id']) ? $this->params['id'] : null);
         $this->sourceTemplateFormFactory->onUpdate = function ($form, $mailSourceTemplate, $buttonSubmitted) {

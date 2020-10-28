@@ -2,6 +2,7 @@
 
 namespace Remp\MailerModule\Tracker;
 
+use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Ramsey\Uuid\Uuid;
@@ -18,7 +19,7 @@ class Remp implements ITracker
 
     private $token;
 
-    public function __construct($trackerHost, $token)
+    public function __construct(string $trackerHost, string $token)
     {
         $this->token = $token;
         $this->client = new Client([
@@ -26,7 +27,7 @@ class Remp implements ITracker
         ]);
     }
 
-    public function trackEvent(\DateTime $dateTime, $category, $action, EventOptions $options)
+    public function trackEvent(DateTime $dateTime, string $category, string $action, EventOptions $options)
     {
         $payload = array_filter([
             'system' => [

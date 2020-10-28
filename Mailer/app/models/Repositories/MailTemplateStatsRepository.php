@@ -14,7 +14,7 @@ class MailTemplateStatsRepository extends Repository
      * @param $id
      * @return false|\Nette\Database\Table\ActiveRow
      */
-    public function byDateAndMailTemplateId(\DateTime $date, $id)
+    public function byDateAndMailTemplateId(DateTime $date, int $id)
     {
         return $this->getTable()
             ->where('mail_template_id', $id)
@@ -26,7 +26,7 @@ class MailTemplateStatsRepository extends Repository
      * @param $id
      * @return \Remp\MailerModule\Selection
      */
-    public function byMailTemplateId($id)
+    public function byMailTemplateId(int $id)
     {
         return $this->getTable()
             ->where('mail_template_id', $id);
@@ -36,7 +36,7 @@ class MailTemplateStatsRepository extends Repository
      * @param $id
      * @return \Remp\MailerModule\Selection
      */
-    public function byMailTypeId($id)
+    public function byMailTypeId(int $id)
     {
         return $this->getTable()
             ->where('mail_template.mail_type_id', $id)
@@ -57,7 +57,7 @@ class MailTemplateStatsRepository extends Repository
      * @param DateTime $to
      * @return \Remp\MailerModule\Selection
      */
-    public function getMailTypeGraphData($mailTypeId, DateTime $from, DateTime $to)
+    public function getMailTypeGraphData(int $mailTypeId, DateTime $from, DateTime $to)
     {
         return $this->getTable()
             ->select('

@@ -6,6 +6,7 @@ use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\SmartObject;
+use Nette\Utils\ArrayHash;
 use Remp\MailerModule\Repository\BatchesRepository;
 use Remp\MailerModule\Repository\BatchTemplatesRepository;
 use Remp\MailerModule\Repository\JobsRepository;
@@ -43,7 +44,7 @@ class EditBatchFormFactory implements IFormFactory
         $this->batchTemplatesRepository = $batchTemplatesRepository;
     }
 
-    public function create(ActiveRow $batch)
+    public function create(ActiveRow $batch): Form
     {
         $form = new Form;
         $form->addProtection();
@@ -81,7 +82,7 @@ class EditBatchFormFactory implements IFormFactory
         return $form;
     }
 
-    public function formSucceeded($form, $values)
+    public function formSucceeded(Form $form, ArrayHash $values): void
     {
         $batch = $this->batchesRepository->find($values['id']);
 

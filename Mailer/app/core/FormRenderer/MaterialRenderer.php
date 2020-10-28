@@ -1,4 +1,5 @@
 <?php
+
 namespace Remp\MailerModule\Form\Rendering;
 
 use Nette\Forms\Controls\Button;
@@ -64,11 +65,11 @@ class MaterialRenderer extends DefaultFormRenderer
             'container' => 'div',
         ],
     ];
+
     /**
      * Provides complete form rendering.
-     * @param  Form $form
-     * @param  string 'begin', 'errors', 'ownerrors', 'body', 'end' or empty to render all $mode
-     *
+     * @param Form $form
+     * @param string|null $mode 'begin', 'errors', 'ownerrors', 'body', 'end' or empty to render all
      * @return string
      */
     public function render(Form $form, $mode = null)
@@ -91,7 +92,7 @@ class MaterialRenderer extends DefaultFormRenderer
         return parent::render($form, $mode);
     }
 
-    public function renderControl(\Nette\Forms\IControl $control)
+    public function renderControl(IControl $control)
     {
         if ($control instanceof Checkbox) {
             $el = Html::el("div", [
@@ -109,6 +110,7 @@ class MaterialRenderer extends DefaultFormRenderer
 
     /**
      * Renders single visual row.
+     * @param IControl $control
      * @return string
      */
     public function renderPair(IControl $control)
@@ -136,6 +138,8 @@ class MaterialRenderer extends DefaultFormRenderer
 
     /**
      * Renders 'label' part of visual row of controls.
+     * @param IControl $control
+     * @param bool $animatedLabel
      * @return Html
      */
     public function renderMaterialLabel(IControl $control, bool $animatedLabel)

@@ -12,7 +12,7 @@ class Meta
 
     private $authors;
 
-    public function __construct($title, $description, $image, $authors)
+    public function __construct(?string $title = null, ?string $description = null, ?string $image = null, array $authors = [])
     {
         $this->title = $title;
         $this->description = $description;

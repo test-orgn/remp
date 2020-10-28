@@ -33,7 +33,7 @@ class SourceTemplatesRepository extends Repository
         ]);
     }
 
-    public function exists($title)
+    public function exists(string $title): int
     {
         return $this->getTable()->where('title', $title)->count('*');
     }
@@ -52,7 +52,7 @@ class SourceTemplatesRepository extends Repository
      *
      * @return Selection
      */
-    public function tableFilter($query, $order, $orderDirection, $limit = null, $offset = null)
+    public function tableFilter(string $query, string $order, string $orderDirection, ?int $limit = null, ?int $offset = null)
     {
         $selection = $this->getTable()
             ->order($order . ' ' . strtoupper($orderDirection));

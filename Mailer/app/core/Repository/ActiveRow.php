@@ -2,7 +2,9 @@
 
 namespace Remp\MailerModule;
 
-class ActiveRow extends \Nette\Database\Table\ActiveRow
+use Nette\Database\Table\ActiveRow as NetteActiveRow;
+
+class ActiveRow extends NetteActiveRow
 {
     public function delete()
     {
