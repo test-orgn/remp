@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Remp\MailerModule\Form\Rendering;
 
@@ -76,7 +77,7 @@ class MaterialRenderer extends DefaultFormRenderer
     {
         foreach ($form->getControls() as $control) {
             if ($control instanceof Button) {
-                if (strpos($control->getControlPrototype()->getClass(), 'btn') === false) {
+                if ($control->getControlPrototype()->getClass() === null || strpos($control->getControlPrototype()->getClass(), 'btn') === false) {
                     $control->getControlPrototype()->addClass(empty($usedPrimary) ? 'btn btn-info' : 'btn btn-default');
                     $usedPrimary = true;
                 }

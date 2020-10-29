@@ -39,6 +39,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - **BREAKING**: Replaced `Remp\MailerModule\Replace\ReplaceInterface` with `Remp\MailerModule\ContentGenerator\GeneratorInput\IReplace`. Please see the example implementations and update your implementation accordingly.
 - **BREAKING**: Added php types into most missing places (interfaces change)
 - **BREAKING**: Unified usage of ActiveRow, IRow and DateTime (interfaces change)
+- Added `declare(strict_types=1);` to all php files
 - Fixed possible issue with asset location on Mac when Valet is used for development.
 - Upgraded vlucas/phpdotenv from version 2 to 5 and removed usage of `getenv()` function.
 - Removed obsolete deploy script.

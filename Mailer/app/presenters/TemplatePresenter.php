@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Remp\MailerModule\Presenters;
 
@@ -115,7 +116,7 @@ final class TemplatePresenter extends BasePresenter
             ->count('*');
 
         $templates = $this->templatesRepository
-            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $listIds, $request['length'], $request['start'])
+            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $listIds, intval($request['length']), intval($request['start']))
             ->fetchAll();
 
         $result = [
@@ -189,11 +190,11 @@ final class TemplatePresenter extends BasePresenter
         $request = $this->request->getParameters();
 
         $logsCount = $this->logsRepository
-            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], null, null, $request['templateId'])
+            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], null, null, intval($request['templateId']))
             ->count('*');
 
         $logs = $this->logsRepository
-            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $request['length'], $request['start'], $request['templateId'])
+            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], intval($request['length']), intval($request['start']), intval($request['templateId']))
             ->fetchAll();
 
         $result = [

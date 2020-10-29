@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Tests\Unit\Generator;
 
@@ -23,7 +24,7 @@ class DennikNBestPerformingArticlesGeneratorTest extends TestCase
     <tr>
         <td>{{ item.title }}</td>
         <td>{{ item.description }}</td>
-        <td><img src="{{item.image}}"></td>
+        <td><img src="{{ item.image }}"></td>
         <td>{{ url }}</td>
     </tr>
 {% endfor %}

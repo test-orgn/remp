@@ -38,7 +38,8 @@ webpack:
 		directory: %wwwDir%/assets/vendor
 		publicPath: assets/vendor/
 	manifest:
-		name: mix-manifest.json
+#	    name: www/assets/vendor/mix-manifest.json
+		name: ../../../../../../Projects/Shmelina/remp/Mailer/www/assets/vendor/mix-manifest.json
 
 application:
 	errorPresenter: Mailer:Error
@@ -220,8 +221,19 @@ services:
 	generator:
 		class: Remp\MailerModule\Generators\GeneratorFactory
 		setup:
-			- registerGenerator('empty', 'Empty generator', Remp\MailerModule\Generators\EmptyGenerator())
-			- registerGenerator('best_performing_articles', 'Best performing articles', \Remp\MailerModule\Generators\GenericBestPerformingArticlesGenerator())
+#			- registerGenerator('empty', 'Empty generator', Remp\MailerModule\Generators\EmptyGenerator())
+#			- registerGenerator('best_performing_articles', 'Best performing articles', \Remp\MailerModule\Generators\GenericBestPerformingArticlesGenerator())
+		    - registerGenerator('tyzden_daily', 'Newsfilter', Remp\MailerModule\Generators\NewsfilterGenerator())
+		    - registerGenerator('newsfilter', 'Newsfilter', Remp\MailerModule\Generators\NewsfilterGenerator())
+		    - registerGenerator('mediabriefing', 'MediaBriefing', Remp\MailerModule\Generators\MediaBriefingGenerator())
+		    - registerGenerator('odkaz_mms', 'Odkaz MMS', Remp\MailerModule\Generators\MMSGenerator())
+		    - registerGenerator('url_parser', 'URL parser', Remp\MailerModule\Generators\UrlParserGenerator())
+		    - registerGenerator('minuta_digest', 'Minuta digest', Remp\MailerModule\Generators\MinutaDigestGenerator())
+		    - registerGenerator('minuta_alert', 'Minuta alert', Remp\MailerModule\Generators\MinutaAlertGenerator())
+		    - registerGenerator('minuta_medium', 'Minuta medium', Remp\MailerModule\Generators\MinutaAlertGenerator())
+		    - registerGenerator('daily_newsletter', 'Daily newsletter', Remp\MailerModule\Generators\DailyNewsletterGenerator())
+		    - registerGenerator('tldr', 'tl;dr', Remp\MailerModule\Generators\TldrGenerator())
+		    - registerGenerator('dennike', 'Denník E', Remp\MailerModule\Generators\DennikeGenerator())
 
 	transporter:
 		class: Remp\MailerModule\PageMeta\GuzzleTransport

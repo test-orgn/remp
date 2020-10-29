@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Remp\MailerModule\Presenters;
 
@@ -285,7 +286,7 @@ final class ListPresenter extends BasePresenter
         $request = $this->request->getParameters();
 
         $templatesCount = $this->templatesRepository
-            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $request['listId'], null, null)
+            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $request['listId'])
             ->count('*');
 
         $templates = $this->templatesRepository
@@ -351,7 +352,7 @@ final class ListPresenter extends BasePresenter
             ->count('*');
 
         $variants = $this->listVariantsRepository
-            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $request['listId'], $request['length'], $request['start']);
+            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $request['listId'], intval($request['length']), intval($request['start']));
 
         $result = [
             'recordsTotal' => $this->listVariantsRepository->totalCount(),

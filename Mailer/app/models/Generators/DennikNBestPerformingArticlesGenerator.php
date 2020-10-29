@@ -1,8 +1,8 @@
 <?php
+declare(strict_types=1);
 
 namespace Remp\MailerModule\Generators;
 
-use Latte\Engine;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 use Remp\MailerModule\ContentGenerator\Engine\EngineFactory;

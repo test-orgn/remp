@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Remp\MailerModule\Presenters;
 
@@ -166,11 +167,11 @@ final class JobPresenter extends BasePresenter
         }
 
         $jobsCount = $this->jobsRepository
-            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $listIds, null, null)
+            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $listIds)
             ->count('*');
 
         $jobs = $this->jobsRepository
-            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $listIds, $request['length'], $request['start'])
+            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $listIds, intval($request['length']), intval($request['start']))
             ->fetchAll();
 
         $result = [
@@ -370,7 +371,7 @@ final class JobPresenter extends BasePresenter
 
     public function createComponentNewBatchForm()
     {
-        $form = $this->newBatchFormFactory->create($this->params['id']);
+        $form = $this->newBatchFormFactory->create(intval($this->params['id']));
 
         $this->newBatchFormFactory->onSuccess = function ($job) {
             $this->flashMessage('Batch was added');

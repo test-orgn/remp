@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Remp\MailerModule\Repository;
 
@@ -124,7 +125,7 @@ class LogsRepository extends Repository
      * @param null $templateId
      * @return Selection
      */
-    public function tableFilter($query, $order, $orderDirection, $limit = null, $offset = null, $templateId = null)
+    public function tableFilter(string $query, string $order, string $orderDirection, ?int $limit = null, ?int $offset = null, ?int $templateId = null)
     {
         $selection = $this->getTable()
             ->order($order . ' ' . strtoupper($orderDirection));
