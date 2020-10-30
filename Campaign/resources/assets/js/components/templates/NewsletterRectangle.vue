@@ -60,18 +60,20 @@
                             <span class="input-group-addon"><i class="zmdi zmdi-format-subject"></i></span>
                             <div class="fg-line">
                                 <label for="success" class="fg-label">Success message</label>
-                                <textarea v-model="success" class="form-control fg-input remp-banner-text-input"
-                                          rows="2" name="success" cols="50" id="success"></textarea>
+                                <input v-model="success" class="form-control fg-input remp-banner-text-input"
+                                          name="success" id="success">
                             </div>
+                            <div><small>Replaces button text if submission is successful</small></div>
                         </div><!-- .input-group -->
 
                         <div class="input-group fg-float m-t-30">
                             <span class="input-group-addon"><i class="zmdi zmdi-format-subject"></i></span>
                             <div class="fg-line">
                                 <label for="failure" class="fg-label">Failure message</label>
-                                <textarea v-model="failure" class="form-control fg-input remp-banner-text-input"
-                                          rows="2" name="failure" cols="50" id="failure"></textarea>
+                                <input v-model="failure" class="form-control fg-input remp-banner-text-input"
+                                       name="failure" id="failure">
                             </div>
+                            <div><small>Replaces button text if submission fails</small></div>
                         </div><!-- .input-group -->
 
                         <div class="input-group fg-float m-t-30">
@@ -173,6 +175,8 @@ let props = [
     '_requestHeaders',
     '_paramsTr',
     '_paramsExtra',
+    '_responseFailure',
+    '_timeoutMessage',
     '_textColor'
 
 ];
@@ -190,8 +194,8 @@ export default {
             this.btnSubmit = 'Subscribe';
             this.title = 'Headline';
             this.text = 'Lorem Ipsum...';
-            this.success = 'Newsletter subscription successful. Thank you and welcome on board!';
-            this.failure = 'Unfortunately subscription was not successful. Please find error message below.';
+            this.success = 'Subscription successful';
+            this.failure = 'Subscription failed';
             this.urlTerms = 'https://example.com';
             this.terms = 'By clicking <em>Subscribe</em>, you agree with <a href="${url}">Terms & Conditions</a>';
         }
@@ -221,6 +225,8 @@ export default {
         requestHeaders: null,
         paramsTr: null,
         paramsExtra: null,
+        responseFailure: null,
+        timeoutMessage: null,
 
         colorScheme: "green",
         colorSchemes: {
@@ -335,7 +341,9 @@ export default {
                 requestBody: this.requestBody,
                 requestHeaders: this.requestHeaders,
                 paramsTr: this.paramsTr,
-                paramsExtra: this.paramsExtra
+                paramsExtra: this.paramsExtra,
+                responseFailure: this.responseFailure,
+                timeoutMessage: this.timeoutMessage
             };
             if (this.colorSchemes[this.colorScheme]) {
                 let cs = this.colorSchemes[this.colorScheme];

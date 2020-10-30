@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+- Added new banner type – Newsletter Rectangle remp/remp#618  
+
 ## [0.15.0] - 2020-10-15
 
 ### Project

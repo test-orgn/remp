@@ -230,6 +230,8 @@
                                       :requestHeaders="newsletterRectangleTemplate.requestHeaders"
                                       :paramsTr="newsletterRectangleTemplate.paramsTr"
                                       :paramsExtra="newsletterRectangleTemplate.paramsExtra"
+                                      :responseFailure="newsletterRectangleTemplate.responseFailure"
+                                      :timeoutMessage="newsletterRectangleTemplate.timeoutMessage"
 
                                       :position="position"
                                       :offsetVertical="offsetVertical"

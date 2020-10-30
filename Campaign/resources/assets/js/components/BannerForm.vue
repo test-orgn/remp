@@ -130,6 +130,8 @@
                                            v-bind:_requestHeaders="newsletterRectangleTemplate.requestHeaders"
                                            v-bind:_paramsTr="newsletterRectangleTemplate.paramsTr"
                                            v-bind:_paramsExtra="newsletterRectangleTemplate.paramsExtra"
+                                           v-bind:_responseFailure="newsletterRectangleTemplate.responseFailure"
+                                           v-bind:_timeoutMessage="newsletterRectangleTemplate.timeoutMessage"
                                            v-bind:v-show="show"
             ></newsletter-rectangle-template>
 

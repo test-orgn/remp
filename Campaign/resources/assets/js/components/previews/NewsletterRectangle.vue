@@ -84,9 +84,16 @@ a.newsletter-rectangle-preview-close::after {
     white-space: nowrap;
 }
 
-@media only screen and (max-device-width: 600px) {
-    .newsletter-rectangle-form {
-    }
+.newsletter-rectangle-failure-message {
+    text-align: left;
+}
+
+.newsletter-rectangle-form-button.newsletter-rectangle-failure {
+    color: #b00c28 !important;
+}
+
+.newsletter-rectangle-form-button.newsletter-rectangle-doing-ajax::after {
+    content: '\2022\2022\2022';
 }
 
 </style>
@@ -102,6 +109,7 @@ a.newsletter-rectangle-preview-close::after {
                   v-bind:style="[boxStyles]"
                   v-bind:method="requestMethod"
                   v-bind:action="endpoint"
+                  v-on:submit="_formSubmit"
             >
                 <a class="newsletter-rectangle-preview-close"
                    href="javascript://"
@@ -119,19 +127,25 @@ a.newsletter-rectangle-preview-close::after {
                            type="email" required
                            placeholder="e-mail"
                            id="newsletter-rectangle-form-email"
+                           @keydown="clearLastResponse"
+                           v-bind:class="{'newsletter-rectangle-doing-ajax': doingAjax}"
+                           v-bind:disabled="doingAjax"
                            v-bind:name="_form('email')">
 
                     <input type="hidden" v-bind:name="_form('newsletterId')" v-bind:value="newsletterId">
                     <input type="hidden" v-bind:name="_form('source')" v-bind:value="_source">
                     <input type="hidden" v-bind:name="_form('referer')" v-bind:value="_referer">
                     <input v-for="(value, name) in paramsExtra" type="hidden" v-bind:name="name" v-bind:value="value">
-                    <input class="newsletter-rectangle-form-button" type="submit"
-                           v-bind:name="_form('submit')"
-                           v-bind:value="btnSubmit"
-                           v-bind:style="[buttonStyles]"
-                           v-on:submit="_formSubmit">
+                    <button class="newsletter-rectangle-form-button"
+                           v-bind:disabled="doingAjax || subscriptionSuccess !== null"
+                           v-bind:class="{
+                               'newsletter-rectangle-doing-ajax': doingAjax,
+                               'newsletter-rectangle-failure': subscriptionSuccess === false,
+                               'newsletter-rectangle-success': subscriptionSuccess === true }"
+                           v-bind:style="[buttonStyles]">{{ _btnSubmit }}</button>
                 </fieldset>
 
+                <div class="newsletter-rectangle-failure-message" v-if="subscriptionSuccess === false" v-html="failureMessage"></div>
                 <div class="newsletter-rectangle-disclaimer" v-html="_terms" ></div>
             </form>
 
@@ -176,6 +190,8 @@ export default {
         "requestHeaders",
         "paramsTr",
         "paramsExtra",
+        "responseFailure",
+        "timeoutMessage",
 
         "position",
         "offsetVertical",
@@ -190,6 +206,9 @@ export default {
             visible: true,
             closeTracked: false,
             clickTracked: false,
+            subscriptionSuccess: null,
+            doingAjax: false,
+            failureMessage: "",
         }
     },
     methods: {
@@ -206,16 +225,19 @@ export default {
             let settings = {};
 
             if (!this.useXhr){
-                this.$parent.clicked(event,true);
+                this.$parent.clicked(event, true);
                 return true;
             }
 
             event.preventDefault();
+            event.stopPropagation();
             this.$parent.clicked(event,false);
 
+            data = $form.serializeArray().reduce((obj, item) => ({ ...obj, ...{ [item.name]: item.value } }), {});
+
             switch (this.requestBody){
-                case 'raw-body':
-                    data = JSON.stringify($form.serializeArray());
+                case 'raw-json':
+                    data = JSON.stringify(data);
                     headers = {
                         'Content-Type': 'application/json'
                     }
@@ -229,33 +251,77 @@ export default {
                     }
                     break;
                 case 'x-www-form-urlencoded':
-                    data = $form.serializeArray();
                     headers = {
-                        "Content-Type": "application/x-www-form-urlencoded"
+                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
                     }
                     break;
             }
 
-            jQuery.ajax({
+            settings = {
                 ...settings,
+                timeout: 7500,
                 type: this.requestMethod,
-                url: this.endpoint,
                 headers: {
                     ...headers,
                     ...this.requestHeaders,
                 },
-                data: data,
-                success: (data) => {
-                    console.log(data);
-                },
-                failure: (data) => {
-                    console.log(data);
-                }
-            });
+                data: data
+            };
+
+            this.doingAjax = true;
+            this.subscriptionSuccess = null;
+
+            jQuery.ajax(this.endpoint, settings)
+                .done((data, textStatus, xhr) => {
+
+                    if (this.is_failed(data)){
+                        this.failureMessage = this.get_failure_message(data);
+                        this.subscriptionSuccess = false;
+                    } else {
+                        this.subscriptionSuccess = true;
+                    }
+
+                })
+                .fail((xhr, textStatus, errorThrown) => {
+                    this.failureMessage = '';
+
+                    if (xhr.status !== 0 && xhr.responseJSON){
+                        this.failureMessage = this.get_failure_message(xhr.responseJSON)
+                    }
+
+                    if (this.failureMessage === '') {
+                        this.failureMessage =
+                            (this.timeoutMessage) ? this.timeoutMessage : 'Unable to connect to remote';
+                    }
+                    this.subscriptionSuccess = false;
+                })
+                .always(()=>{
+                    this.doingAjax = false;
+                });
 
         },
-        _renderString: function(str, obj){
+        is_failed: function(data){
+            return (
+                this.responseFailure.hasOwnProperty('status_param') &&
+                this.responseFailure.hasOwnProperty('status_param_value') &&
+                data.hasOwnProperty(this.responseFailure['status_param']) &&
+                data[this.responseFailure['status_param']] === this.responseFailure['status_param_value']
+            );
+        },
+        get_failure_message: function(data){
+            if (
+                this.responseFailure.hasOwnProperty('message_param') &&
+                data.hasOwnProperty(this.responseFailure['message_param'])
+            ) {
+                return data[this.responseFailure['message_param']]
+            }
+            return '';
+        },
+        renderString: function(str, obj){
             return str.replace(/\$\{(.+?)\}/g,(match,p1)=>{return this._index(obj,p1)})
+        },
+        clearLastResponse: function(event){
+            this.subscriptionSuccess = null;
         },
         _index: function(obj,is,value) {
             if (typeof is == 'string')
@@ -269,6 +335,18 @@ export default {
         }
     },
     computed: {
+        _btnSubmit: function(){
+            if (this.doingAjax){
+                return '';
+            }
+            if (this.subscriptionSuccess === true ){
+                return this.success;
+            }
+            if (this.subscriptionSuccess === false){
+                return this.failure;
+            }
+            return this.btnSubmit;
+        },
         _source: function(){
             return 'newsletter-rectangle';
         },
@@ -285,7 +363,7 @@ export default {
                 return '';
             }
             let css = `<style>.newsletter-rectangle-form a {color: ${this.buttonBackgroundColor}</style>`;
-            return this._renderString(this.terms, {url: this.urlTerms}) + css;
+            return this.renderString(this.terms, {url: this.urlTerms}) + css;
         },
         _position: function () {
             if (!this.$parent.customPositioned()) {
@@ -331,6 +409,12 @@ export default {
             }
         },
         buttonStyles: function () {
+            if (this.subscriptionSuccess === true || this.subscriptionSuccess === false){
+                return {
+                    backgroundColor: this.buttonTextColor,
+                    color: this.buttonBackgroundColor,
+                }
+            }
             return {
                 color: this.buttonTextColor,
                 backgroundColor: this.buttonBackgroundColor,

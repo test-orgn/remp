@@ -37,7 +37,7 @@ return [
     | REQUEST BODY
     |--------------------------------------------------------------------------
     |
-    | available options: form-data, x-www-form-urlencoded, raw-json
+    | available options: form-data, x-www-form-urlencoded (default), raw-json
     */
 
     'request_body' => env('NEWSLETTER_BANNER_REQUEST_BODY', 'form-data'),
@@ -47,7 +47,8 @@ return [
     | REQUEST HEADERS
     |--------------------------------------------------------------------------
     |
-    |
+    | Add any HTTP header you need (JSON)
+    | not applicable if used with form-data `request_body`, use `params_extra` instead
     */
 
     'request_headers' => json_decode(env('NEWSLETTER_BANNER_REQUEST_HEADERS', /** @lang JSON */ '
@@ -87,4 +88,34 @@ return [
         }
     ')),
 
+    /*
+    |--------------------------------------------------------------------------
+    | RESPONSE SUCCESS
+    |--------------------------------------------------------------------------
+    |
+    | JSON with following items:
+    | `status_param` - name of param in response JSON containing status
+    | `status_param_value` - value that denotes failed request
+    | `message_param` - name of param in response JSON containing status message
+    |
+    */
+
+    'response_failure' => json_decode(env('NEWSLETTER_BANNER_RESPONSE_FAILURE', /** @lang JSON */ '
+        {
+            "status_param": "status",
+            "status_param_value": "error",
+            "message_param": "message",
+        } 
+    ')),
+
+    /*
+    |--------------------------------------------------------------------------
+    | TIMEOUT MESSAGE
+    |--------------------------------------------------------------------------
+    |
+    | If XHR request fails this message is shown to user
+    |
+    */
+
+    'timeout_message' => env('NEWSLETTER_BANNER_RESPONSE_TIMEOUT_MESSAGE', 'Unable to connect.'),
 ];

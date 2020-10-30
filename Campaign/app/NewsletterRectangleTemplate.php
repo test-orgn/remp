@@ -28,7 +28,9 @@ class NewsletterRectangleTemplate extends AbstractTemplate
         'request_body',
         'request_headers',
         'params_tr',
-        'params_extra'
+        'params_extra',
+        'response_failure',
+        'timeout_message',
     ];
 
     public function getEndpointAttribute()
@@ -64,6 +66,16 @@ class NewsletterRectangleTemplate extends AbstractTemplate
     public function getParamsExtraAttribute()
     {
         return config('newsletterBanners.params_extra');
+    }
+
+    public function getResponseFailureAttribute()
+    {
+        return config('newsletterBanners.response_failure');
+    }
+
+    public function getTimeoutMessageAttribute()
+    {
+        return config('newsletterBanners.timeout_message');
     }
 
     /**
