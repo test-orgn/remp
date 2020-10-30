@@ -117,12 +117,12 @@ class LogsRepository extends Repository
     }
 
     /**
-     * @param $query
-     * @param $order
-     * @param $orderDirection
-     * @param null $limit
-     * @param null $offset
-     * @param null $templateId
+     * @param string $query
+     * @param string $order
+     * @param string $orderDirection
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param int|null $templateId
      * @return Selection
      */
     public function tableFilter(string $query, string $order, string $orderDirection, ?int $limit = null, ?int $offset = null, ?int $templateId = null)

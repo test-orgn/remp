@@ -115,7 +115,7 @@ WHERE mail_job_queue.id IN (
           FROM mail_user_subscriptions
           INNER JOIN mail_user_subscription_variants
             ON mail_user_subscription_variants.mail_user_subscription_id = mail_user_subscriptions.id
-            AND mail_user_subscription_variants.mail_type_variant_id = {$variantId}
+            AND mail_user_subscription_variants.mail_type_variant_id = '{$variantId}'
             AND mail_user_subscriptions.subscribed = 1
         )
   ) t1

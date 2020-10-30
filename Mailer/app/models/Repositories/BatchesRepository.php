@@ -36,7 +36,7 @@ class BatchesRepository extends Repository
             'mail_job_id' => $jobId,
             'method' => $method,
             'max_emails' => $emailCount,
-            'start_at' => new DateTime($startAt),
+            'start_at' => $startAt ? new DateTime($startAt) : new DateTime(),
             'created_at' => new DateTime(),
             'updated_at' => new DateTime(),
         ]);

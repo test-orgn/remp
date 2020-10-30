@@ -6,7 +6,7 @@
     <arg name="encoding" value="UTF-8" />
     <arg name="cache" value=".phpcs.cache" />
     <!-- do not sniff migrations, assets and Tyzden's migration_scripts -->
-    <arg name="ignore" value="*/migrations/*,*/TyzdenModule/commands/migration_scripts/*,*/assets/*" />
+    <arg name="ignore" value="*/migrations/*" />
 
 
     <!-- RULESET ################################################ -->

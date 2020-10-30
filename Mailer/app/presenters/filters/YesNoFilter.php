@@ -5,8 +5,8 @@ namespace Remp\MailerModule\Filters;
 
 class YesNoFilter
 {
-    public function process(int $string): string
+    public function process(int $input): string
     {
-        return (boolean)$string ? 'Yes' : 'No';
+        return (boolean)$input ? 'Yes' : 'No';
     }
 }

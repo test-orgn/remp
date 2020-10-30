@@ -1,8 +1,7 @@
 <?php
 declare(strict_types=1);
-namespace Remp\MailerModule\Segment;
 
-use Remp\MailerModule\ActiveRow;
+namespace Remp\MailerModule\Segment;
 
 class Dummy implements ISegment
 {

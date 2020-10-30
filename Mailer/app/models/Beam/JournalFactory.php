@@ -11,7 +11,7 @@ class JournalFactory
 {
     private $client;
     
-    public function __construct(string $baseUrl, RedisCache $redisCache)
+    public function __construct(?string $baseUrl, ?RedisCache $redisCache)
     {
         if ($baseUrl) {
             $client = new Client([
@@ -25,7 +25,7 @@ class JournalFactory
         }
     }
 
-    public function getClient(): Client
+    public function getClient(): ?Client
     {
         return $this->client;
     }

@@ -29,6 +29,10 @@ class BeamConversionsRepository extends Repository implements IConversionsReposi
 
     public function getBatchTemplatesConversions(array $batchIds, array $mailTemplateCodes): array
     {
+        if (!$this->journal) {
+            return [];
+        }
+
         $request = (new ListRequest('commerce'))
             ->addSelect("step", "utm_campaign", "utm_content", "user_id", "token", "time")
             ->addFilter('step', 'purchase')

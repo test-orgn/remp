@@ -58,7 +58,7 @@ HTML;
     /**
      * @param $linkText
      * @param $linkUrl
-     * @return $this
+     * @return ArticleLocker
      */
     public function setupLockLink(string $linkText, string $linkUrl): self
     {
@@ -68,10 +68,10 @@ HTML;
     }
 
     /**
-     * @param mixed $text
+     * @param string $text
      * @return ArticleLocker
      */
-    public function setLockText(string $text): ArticleLocker
+    public function setLockText(string $text): self
     {
         $this->text = $text;
         return $this;

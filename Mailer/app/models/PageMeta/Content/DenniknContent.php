@@ -66,7 +66,7 @@ class DenniknContent implements ContentInterface
         return new Meta($title, $description, $image, $denniknAuthors);
     }
 
-    private function processImage(string $imageUrl): string
+    private function processImage(?string $imageUrl): string
     {
         if (!$imageUrl) {
             return 'https://static.novydenik.com/2018/11/placeholder_2@2x.png';

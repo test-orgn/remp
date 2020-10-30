@@ -18,7 +18,7 @@ class NovydenikContent implements ContentInterface
         $this->transport = $transport;
     }
 
-    public function fetchUrlMeta($url): ?Meta
+    public function fetchUrlMeta(string $url): ?Meta
     {
         $url = preg_replace('/\\?ref=(.*)/', '', $url);
         try {
@@ -36,7 +36,7 @@ class NovydenikContent implements ContentInterface
         return $meta;
     }
 
-    public function parseMeta($content)
+    public function parseMeta(string $content): Meta
     {
         preg_match_all('/<script id="schema" type="application\/ld\+json">(.*?)<\/script>/', $content, $matches);
 
@@ -66,7 +66,7 @@ class NovydenikContent implements ContentInterface
         return new Meta($title, $description, $image, $denniknAuthors);
     }
 
-    private function processImage($imageUrl)
+    private function processImage(?string $imageUrl): string
     {
         if (!$imageUrl) {
             return 'https://static.novydenik.com/2018/11/placeholder_2@2x.png';

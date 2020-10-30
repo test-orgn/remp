@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
+
 namespace Remp\MailerModule\Segment;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
-use Remp\MailerModule\ActiveRow;
 use Nette\Utils\Json;
 
 class Beam implements ISegment

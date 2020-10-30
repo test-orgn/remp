@@ -50,13 +50,13 @@ trait UtmReplaceTrait
                 if (strcasecmp($key, 'utm_source') === 0) {
                     $finalParams[] = "$key={$utmSource}";
                     $utmSourceAdded = true;
-                } else if (strcasecmp($key, 'utm_medium') === 0) {
+                } elseif (strcasecmp($key, 'utm_medium') === 0) {
                     $finalParams[] = "$key={$utmMedium}";
                     $utmMediumAdded = true;
-                } else if (strcasecmp($key, 'utm_campaign') === 0) {
+                } elseif (strcasecmp($key, 'utm_campaign') === 0) {
                     $finalParams[] = "$key={$utmCampaign}";
                     $utmCampaignAdded = true;
-                } else if (strcasecmp($key, 'utm_content') === 0) {
+                } elseif (strcasecmp($key, 'utm_content') === 0) {
                     $finalParams[] = "$key={$utmContent}";
                     $utmContentAdded = true;
                 } else {

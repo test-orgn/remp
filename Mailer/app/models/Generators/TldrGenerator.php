@@ -280,7 +280,7 @@ class TldrGenerator implements IGenerator
      * @return ArrayHash with data to fill the form with
      * @throws \Remp\MailerModule\Api\v1\Handlers\Mailers\PreprocessException
      */
-    public function preprocessParameters($data): ArrayHash
+    public function preprocessParameters($data): ?ArrayHash
     {
         $output = new ArrayHash();
 
