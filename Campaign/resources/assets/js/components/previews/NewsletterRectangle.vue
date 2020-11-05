@@ -5,20 +5,27 @@
 .newsletter-rectangle-preview-close {
     position: absolute;
     display: block;
-    top: 20px;
-    right: 20px;
+    top: 0;
+    right: 0;
     text-decoration: none;
     font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
+    min-width: 40px;
+    height: 40px;
     letter-spacing: 0.05em;
+    line-height: 40px;
+    padding-right: 3px;
+    text-align: right;
 }
 
 a.newsletter-rectangle-preview-close::after {
-    content: "\00a0\00d7";
+    content: "\00a0\00d7\00a0";
     font-size: 24px;
     vertical-align: sub;
     font-weight: normal;
+    line-height: 40px;
+    display: inline-block;
 }
 
 .newsletter-rectangle-form {
