@@ -163,8 +163,6 @@ a.newsletter-rectangle-preview-close::after {
 </template>
 
 <script>
-import jQuery from 'jquery';
-
 export default {
     name: 'newsletter-rectangle-preview',
     props: [
@@ -198,7 +196,6 @@ export default {
         "paramsTr",
         "paramsExtra",
         "responseFailure",
-        "timeoutMessage",
 
         "position",
         "offsetVertical",
@@ -226,10 +223,12 @@ export default {
             return name;
         },
         _formSubmit: function (event){
-            let $form = jQuery(event.target);
+            let form = event.target;
+            let formData = new FormData(form);
+            let headers = new Headers;
             let data;
-            let headers = {};
             let settings = {};
+            let request;
 
             if (!this.useXhr){
                 this.$parent.clicked(event, true);
@@ -240,72 +239,68 @@ export default {
             event.stopPropagation();
             this.$parent.clicked(event,false);
 
-            data = $form.serializeArray().reduce((obj, item) => ({ ...obj, ...{ [item.name]: item.value } }), {});
-
             switch (this.requestBody){
-                case 'raw-json':
-                    data = JSON.stringify(data);
-                    headers = {
-                        'Content-Type': 'application/json'
-                    }
+                case 'json':
+                    data = JSON.stringify(Object.fromEntries(formData.entries()));
+                    headers.set('Content-Type', 'application/json');
                     break;
                 case 'form-data':
-                    data = $form.serialize();
-                    settings = {
-                        "processData": false,
-                        "mimeType": "multipart/form-data",
-                        "contentType": false,
-                    }
+                    data = formData;
                     break;
                 case 'x-www-form-urlencoded':
-                    headers = {
-                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-                    }
+                    data = new URLSearchParams(formData).toString();
+                    headers.set('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
                     break;
             }
 
+            for (const [key, value] of Object.entries(this.requestHeaders)) {
+                headers.set(key, value.toString());
+            }
+
             settings = {
-                ...settings,
-                timeout: 7500,
-                type: this.requestMethod,
-                headers: {
-                    ...headers,
-                    ...this.requestHeaders,
-                },
-                data: data
+                method: this.requestMethod,
+                headers: headers,
             };
+
+            if (this.requestMethod === 'GET'){
+                let getUrl = new URL(this.endpoint);
+                getUrl.search = new URLSearchParams(formData).toString();
+                request = new Request(getUrl.toString());
+            } else {
+                request = new Request(this.endpoint);
+                settings.body = data;
+            }
 
             this.doingAjax = true;
             this.subscriptionSuccess = null;
 
-            jQuery.ajax(this.endpoint, settings)
-                .done((data, textStatus, xhr) => {
+            fetch(request, settings).then(response => {
+                let contentType = response.headers.get("content-type");
 
-                    if (this.is_failed(data)){
-                        this.failureMessage = this.get_failure_message(data);
-                        this.subscriptionSuccess = false;
-                    } else {
-                        this.subscriptionSuccess = true;
-                    }
-
-                })
-                .fail((xhr, textStatus, errorThrown) => {
-                    this.failureMessage = '';
-
-                    if (xhr.status !== 0 && xhr.responseJSON){
-                        this.failureMessage = this.get_failure_message(xhr.responseJSON)
-                    }
-
-                    if (this.failureMessage === '') {
-                        this.failureMessage =
-                            (this.timeoutMessage) ? this.timeoutMessage : 'Unable to connect to remote';
-                    }
+                if (!response.ok) {
+                    form.dispatchEvent(new CustomEvent('rempXhrError', {type: 'httpResponseStatus', details: response} ));
                     this.subscriptionSuccess = false;
-                })
-                .always(()=>{
-                    this.doingAjax = false;
-                });
+                }
 
+                if (contentType && contentType.includes("application/json")) {
+                    return response.json();
+                }
+
+                throw new TypeError("Response is not a JSON");
+
+            }).then((data) => {
+                if (this.is_failed(data) || this.subscriptionSuccess === false) {
+                    this.failureMessage = this.get_failure_message(data);
+                    this.subscriptionSuccess = false;
+                } else {
+                    this.subscriptionSuccess = true;
+                }
+            }).catch((error) => {
+                this.subscriptionSuccess = false;
+                form.dispatchEvent(new CustomEvent('rempXhrError', {type: 'exception', details: error} ));
+            }).finally(() => {
+                this.doingAjax = false;
+            });
         },
         is_failed: function(data){
             return (

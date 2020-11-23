@@ -37,10 +37,10 @@ return [
     | REQUEST BODY
     |--------------------------------------------------------------------------
     |
-    | available options: form-data, x-www-form-urlencoded (default), raw-json
+    | Available options: x-www-form-urlencoded (default), form-data, json
     */
 
-    'request_body' => env('NEWSLETTER_BANNER_REQUEST_BODY', 'form-data'),
+    'request_body' => env('NEWSLETTER_BANNER_REQUEST_BODY', 'x-www-form-urlencoded'),
 
     /*
     |--------------------------------------------------------------------------
@@ -48,14 +48,13 @@ return [
     |--------------------------------------------------------------------------
     |
     | Add any HTTP header you need (JSON)
-    | not applicable if used with form-data `request_body`, use `params_extra` instead
+    | Not applicable if used with form-data `request_body`, use `params_extra` instead.
     */
 
     'request_headers' => json_decode(env('NEWSLETTER_BANNER_REQUEST_HEADERS', /** @lang JSON */ '
         {
-            "Content-Type": "multipart/form-data"
         }
-    ')),
+    '), NULL, 512, JSON_THROW_ON_ERROR),
 
     /*
     |--------------------------------------------------------------------------
@@ -71,7 +70,7 @@ return [
             "newsletter_id": "newsletter_id",
             "source": "source"
         }
-    ')),
+    '), NULL, 512, JSON_THROW_ON_ERROR),
 
     /*
     |--------------------------------------------------------------------------
@@ -86,7 +85,7 @@ return [
     'params_extra' => json_decode(env('NEWSLETTER_BANNER_PARAMS_EXTRA', /** @lang JSON */ '
         {         
         }
-    ')),
+    '), NULL, 512, JSON_THROW_ON_ERROR),
 
     /*
     |--------------------------------------------------------------------------
@@ -104,18 +103,8 @@ return [
         {
             "status_param": "status",
             "status_param_value": "error",
-            "message_param": "message",
+            "message_param": "message"
         } 
-    ')),
+    '), NULL, 512, JSON_THROW_ON_ERROR),
 
-    /*
-    |--------------------------------------------------------------------------
-    | TIMEOUT MESSAGE
-    |--------------------------------------------------------------------------
-    |
-    | If XHR request fails this message is shown to user
-    |
-    */
-
-    'timeout_message' => env('NEWSLETTER_BANNER_RESPONSE_TIMEOUT_MESSAGE', 'Unable to connect.'),
 ];

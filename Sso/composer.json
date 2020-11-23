@@ -31,6 +31,7 @@
     ],
     "require": {
         "php": "^7.3",
+        "ext-json": "*",
         "arrilot/laravel-widgets": "3.13.1",
         "deployer/deployer": "^6.8",
         "deployer/recipes": "^6.2",
@@ -50,8 +51,7 @@
         "remp/laravel-widgets": "*",
         "tymon/jwt-auth": "^1.0",
         "ukfast/laravel-health-check": "^1.5",
-        "yajra/laravel-datatables-oracle": "v8.13.7",
-        "ext-json": "*"
+        "yajra/laravel-datatables-oracle": "v8.13.7"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.8",

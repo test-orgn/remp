@@ -29,53 +29,47 @@ class NewsletterRectangleTemplate extends AbstractTemplate
         'request_headers',
         'params_tr',
         'params_extra',
-        'response_failure',
-        'timeout_message',
+        'response_failure'
     ];
 
     public function getEndpointAttribute()
     {
-        return config('newsletterBanners.endpoint');
+        return config('newsletter_banners.endpoint');
     }
 
     public function getUseXhrAttribute()
     {
-        return config('newsletterBanners.use_xhr');
+        return config('newsletter_banners.use_xhr');
     }
 
     public function getRequestMethodAttribute()
     {
-        return config('newsletterBanners.request_method');
+        return config('newsletter_banners.request_method');
     }
 
     public function getRequestBodyAttribute()
     {
-        return config('newsletterBanners.request_body');
+        return config('newsletter_banners.request_body');
     }
 
     public function getRequestHeadersAttribute()
     {
-        return config('newsletterBanners.request_headers');
+        return config('newsletter_banners.request_headers');
     }
 
     public function getParamsTrAttribute()
     {
-        return config('newsletterBanners.params_tr');
+        return config('newsletter_banners.params_tr');
     }
 
     public function getParamsExtraAttribute()
     {
-        return config('newsletterBanners.params_extra');
+        return config('newsletter_banners.params_extra');
     }
 
     public function getResponseFailureAttribute()
     {
-        return config('newsletterBanners.response_failure');
-    }
-
-    public function getTimeoutMessageAttribute()
-    {
-        return config('newsletterBanners.timeout_message');
+        return config('newsletter_banners.response_failure');
     }
 
     /**
