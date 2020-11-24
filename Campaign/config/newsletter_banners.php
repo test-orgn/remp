@@ -54,7 +54,7 @@ return [
     'request_headers' => json_decode(env('NEWSLETTER_BANNER_REQUEST_HEADERS', /** @lang JSON */ '
         {
         }
-    '), NULL, 512, JSON_THROW_ON_ERROR),
+    '), null, 512, JSON_THROW_ON_ERROR),
 
     /*
     |--------------------------------------------------------------------------
@@ -70,7 +70,7 @@ return [
             "newsletter_id": "newsletter_id",
             "source": "source"
         }
-    '), NULL, 512, JSON_THROW_ON_ERROR),
+    '), null, 512, JSON_THROW_ON_ERROR),
 
     /*
     |--------------------------------------------------------------------------
@@ -85,7 +85,7 @@ return [
     'params_extra' => json_decode(env('NEWSLETTER_BANNER_PARAMS_EXTRA', /** @lang JSON */ '
         {         
         }
-    '), NULL, 512, JSON_THROW_ON_ERROR),
+    '), null, 512, JSON_THROW_ON_ERROR),
 
     /*
     |--------------------------------------------------------------------------
@@ -105,6 +105,6 @@ return [
             "status_param_value": "error",
             "message_param": "message"
         } 
-    '), NULL, 512, JSON_THROW_ON_ERROR),
+    '), null, 512, JSON_THROW_ON_ERROR),
 
 ];

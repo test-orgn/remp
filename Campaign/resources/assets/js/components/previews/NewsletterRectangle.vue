@@ -30,11 +30,12 @@ a.newsletter-rectangle-preview-close::after {
 
 .newsletter-rectangle-form {
     position: relative;
-    max-width: 420px;
     margin: 0 auto;
     padding: 20px;
     font-size: 14px;
     line-height: 20px;
+    max-width: 420px;
+    overflow: 'hidden';
 }
 
 .newsletter-rectangle-title {
@@ -46,6 +47,7 @@ a.newsletter-rectangle-preview-close::after {
 
 .newsletter-rectangle-text {
     margin-bottom: 15px;
+    white-space: pre-line;
 }
 
 .newsletter-rectangle-form-label {
@@ -95,6 +97,26 @@ a.newsletter-rectangle-preview-close::after {
     text-align: left;
 }
 
+.compact .newsletter-rectangle-title, .compact .newsletter-rectangle-text  {
+    margin-bottom: 10px;
+}
+
+.compact .newsletter-rectangle-form-inputs {
+    margin: 10px 0;
+}
+
+.compact .newsletter-rectangle-form-input, .compact .newsletter-rectangle-form-button {
+    height: 40px;
+}
+.compact .newsletter-rectangle-form-button {
+    line-height: 40px;
+    margin-top: 7px;
+}
+
+.compact.newsletter-rectangle-form {
+    padding: 15px;
+}
+
 .newsletter-rectangle-form-button.newsletter-rectangle-failure {
     color: #b00c28 !important;
 }
@@ -116,6 +138,7 @@ a.newsletter-rectangle-preview-close::after {
                   v-bind:style="[boxStyles]"
                   v-bind:method="requestMethod"
                   v-bind:action="endpoint"
+                  v-bind:class="boxClass"
                   v-on:submit="_formSubmit"
             >
                 <a class="newsletter-rectangle-preview-close"
@@ -239,6 +262,10 @@ export default {
             event.stopPropagation();
             this.$parent.clicked(event,false);
 
+            for (const [key, value] of Object.entries(this.requestHeaders)) {
+                headers.set(key, value.toString());
+            }
+
             switch (this.requestBody){
                 case 'json':
                     data = JSON.stringify(Object.fromEntries(formData.entries()));
@@ -251,10 +278,6 @@ export default {
                     data = new URLSearchParams(formData).toString();
                     headers.set('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
                     break;
-            }
-
-            for (const [key, value] of Object.entries(this.requestHeaders)) {
-                headers.set(key, value.toString());
             }
 
             settings = {
@@ -278,7 +301,13 @@ export default {
                 let contentType = response.headers.get("content-type");
 
                 if (!response.ok) {
-                    form.dispatchEvent(new CustomEvent('rempXhrError', {type: 'httpResponseStatus', details: response} ));
+                    form.dispatchEvent(new CustomEvent('rempXhrError', {
+                        detail: {
+                            type: 'httpResponse',
+                            message: 'Request to newsletter backend API not successful',
+                            response: response
+                        }
+                    }));
                     this.subscriptionSuccess = false;
                 }
 
@@ -289,20 +318,25 @@ export default {
                 throw new TypeError("Response is not a JSON");
 
             }).then((data) => {
-                if (this.is_failed(data) || this.subscriptionSuccess === false) {
-                    this.failureMessage = this.get_failure_message(data);
+                if (this.isFailed(data) || this.subscriptionSuccess === false) {
+                    this.failureMessage = this.getFailureMessage(data);
                     this.subscriptionSuccess = false;
                 } else {
                     this.subscriptionSuccess = true;
                 }
             }).catch((error) => {
                 this.subscriptionSuccess = false;
-                form.dispatchEvent(new CustomEvent('rempXhrError', {type: 'exception', details: error} ));
+                form.dispatchEvent(new CustomEvent('rempXhrError', {
+                    detail: {
+                        type: 'exception',
+                        message: error
+                    }
+                }));
             }).finally(() => {
                 this.doingAjax = false;
             });
         },
-        is_failed: function(data){
+        isFailed: function(data){
             return (
                 this.responseFailure.hasOwnProperty('status_param') &&
                 this.responseFailure.hasOwnProperty('status_param_value') &&
@@ -310,7 +344,7 @@ export default {
                 data[this.responseFailure['status_param']] === this.responseFailure['status_param_value']
             );
         },
-        get_failure_message: function(data){
+        getFailureMessage: function(data){
             if (
                 this.responseFailure.hasOwnProperty('message_param') &&
                 data.hasOwnProperty(this.responseFailure['message_param'])
@@ -319,21 +353,26 @@ export default {
             }
             return '';
         },
-        renderString: function(str, obj){
-            return str.replace(/\$\{(.+?)\}/g,(match,p1)=>{return this._index(obj,p1)})
-        },
         clearLastResponse: function(event){
             this.subscriptionSuccess = null;
         },
-        _index: function(obj,is,value) {
-            if (typeof is == 'string')
-                is=is.split('.');
-            if (is.length===1 && value!==undefined)
+        // Searches str for ${var}, where var is property of obj and replaces it in str with property value
+        renderString: function(str, obj){
+            return str.replace(/\$\{(.+?)\}/g, (match, p1) => {
+                return this._index(obj, p1)
+            });
+        },
+        _index: function(obj, is, value) {
+            if (typeof is == 'string') {
+                is = is.split('.');
+            }
+            if (is.length === 1 && value !== undefined) {
                 return obj[is[0]] = value;
-            else if (is.length===0)
+            } else if (is.length === 0) {
                 return obj;
-            else
-                return this._index(obj[is[0]],is.slice(1), value);
+            } else {
+                return this._index(obj[is[0]], is.slice(1), value);
+            }
         }
     },
     computed: {
@@ -405,9 +444,15 @@ export default {
                 backgroundColor: this.backgroundColor,
                 color: this.textColor,
                 minWidth: this.width || '100px',
-                maxWidth: this.width || '370px',
+                maxWidth: this.width || '',
                 minHeight: this.height || '250px',
-                maxHeight: this.height || '370px',
+                maxHeight: this.height || '',
+            }
+        },
+        boxClass: function (){
+            let width = parseInt(this.width);
+            if (!isNaN(width) && width < 420){
+                return 'compact';
             }
         },
         buttonStyles: function () {

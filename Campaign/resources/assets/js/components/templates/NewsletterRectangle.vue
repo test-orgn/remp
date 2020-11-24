@@ -27,6 +27,7 @@
                                 <input v-model="newsletterId" class="form-control fg-input remp-banner-text-input"
                                        name="newsletter_id" id="newsletter_id">
                             </div>
+                            <div><small v-html="newsletterIdHint"></small></div>
                         </div><!-- .input-group -->
 
                         <div class="input-group fg-float m-t-30">
@@ -176,7 +177,7 @@ let props = [
     '_paramsTr',
     '_paramsExtra',
     '_responseFailure',
-    '_timeoutMessage',
+    '_rempMailerAddr',
     '_textColor'
 
 ];
@@ -226,7 +227,7 @@ export default {
         paramsTr: null,
         paramsExtra: null,
         responseFailure: null,
-        timeoutMessage: null,
+        rempMailerAddr: null,
 
         colorScheme: "green",
         colorSchemes: {
@@ -284,15 +285,29 @@ export default {
                 "width": null,
                 "height": null,
             },
-            "300x300": {
+            "300x250": {
                 "label": "300x250",
                 "width": "300px",
                 "height": "250px",
+            },
+            "336x280": {
+                "label": "336x280",
+                "width": "336px",
+                "height": "280px",
             },
         }
 
     }),
     computed: {
+        newsletterIdHint: function(){
+            if (this.rempMailerAddr !== null){
+                let url = this.rempMailerAddr + '/list';
+                return `Newsletter <code>code</code> as found in REMP Mailer <a href="${url}" target="_blank">Newsletter lists</a>.`;
+
+            }
+            return `It appears you are not using REMP Mailer. In case of another provider, please use newsletter
+                identification code/number that you wish to signup for. In most cases you can find this id in backend.`;
+        },
         colorSchemeOptions: function() {
             let options = [];
             for (let idx in this.colorSchemes) {
@@ -343,7 +358,7 @@ export default {
                 paramsTr: this.paramsTr,
                 paramsExtra: this.paramsExtra,
                 responseFailure: this.responseFailure,
-                timeoutMessage: this.timeoutMessage
+                rempMailerAddr: this.rempMailerAddr
             };
             if (this.colorSchemes[this.colorScheme]) {
                 let cs = this.colorSchemes[this.colorScheme];

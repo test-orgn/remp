@@ -166,7 +166,8 @@ window.remplib = window.remplib || {};
                     requestHeaders: model['newsletter_rectangle_template']['request_headers'] || null,
                     paramsTr: model['newsletter_rectangle_template']['params_tr'] || null,
                     paramsExtra: model['newsletter_rectangle_template']['params_extra'] || null,
-                    responseFailure: model['newsletter_rectangle_template']['response_failure'] || null
+                    responseFailure: model['newsletter_rectangle_template']['response_failure'] || null,
+                    rempMailerAddr: model['newsletter_rectangle_template']['remp_mailer_addr'] || null,
                 }
             }
 

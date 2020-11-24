@@ -29,7 +29,8 @@ class NewsletterRectangleTemplate extends AbstractTemplate
         'request_headers',
         'params_tr',
         'params_extra',
-        'response_failure'
+        'response_failure',
+        'remp_mailer_addr'
     ];
 
     public function getEndpointAttribute()
@@ -70,6 +71,10 @@ class NewsletterRectangleTemplate extends AbstractTemplate
     public function getResponseFailureAttribute()
     {
         return config('newsletter_banners.response_failure');
+    }
+    public function getRempMailerAddrAttribute()
+    {
+        return config('services.remp.mailer.web_addr');
     }
 
     /**

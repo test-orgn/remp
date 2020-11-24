@@ -406,3 +406,21 @@ Returns:
 ## MaxMind - GeoIP2 Lite
 
 This product includes GeoLite2 data created by MaxMind, available from [http://www.maxmind.com](http://www.maxmind.com).
+
+## Newsletter Banner
+
+This banner type allows you to directly collect newsletter subscribers. It supports various types of communication with
+your newsletter backend API. Configuration via `.env`. For full list of available options, see `.env.example`.  
+
+### Custom events
+
+#### rempXhrError
+
+Custom event `rempXhrError` available if requests are configured with XHR. It is fired on `form` element if XHR error 
+is detected. Event contains following extra information in `detail` field: 
+
+| field      | type     | description                                                                                                              |
+|------------|----------|--------------------------------------------------------------------------------------------------------------------------|
+| `type`     | *String* | `httpResponse` - for http response codes != 2XX <br>`exception` - for general error, e.g. response content type not JSON |
+| `message`  | *String* | Error detail                                                                                                             |
+| `response` | *Object* | `fetch` response object, applicable for `httpResponse` type                                                              |
