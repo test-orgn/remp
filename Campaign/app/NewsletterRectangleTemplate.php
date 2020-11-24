@@ -21,6 +21,8 @@ class NewsletterRectangleTemplate extends AbstractTemplate
         'height'
     ];
 
+    private $banner_config = [];
+
     protected $appends = [
         'endpoint',
         'use_xhr',
@@ -33,48 +35,64 @@ class NewsletterRectangleTemplate extends AbstractTemplate
         'remp_mailer_addr'
     ];
 
+    public function __construct(array $attributes = []){
+        $this->banner_config = [
+            'endpoint' => config('newsletter_banners.endpoint'),
+            'use_xhr' => config('newsletter_banners.use_xhr'),
+            'request_method' => config('newsletter_banners.request_method'),
+            'request_body' => config('newsletter_banners.request_body'),
+            'request_headers' => config('newsletter_banners.request_headers'),
+            'params_tr' => config('newsletter_banners.params_tr'),
+            'params_extra' => config('newsletter_banners.params_extra'),
+            'response_failure' => config('newsletter_banners.response_failure'),
+            'remp_mailer_addr' => config('services.remp.mailer.web_addr')
+        ];
+
+        parent::__construct($attributes);
+    }
+
     public function getEndpointAttribute()
     {
-        return config('newsletter_banners.endpoint');
+        return $this->banner_config['endpoint'];
     }
 
     public function getUseXhrAttribute()
     {
-        return config('newsletter_banners.use_xhr');
+        return $this->banner_config['use_xhr'];
     }
 
     public function getRequestMethodAttribute()
     {
-        return config('newsletter_banners.request_method');
+        return $this->banner_config['request_method'];
     }
 
     public function getRequestBodyAttribute()
     {
-        return config('newsletter_banners.request_body');
+        return $this->banner_config['request_body'];
     }
 
     public function getRequestHeadersAttribute()
     {
-        return config('newsletter_banners.request_headers');
+        return $this->banner_config['request_headers'];
     }
 
     public function getParamsTrAttribute()
     {
-        return config('newsletter_banners.params_tr');
+        return $this->banner_config['params_tr'];
     }
 
     public function getParamsExtraAttribute()
     {
-        return config('newsletter_banners.params_extra');
+        return $this->banner_config['params_extra'];
     }
 
     public function getResponseFailureAttribute()
     {
-        return config('newsletter_banners.response_failure');
+        return $this->banner_config['response_failure'];
     }
     public function getRempMailerAddrAttribute()
     {
-        return config('services.remp.mailer.web_addr');
+        return $this->banner_config['remp_mailer_addr'];
     }
 
     /**

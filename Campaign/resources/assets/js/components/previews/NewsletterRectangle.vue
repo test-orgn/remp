@@ -35,7 +35,7 @@ a.newsletter-rectangle-preview-close::after {
     font-size: 14px;
     line-height: 20px;
     max-width: 420px;
-    overflow: 'hidden';
+    overflow: hidden;
 }
 
 .newsletter-rectangle-title {
@@ -56,6 +56,8 @@ a.newsletter-rectangle-preview-close::after {
 
 .newsletter-rectangle-form-inputs {
     margin: 20px 0;
+    border: none;
+    padding: 0;
 }
 
 .newsletter-rectangle-form-input {
@@ -162,7 +164,7 @@ a.newsletter-rectangle-preview-close::after {
                            v-bind:disabled="doingAjax"
                            v-bind:name="_form('email')">
 
-                    <input type="hidden" v-bind:name="_form('newsletterId')" v-bind:value="newsletterId">
+                    <input type="hidden" v-bind:name="_form('newsletter_id')" v-bind:value="newsletterId">
                     <input type="hidden" v-bind:name="_form('source')" v-bind:value="_source">
                     <input type="hidden" v-bind:name="_form('referer')" v-bind:value="_referer">
                     <input v-for="(value, name) in paramsExtra" type="hidden" v-bind:name="name" v-bind:value="value">
@@ -306,7 +308,9 @@ export default {
                             type: 'httpResponse',
                             message: 'Request to newsletter backend API not successful',
                             response: response
-                        }
+                        },
+                        bubbles: true,
+                        cancelable: true
                     }));
                     this.subscriptionSuccess = false;
                 }
@@ -330,7 +334,9 @@ export default {
                     detail: {
                         type: 'exception',
                         message: error
-                    }
+                    },
+                    bubbles: true,
+                    cancelable: true
                 }));
             }).finally(() => {
                 this.doingAjax = false;
@@ -356,7 +362,7 @@ export default {
         clearLastResponse: function(event){
             this.subscriptionSuccess = null;
         },
-        // Searches str for ${var}, where var is property of obj and replaces it in str with property value
+        // Searches str for ${var}, where var is property of obj and replaces it with property value
         renderString: function(str, obj){
             return str.replace(/\$\{(.+?)\}/g, (match, p1) => {
                 return this._index(obj, p1)
@@ -412,10 +418,10 @@ export default {
             }
 
             if (this.positionOptions[this.position]) {
-                var styles = this.positionOptions[this.position].style;
+                let styles = this.positionOptions[this.position].style;
 
-                for (var ii in styles) {
-                    styles[ii] = ((ii == 'top' || ii == 'bottom') ? this.offsetVertical : this.offsetHorizontal) + 'px'
+                for (let ii in styles) {
+                    styles[ii] = ((ii === 'top' || ii === 'bottom') ? this.offsetVertical : this.offsetHorizontal) + 'px'
                 }
 
                 return styles;
