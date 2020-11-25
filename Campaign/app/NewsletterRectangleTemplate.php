@@ -35,7 +35,8 @@ class NewsletterRectangleTemplate extends AbstractTemplate
         'remp_mailer_addr'
     ];
 
-    public function __construct(array $attributes = []){
+    public function __construct(array $attributes = [])
+    {
         $this->banner_config = [
             'endpoint' => config('newsletter_banners.endpoint'),
             'use_xhr' => config('newsletter_banners.use_xhr'),
