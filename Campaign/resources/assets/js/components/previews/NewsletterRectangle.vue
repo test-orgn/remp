@@ -167,6 +167,13 @@ a.newsletter-rectangle-preview-close::after {
                     <input type="hidden" v-bind:name="_form('newsletter_id')" v-bind:value="newsletterId">
                     <input type="hidden" v-bind:name="_form('source')" v-bind:value="_source">
                     <input type="hidden" v-bind:name="_form('referer')" v-bind:value="_referer">
+
+                    <input type="hidden" name="utm_source" value="remp_campaign">
+                    <input type="hidden" name="utm_medium" v-bind:value="displayType">
+                    <input type="hidden" name="utm_campaign" v-if="campaignUuid"  v-bind:value="campaignUuid">
+                    <input type="hidden" name="utm_content" v-if="uuid" v-bind:value="uuid">
+                    <input type="hidden" name="banner_variant" v-if="variantUuid" v-bind:value="variantUuid">
+
                     <input v-for="(value, name) in paramsExtra" type="hidden" v-bind:name="name" v-bind:value="value">
                     <button class="newsletter-rectangle-form-button"
                            v-bind:disabled="doingAjax || subscriptionSuccess !== null"
@@ -195,6 +202,7 @@ export default {
         "positionOptions",
         "show",
         "uuid",
+        "variantUuid",
         "campaignUuid",
         "forcedPosition",
 

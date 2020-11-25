@@ -206,6 +206,7 @@
                                       :show="visible"
                                       :uuid="uuid"
                                       :campaignUuid="campaignUuid"
+                                      :variantUuid="variantUuid"
                                       :forcedPosition="forcedPosition"
 
                                       :newsletterId="newsletterRectangleTemplate.newsletterId"

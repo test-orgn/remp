@@ -410,17 +410,102 @@ This product includes GeoLite2 data created by MaxMind, available from [http://w
 ## Newsletter Banner
 
 This banner type allows you to directly collect newsletter subscribers. It supports various types of communication with
-your newsletter backend API. Configuration via `.env`. For full list of available options, see `.env.example`.  
+your newsletter backend API.   
 
-### Custom events
+In most cases you are going to need your own API proxy, since most newsletter APIs (including REMP CRM) make use of 
+private tokens that should not be exposed to client. In case your newsletter API does not require such, you might not 
+need a proxy. 
+
+### Setup
+
+All configuration options are set via `.env`, refer to `.env.example` for full list of available options. 
+
+#### `NEWSLETTER_BANNER_API_ENDPOINT`
+Put here your API endpoint (direct or your own proxy).
+
+#### `NEWSLETTER_BANNER_USE_XHR`
+In most cases you want to use XHR (a.k.a. AJAX) for communication with your API, however in rare cases of legacy 
+backends you might need a regular POST or GET form submission.  In such case, banner closes itself after submission 
+since it has no way of knowing if operation was successful.
+
+#### `NEWSLETTER_BANNER_REQUEST_METHOD`
+Most of the time APIs require POST requests for data submission. However, if you need GET, you can choose it here. 
+
+#### `NEWSLETTER_BANNER_REQUEST_BODY`  
+Applicable only if POST request method is used, since GET method does not have a body. Default option is 
+`x-www-form-urlencoded`, however depending on your API needs, you can choose traditional `form-data` that creates 
+multipart body or `json`. 
+
+#### `NEWSLETTER_BANNER_REQUEST_HEADERS`  
+You can add HTTP headers of your liking, however keep in mind that content-type header is overridden by 
+`NEWSLETTER_BANNER_REQUEST_BODY` setting. Please make sure you do not put here any internal tokens or keys, since 
+this value is exposed to client.
+
+#### `NEWSLETTER_BANNER_PARAMS_TR`  
+Use this setting (accepts JSON) to change names of params `email`, `newsletter_id` and `source` to whatever your 
+newsletter API implementation consumes – `email` will contain email address of new subscriber, `newsletter_id` is 
+identification of newsletter list your what him/her to subscribe to and `source` will contain banner type. 
+
+#### `NEWSLETTER_BANNER_PARAMS_EXTRA` 
+If you need to add any params to request, put it to this JSON. Also remember not to put here any internal tokens or keys.
+
+#### `NEWSLETTER_BANNER_RESPONSE_FAILURE`
+JSON object for handling response failures. Set `message_param` prop to indicate where failure message is in response 
+object. If your API does not fail with proper HTTP code, you need to set `status_param` and 
+`status_param_value`. Example:
+
+If you have such response from newsletter API:
+```json
+{
+  "status": "error", 
+  "message": "User already exists"
+}
+```
+
+You need to set in `.env`:
+```dotenv
+NEWSLETTER_BANNER_RESPONSE_FAILURE='{"status_param":"status","status_param_value":"error","message_param":"message"}'
+```
+
+Please note that `message` prop of this object should always be set (even if your API responds with proper HTTP code). 
+
+### API requirements
+
+Newsletter API is required to respond with `application/json` content-type. It is also a good habit if it responds with 
+proper HTTP response code, but if it does not, make sure to properly set up `NEWSLETTER_BANNER_RESPONSE_FAILURE` object. 
+If not properly set, banner will consider all responses from API as successful. Your API also should respond with 
+failure message that can be shown to subscriber.
+
+A response is considered successful if:
+- HTTP response code is `2XX`  
+- Content-type is `application/json`  
+- JSON response data is not matching
+    `NEWSLETTER_BANNER_RESPONSE_FAILURE['status_param']==NEWSLETTER_BANNER_RESPONSE_FAILURE['status_param_value']` 
+
+#### Successful  
+
+### Error handling
 
 #### rempXhrError
 
 Custom event `rempXhrError` available if requests are configured with XHR. It is fired on `form` element if XHR error 
 is detected. Event contains following extra information in `detail` field: 
 
-| field      | type     | description                                                                                                              |
-|------------|----------|--------------------------------------------------------------------------------------------------------------------------|
+| field      | type     | description  |
+|------------|----------|--------------|
 | `type`     | *String* | `httpResponse` - for http response codes != 2XX <br>`exception` - for general error, e.g. response content type not JSON |
-| `message`  | *String* | Error detail                                                                                                             |
-| `response` | *Object* | `fetch` response object, applicable for `httpResponse` type                                                              |
+| `message`  | *String* | Error detail |
+| `response` | *Object* | `fetch` response object, applicable for `httpResponse` type |
+
+### UTM tracking
+
+Following params are added to every request or links (e.g. T&C): 
+
+- utm_source: `"remp_campaign"` => always same string
+- utm_medium: `displayType` => overlay or inline
+- utm_campaign: `campaignUuid` => campaign id
+- utm_content: `uuid` => banner id
+- banner_variant: `variantUuid` => banner variant id (in campaign)
+
+If you set these params in `NEWSLETTER_BANNER_PARAMS_EXTRA` settings as well, both are included in signup form. Further 
+behaviour depends on newsletter API implementation. It is strongly discouraged however. 
