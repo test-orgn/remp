@@ -371,7 +371,7 @@ final class JobPresenter extends BasePresenter
 
     public function createComponentNewBatchForm()
     {
-        $form = $this->newBatchFormFactory->create(intval($this->params['id']));
+        $form = $this->newBatchFormFactory->create(isset($this->params['id']) ? intval($this->params['id']) : null);
 
         $this->newBatchFormFactory->onSuccess = function ($job) {
             $this->flashMessage('Batch was added');

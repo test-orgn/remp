@@ -288,7 +288,7 @@ class MailWorkerCommand extends Command
                         sleep(10);
                     }
 
-                    $first_email = new DateTime($batch->first_email_sent_at);
+                    $first_email = $batch->first_email_sent_at ? new DateTime($batch->first_email_sent_at) : null;
                     $now = new DateTime();
 
                     $this->mailJobBatchRepository->update($batch, [

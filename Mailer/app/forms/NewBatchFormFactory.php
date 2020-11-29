@@ -48,7 +48,7 @@ class NewBatchFormFactory
         $this->segmentAggregator = $segmentAggregator;
     }
 
-    public function create(?int $jobId = null)
+    public function create(?int $jobId)
     {
         $form = new Form;
         $form->addProtection();

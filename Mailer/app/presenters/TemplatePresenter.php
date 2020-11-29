@@ -289,7 +289,7 @@ final class TemplatePresenter extends BasePresenter
 
     public function createComponentTemplateTestForm(): Form
     {
-        $form = $this->templateTestFormFactory->create($this->params['id']);
+        $form = $this->templateTestFormFactory->create(intval($this->params['id']));
 
         $presenter = $this;
         $this->templateTestFormFactory->onSuccess = function ($template) use ($presenter) {

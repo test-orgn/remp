@@ -409,7 +409,7 @@ final class ListPresenter extends BasePresenter
 
         // handle newsletter list category change
         if ($this['listForm']['mail_type_category_id']->getValue() !== $categoryId) {
-            $lists = $this->listsRepository->findByCategory($categoryId);
+            $lists = $this->listsRepository->findByCategory(intval($categoryId));
             if ($listId = $this['listForm']['id']->getValue()) {
                 $lists = $lists->where('id != ?', $listId);
             }
