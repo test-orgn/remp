@@ -59,6 +59,7 @@ var Commerce = Type("Commerce", func() {
 		Enum("checkout", "payment", "purchase", "refund")
 	})
 	Attribute("remp_commerce_id", String, "ID of event")
+	Attribute("remp_checkout_id", String, "ID of checkout process")
 	Attribute("checkout", CommerceCheckout, "Used when user enters the checkout process (reviews the cart)")
 	Attribute("payment", CommercePayment, "Used when user confirmed checkout and was redirected to the payment processor")
 	Attribute("purchase", CommercePayment, "Used when payment processor confirms the payment")
