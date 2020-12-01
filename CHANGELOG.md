@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - [Segments]: Removed `offset` parameter for histograms. Beam APIs haven't used it and composite index (new Elastic-7-friendly implementation) doesn't support it yet. remp/remp#622
 - Added filter by content type to conversion, article pageviews, article conversions and author detail listing. remp/remp#769
 - [Tracker]: Added new parameter `remp_checkout_id` to `track/commerce` endpoint of API tracker. remp/crm#1559
+- Added new identifier `remp_checkout_id` into `remplib.js` to identify unique checkout process. remp/crm#1559
 
 ### [Campaign]
 

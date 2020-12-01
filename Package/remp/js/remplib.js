@@ -12,6 +12,8 @@ export default {
 
     rempSessionIDKey: "remp_session_id",
 
+    rempCheckoutIDKey: "remp_checkout_id",
+
     storage: "local_storage", // "cookie", "local_storage"
 
     storageExpiration: {
@@ -74,6 +76,22 @@ export default {
         }
         this.rempPageviewID = remplib.uuidv4();
         return this.rempPageviewID;
+    },
+
+    getRempCheckoutID: function() {
+        let rempCheckoutID = this.getFromStorage(this.rempCheckoutIDKey);
+        if (rempCheckoutID) {
+            return rempCheckoutID;
+        }
+
+        return this.generateRempCheckoutID();
+    },
+
+    generateRempCheckoutID: function() {
+        let rempCheckoutID = remplib.uuidv4();
+        this.setToStorage(this.rempCheckoutIDKey, rempCheckoutID);
+
+        return rempCheckoutID;
     },
 
     uuidv4: function() {
