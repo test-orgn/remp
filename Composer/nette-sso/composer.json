@@ -12,8 +12,8 @@
   "require": {
     "php": ">=7.0",
     "guzzlehttp/guzzle": "^6.2",
-    "nette/security": "^2.4",
-    "nette/http": "^2.4"
+    "nette/security": "^2.4|^3.0",
+    "nette/http": "^2.4|^3.0"
   },
   "require-dev": {
   },

@@ -11,7 +11,9 @@ use Remp\MailerModule\Repository\UserSubscriptionsRepository;
 use Remp\MailerModule\User\IUser;
 use Tomaj\NetteApi\Handlers\BaseHandler;
 use Tomaj\NetteApi\Params\InputParam;
+use Tomaj\NetteApi\Params\RawInputParam;
 use Tomaj\NetteApi\Response\JsonApiResponse;
+use Tomaj\NetteApi\Response\ResponseInterface;
 
 class BulkUserRegisteredHandler extends BaseHandler
 {
@@ -32,14 +34,14 @@ class BulkUserRegisteredHandler extends BaseHandler
         $this->listsRepository = $listsRepository;
     }
 
-    public function params()
+    public function params(): array
     {
         return [
-            new InputParam(InputParam::TYPE_POST_RAW, 'raw')
+            new RawInputParam('raw'),
         ];
     }
 
-    public function handle($params)
+    public function handle(array $params): ResponseInterface
     {
         try {
             $data = Json::decode($params['raw'], Json::FORCE_ARRAY);

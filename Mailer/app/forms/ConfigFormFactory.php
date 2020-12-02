@@ -112,11 +112,11 @@ class ConfigFormFactory
                         $othersContainer->addTextArea($config['name'], $config['display_name'])
                             ->setDefaultValue($config['value'])
                             ->getControlPrototype()
-                            ->addAttributes(['class' => 'auto-size']);
+                            ->ad(['class' => 'auto-size']);
                         break;
                     case Config::TYPE_HTML:
                         $othersContainer->addTextArea($config['name'], $config['display_name'])
-                            ->setAttribute('rows', 15)
+                            ->setHtmlAttribute('rows', 15)
                             ->setDefaultValue($config['value'])
                             ->getControlPrototype()
                             ->addAttributes(['class' => 'html-editor']);

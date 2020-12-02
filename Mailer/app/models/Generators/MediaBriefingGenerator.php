@@ -12,6 +12,7 @@ use Remp\MailerModule\PageMeta\ContentInterface;
 use Remp\MailerModule\Repository\SourceTemplatesRepository;
 use Tomaj\NetteApi\Params\InputParam;
 use GuzzleHttp\Client;
+use Tomaj\NetteApi\Params\PostInputParam;
 
 class MediaBriefingGenerator implements IGenerator
 {
@@ -48,14 +49,14 @@ class MediaBriefingGenerator implements IGenerator
     public function apiParams(): array
     {
         return [
-            new InputParam(InputParam::TYPE_POST, 'source_template_id', InputParam::REQUIRED),
-            new InputParam(InputParam::TYPE_POST, 'mediabriefing_html', InputParam::REQUIRED),
-            new InputParam(InputParam::TYPE_POST, 'url', InputParam::REQUIRED),
-            new InputParam(InputParam::TYPE_POST, 'title', InputParam::REQUIRED),
-            new InputParam(InputParam::TYPE_POST, 'sub_title', InputParam::OPTIONAL),
-            new InputParam(InputParam::TYPE_POST, 'image_url', InputParam::OPTIONAL),
-            new InputParam(InputParam::TYPE_POST, 'image_title', InputParam::OPTIONAL),
-            new InputParam(InputParam::TYPE_POST, 'from', InputParam::REQUIRED),
+            (new PostInputParam('source_template_id'))->isRequired(),
+            (new PostInputParam('mediabriefing_html'))->isRequired(),
+            (new PostInputParam('url'))->isRequired(),
+            (new PostInputParam('title'))->isRequired(),
+            (new PostInputParam('sub_title')),
+            (new PostInputParam('image_url')),
+            (new PostInputParam('image_title')),
+            (new PostInputParam('from'))->isRequired(),
         ];
     }
 
@@ -249,8 +250,8 @@ class MediaBriefingGenerator implements IGenerator
             ->setRequired("Field 'Media Briefing URL' is required.");
 
         $form->addTextArea('mediabriefing_html', 'HTML')
-            ->setAttribute('rows', 20)
-            ->setAttribute('class', 'form-control html-editor')
+            ->setHtmlAttribute('rows', 20)
+            ->setHtmlAttribute('class', 'form-control html-editor')
             ->getControlPrototype();
 
         $form->addHidden('article_id');

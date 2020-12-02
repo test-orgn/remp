@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Remp\MailerModule\Presenters;
 
 use Nette;
+use Nette\Application\IResponse;
 use Nette\Application\Responses;
 use Remp\MailerModule\Components\IMissingConfigurationFactory;
 use Remp\MailerModule\Components\MissingConfiguration;
@@ -23,7 +24,7 @@ class ErrorPresenter implements Nette\Application\IPresenter
         $this->logger = $logger;
     }
 
-    public function run(Nette\Application\Request $request)
+    public function run(Nette\Application\Request $request): IResponse
     {
         $exception = $request->getParameter('exception');
 

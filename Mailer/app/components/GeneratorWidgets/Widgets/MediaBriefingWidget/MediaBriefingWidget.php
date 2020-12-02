@@ -36,7 +36,6 @@ class MediaBriefingWidget extends BaseControl implements IGeneratorWidget
         ListsRepository $listsRepository,
         ContentGenerator $contentGenerator
     ) {
-        parent::__construct();
         $this->layoutsRepository = $layoutsRepository;
         $this->templatesRepository = $templatesRepository;
         $this->session = $session;

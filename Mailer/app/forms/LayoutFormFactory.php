@@ -42,7 +42,7 @@ class LayoutFormFactory implements IFormFactory
             ->setRequired("Field 'Name' is required.");
 
         $form->addTextArea('layout_text', 'Text version')
-            ->setAttribute('rows', 3);
+            ->setHtmlAttribute('rows', 3);
 
         $form->addTextArea('layout_html', 'HTML version');
 

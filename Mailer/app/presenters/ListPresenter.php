@@ -286,11 +286,11 @@ final class ListPresenter extends BasePresenter
         $request = $this->request->getParameters();
 
         $templatesCount = $this->templatesRepository
-            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $request['listId'])
+            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], [$request['listId']])
             ->count('*');
 
         $templates = $this->templatesRepository
-            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $request['listId'], $request['length'], $request['start'])
+            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], [$request['listId']], intval($request['length']), intval($request['start']))
             ->fetchAll();
 
         $result = [
@@ -348,11 +348,11 @@ final class ListPresenter extends BasePresenter
         $request = $this->request->getParameters();
 
         $variantsCount = $this->listVariantsRepository
-            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $request['listId'])
+            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], [$request['listId']])
             ->count('*');
 
         $variants = $this->listVariantsRepository
-            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], $request['listId'], intval($request['length']), intval($request['start']));
+            ->tableFilter($request['search']['value'], $request['columns'][$request['order'][0]['column']]['name'], $request['order'][0]['dir'], [$request['listId']], intval($request['length']), intval($request['start']));
 
         $result = [
             'recordsTotal' => $this->listVariantsRepository->totalCount(),

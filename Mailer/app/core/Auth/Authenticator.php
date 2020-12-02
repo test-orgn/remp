@@ -7,6 +7,7 @@ use Nette\Application\LinkGenerator;
 use Nette\Http\IResponse;
 use Nette\Security\AuthenticationException;
 use Nette\Security\IAuthenticator;
+use Nette\Security\IIdentity;
 use Nette\Security\Identity;
 
 class Authenticator implements IAuthenticator
@@ -30,7 +31,7 @@ class Authenticator implements IAuthenticator
         $this->linkGenerator = $linkGenerator;
     }
 
-    public function authenticate(array $credentials): Identity
+    public function authenticate(array $credentials): IIdentity
     {
         if (empty(array_filter($credentials))) {
             $link = $this->linkGenerator->link('Mailer:Sign:In');

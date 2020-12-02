@@ -20,8 +20,6 @@ class GeneratorWidgets extends BaseControl
         GeneratorWidgetsManager $widgetsManager,
         SourceTemplatesRepository $sourceTemplatesRepository
     ) {
-        parent::__construct();
-
         $this->sourceTemplateId = $sourceTemplateId;
         $this->sourceTemplatesRepository = $sourceTemplatesRepository;
         $this->widgetsManager = $widgetsManager;

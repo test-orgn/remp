@@ -10,6 +10,7 @@ use Remp\MailerModule\Sender;
 use Tomaj\Hermes\Emitter;
 use Tomaj\NetteApi\Handlers\BaseHandler;
 use Tomaj\NetteApi\Response\JsonApiResponse;
+use Tomaj\NetteApi\Response\ResponseInterface;
 
 /**
  * MailgunEventsHandler implements updated version of Mailgun Webhooks using JSON payload instead of POST params.
@@ -46,7 +47,7 @@ class MailgunEventsHandler extends BaseHandler
         $this->emitter = $emitter;
     }
 
-    public function handle($params)
+    public function handle(array $params): ResponseInterface
     {
         $json = file_get_contents("php://input");
         if (empty($json)) {

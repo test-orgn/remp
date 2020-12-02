@@ -6,6 +6,7 @@ namespace Remp\MailerModule\Components\GeneratorWidgets\Widgets;
 use Exception;
 use IteratorAggregate;
 use ArrayIterator;
+use Nette\Database\Table\GroupedSelection;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 
@@ -63,7 +64,7 @@ class DataRow implements IteratorAggregate, IRow
         throw new Exception('Not supported');
     }
 
-    public function getTable()
+    public function getTable(): Selection
     {
         throw new Exception('Not supported');
     }
@@ -73,17 +74,17 @@ class DataRow implements IteratorAggregate, IRow
         throw new Exception('Not supported');
     }
 
-    public function getSignature($throw = true)
+    public function getSignature(bool $throw = true): string
     {
         throw new Exception('Not supported');
     }
 
-    public function related($key, $throughColumn = null)
+    public function related(string $key, string $throughColumn = null): GroupedSelection
     {
         throw new Exception('Not supported');
     }
 
-    public function ref($key, $throughColumn = null)
+    public function ref(string $key, string $throughColumn = null): ?IRow
     {
         throw new Exception('Not supported');
     }

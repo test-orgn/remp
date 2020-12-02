@@ -11,6 +11,7 @@ use Remp\MailerModule\ContentGenerator\Engine\EngineFactory;
 use Remp\MailerModule\PageMeta\ContentInterface;
 use Remp\MailerModule\Repository\SourceTemplatesRepository;
 use Tomaj\NetteApi\Params\InputParam;
+use Tomaj\NetteApi\Params\PostInputParam;
 
 class NewsfilterGenerator implements IGenerator
 {
@@ -49,13 +50,13 @@ class NewsfilterGenerator implements IGenerator
     public function apiParams(): array
     {
         return [
-            new InputParam(InputParam::TYPE_POST, 'source_template_id', InputParam::REQUIRED),
-            new InputParam(InputParam::TYPE_POST, 'newsfilter_html', InputParam::REQUIRED),
-            new InputParam(InputParam::TYPE_POST, 'url', InputParam::REQUIRED),
-            new InputParam(InputParam::TYPE_POST, 'title', InputParam::REQUIRED),
-            new InputParam(InputParam::TYPE_POST, 'editor', InputParam::REQUIRED),
-            new InputParam(InputParam::TYPE_POST, 'summary', InputParam::OPTIONAL),
-            new InputParam(InputParam::TYPE_POST, 'from', InputParam::REQUIRED),
+            (new PostInputParam('source_template_id'))->isRequired(),
+            (new PostInputParam('newsfilter_html'))->isRequired(),
+            (new PostInputParam('url'))->isRequired(),
+            (new PostInputParam('title'))->isRequired(),
+            (new PostInputParam('editor'))->isRequired(),
+            (new PostInputParam('summary')),
+            (new PostInputParam('from'))->isRequired(),
         ];
     }
 
@@ -236,12 +237,12 @@ class NewsfilterGenerator implements IGenerator
             ->setRequired("Field 'Editor' is required.");
 
         $form->addTextArea('summary', 'Summary')
-            ->setAttribute('rows', 3)
+            ->setHtmlAttribute('rows', 3)
             ->setRequired(false);
 
         $form->addTextArea('newsfilter_html', 'HTML')
-            ->setAttribute('rows', 20)
-            ->setAttribute('class', 'form-control html-editor')
+            ->setHtmlAttribute('rows', 20)
+            ->setHtmlAttribute('class', 'form-control html-editor')
             ->getControlPrototype();
 
         $form->addHidden('article_id');

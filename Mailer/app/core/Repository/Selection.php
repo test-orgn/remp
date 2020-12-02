@@ -21,7 +21,7 @@ class Selection extends NetteSelection
     /**
      * @inheritdoc
      */
-    public function createSelectionInstance($table = null)
+    public function createSelectionInstance(string $table = null): NetteSelection
     {
         return new self($this->context, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : null);
     }
@@ -29,7 +29,7 @@ class Selection extends NetteSelection
     /**
      * @inheritdoc
      */
-    public function createRow(array $row): ActiveRow
+    public function createRow(array $row): \Nette\Database\Table\ActiveRow
     {
         return new ActiveRow($row, $this);
     }

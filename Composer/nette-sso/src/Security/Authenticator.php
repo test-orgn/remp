@@ -6,6 +6,7 @@ use Nette\Http\UrlScript;
 use Nette\Security\IAuthenticator;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse;
+use Nette\Security\IIdentity;
 use Nette\Security\Identity;
 
 class Authenticator implements IAuthenticator
@@ -28,9 +29,9 @@ class Authenticator implements IAuthenticator
 
     /**
      * @param array $credentials Only present due to interface limitations, please use empty array.
-     * @return Identity
+     * @return IIdentity
      */
-    public function authenticate(array $credentials)
+    public function authenticate(array $credentials): IIdentity
     {
         $token = $this->request->getQuery('token');
         try {

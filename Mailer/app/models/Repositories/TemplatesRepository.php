@@ -140,7 +140,7 @@ class TemplatesRepository extends Repository
      *
      * @return Selection
      */
-    public function tableFilter($query, $order, $orderDirection, $listIds = null, $limit = null, $offset = null)
+    public function tableFilter(string $query, string $order, string $orderDirection, ?array $listId = null, ?int $limit = null, ?int $offset = null)
     {
         $selection = $this->getTable()
             ->order($order . ' ' . strtoupper($orderDirection));
@@ -154,9 +154,9 @@ class TemplatesRepository extends Repository
             $selection->whereOr($where);
         }
 
-        if ($listIds !== null) {
+        if ($listId !== null) {
             $selection->where([
-                'mail_type_id' => $listIds
+                'mail_type_id' => $listId
             ]);
         }
 

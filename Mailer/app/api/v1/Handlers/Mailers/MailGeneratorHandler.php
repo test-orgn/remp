@@ -7,7 +7,9 @@ use Remp\MailerModule\Generators\GeneratorFactory;
 use Remp\MailerModule\Repository\SourceTemplatesRepository;
 use Tomaj\NetteApi\Handlers\BaseHandler;
 use Tomaj\NetteApi\Params\InputParam;
+use Tomaj\NetteApi\Params\PostInputParam;
 use Tomaj\NetteApi\Response\JsonApiResponse;
+use Tomaj\NetteApi\Response\ResponseInterface;
 
 class MailGeneratorHandler extends BaseHandler
 {
@@ -22,14 +24,14 @@ class MailGeneratorHandler extends BaseHandler
         $this->sourceTemplatesRepository = $sourceTemplatesRepository;
     }
 
-    public function params()
+    public function params(): array
     {
         return [
-            new InputParam(InputParam::TYPE_POST, 'source_template_id', InputParam::REQUIRED),
+            (new PostInputParam('source_template_id'))->isRequired()
         ];
     }
 
-    public function handle($params)
+    public function handle(array $params): ResponseInterface
     {
         $generator = null;
         $template = $this->sourceTemplatesRepository->find($params['source_template_id']);

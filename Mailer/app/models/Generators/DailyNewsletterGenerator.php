@@ -11,6 +11,7 @@ use Remp\MailerModule\ContentGenerator\Engine\EngineFactory;
 use Remp\MailerModule\PageMeta\ContentInterface;
 use Remp\MailerModule\Repository\SourceTemplatesRepository;
 use Tomaj\NetteApi\Params\InputParam;
+use Tomaj\NetteApi\Params\PostInputParam;
 
 class DailyNewsletterGenerator implements IGenerator
 {
@@ -35,10 +36,9 @@ class DailyNewsletterGenerator implements IGenerator
     public function generateForm(Form $form): void
     {
         $form->addTextArea('posts', 'List of posts')
-            ->setAttribute('rows', 4)
-            ->setOption('description', 'Insert Urls for every Minuta - each on separate line')
-            ->getControlPrototype()
-            ->setAttribute('class', 'form-control html-editor');
+            ->setHtmlAttribute('rows', 4)
+            ->setHtmlAttribute('class', 'form-control html-editor')
+            ->setOption('description', 'Insert Urls for every Minuta - each on separate line');
 
         $form->onSuccess[] = [$this, 'formSucceeded'];
     }
@@ -90,8 +90,8 @@ class DailyNewsletterGenerator implements IGenerator
     public function apiParams(): array
     {
         return [
-            new InputParam(InputParam::TYPE_POST, 'source_template_id', InputParam::REQUIRED),
-            new InputParam(InputParam::TYPE_POST, 'posts', InputParam::REQUIRED)
+            (new PostInputParam('source_template_id'))->isRequired(),
+            (new PostInputParam('posts'))->isRequired(),
         ];
     }
 
