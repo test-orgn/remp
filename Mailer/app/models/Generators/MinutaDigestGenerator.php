@@ -9,7 +9,6 @@ use Nette\Utils\Validators;
 use Remp\MailerModule\Api\v1\Handlers\Mailers\InvalidUrlException;
 use Remp\MailerModule\ContentGenerator\Engine\EngineFactory;
 use Remp\MailerModule\PageMeta\ContentInterface;
-use Remp\MailerModule\PageMeta\TransportInterface;
 use Remp\MailerModule\Repository\SourceTemplatesRepository;
 use Tomaj\NetteApi\Params\InputParam;
 
@@ -21,18 +20,14 @@ class MinutaDigestGenerator implements IGenerator
 
     public $onSubmit;
 
-    private $transport;
-
     private $engineFactory;
 
     public function __construct(
         SourceTemplatesRepository $sourceTemplatesRepository,
-        TransportInterface $transporter,
         ContentInterface $content,
         EngineFactory $engineFactory
     ) {
         $this->sourceTemplatesRepository = $sourceTemplatesRepository;
-        $this->transport = $transporter;
         $this->content = $content;
         $this->engineFactory = $engineFactory;
     }
@@ -62,10 +57,10 @@ class MinutaDigestGenerator implements IGenerator
 
     public function process(array $values): array
     {
-        $sourceTemplate = $this->sourceTemplatesRepository->find($values->source_template_id);
+        $sourceTemplate = $this->sourceTemplatesRepository->find($values['source_template_id']);
 
         $posts = [];
-        $urls = explode("\n", $values->posts);
+        $urls = explode("\n", $values['posts']);
         foreach ($urls as $url) {
             $url = trim($url);
             if (Validators::isUrl($url)) {

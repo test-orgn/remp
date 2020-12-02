@@ -66,10 +66,10 @@ class MediaBriefingGenerator implements IGenerator
 
     public function process(array $values): array
     {
-        $sourceTemplate = $this->mailSourceTemplateRepository->find($values->source_template_id);
+        $sourceTemplate = $this->mailSourceTemplateRepository->find($values['source_template_id']);
         $content = $this->content;
 
-        $post = $values->mediabriefing_html;
+        $post = $values['mediabriefing_html'];
         $lockedPost = $this->articleLocker->getLockedPost($post);
 
         list(
@@ -169,11 +169,11 @@ class MediaBriefingGenerator implements IGenerator
 
         $imageHtml = '';
 
-        if (isset($values->image_title) && isset($values->image_url)) {
-            $imageHtml = str_replace('$1', $values->image_url, $captionTemplate);
-            $imageHtml = str_replace('$2', $values->image_title, $imageHtml);
-        } elseif (isset($values->image_url)) {
-            $imageHtml = str_replace('$1', $values->image_url, $imageTemplate);
+        if (isset($values['image_title']) && isset($values['image_url'])) {
+            $imageHtml = str_replace('$1', $values['image_url'], $captionTemplate);
+            $imageHtml = str_replace('$2', $values['image_title'], $imageHtml);
+        } elseif (isset($values['image_url'])) {
+            $imageHtml = str_replace('$1', $values['image_url'], $imageTemplate);
         }
 
         $post = $imageHtml . $post;
@@ -191,17 +191,17 @@ class MediaBriefingGenerator implements IGenerator
         $lockedText = preg_replace('/(\r\n|\r|\n)+/', "\n", $lockedText);
 
         $params = [
-            'title' => $values->title,
-            'sub_title' => $values->sub_title,
-            'url' => $values->url,
+            'title' => $values['title'],
+            'sub_title' => $values['sub_title'],
+            'url' => $values['url'],
             'html' => $post,
             'text' => $text,
         ];
 
         $lockedParams = [
-            'title' => $values->title,
-            'sub_title' => $values->sub_title,
-            'url' => $values->url,
+            'title' => $values['title'],
+            'sub_title' => $values['sub_title'],
+            'url' => $values['url'],
             'html' => $lockedPost,
             'text' => strip_tags($lockedText),
         ];

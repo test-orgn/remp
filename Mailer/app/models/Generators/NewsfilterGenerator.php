@@ -66,10 +66,10 @@ class NewsfilterGenerator implements IGenerator
 
     public function process(array $values): array
     {
-        $sourceTemplate = $this->mailSourceTemplateRepository->find($values->source_template_id);
+        $sourceTemplate = $this->mailSourceTemplateRepository->find($values['source_template_id']);
         $content = $this->content;
 
-        $post = $values->newsfilter_html;
+        $post = $values['newsfilter_html'];
         $post = $this->parseOls($post);
 
         $lockedPost = $this->articleLocker->getLockedPost($post);
@@ -177,18 +177,18 @@ class NewsfilterGenerator implements IGenerator
         $lockedPost = $this->articleLocker->putLockedMessage($lockedPost);
 
         $params = [
-            'title' => $values->title,
-            'editor' => $values->editor,
-            'summary' => $values->summary,
-            'url' => $values->url,
+            'title' => $values['title'],
+            'editor' => $values['editor'],
+            'summary' => $values['summary'],
+            'url' => $values['url'],
             'html' => $post,
             'text' => strip_tags($post),
         ];
         $lockedParams = [
-            'title' => $values->title,
-            'editor' => $values->editor,
-            'url' => $values->url,
-            'summary' => $values->summary,
+            'title' => $values['title'],
+            'editor' => $values['editor'],
+            'summary' => $values['summary'],
+            'url' => $values['url'],
             'html' => $lockedPost,
             'text' => strip_tags($lockedPost),
         ];

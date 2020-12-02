@@ -70,9 +70,9 @@ class DennikeGenerator implements IGenerator
         $this->articleLocker->setLockText('Predplaťte si Denník E a tento newsletter dostanete každé ráno celý.');
         $this->articleLocker->setupLockLink('Pridajte sa k predplatiteľom', 'https://predplatne.dennikn.sk/ecko');
 
-        $sourceTemplate = $this->mailSourceTemplateRepository->find($values->source_template_id);
+        $sourceTemplate = $this->mailSourceTemplateRepository->find($values['source_template_id']);
 
-        $post = $values->dennike_html;
+        $post = $values['dennike_html'];
         $lockedPost = $this->articleLocker->getLockedPost($post);
 
         list(
@@ -173,11 +173,11 @@ class DennikeGenerator implements IGenerator
 
         $imageHtml = '';
 
-        if (isset($values->image_title) && isset($values->image_url)) {
-            $imageHtml = str_replace('$1', $values->image_url, $captionTemplate);
-            $imageHtml = str_replace('$2', $values->image_title, $imageHtml);
-        } elseif (isset($values->image_url)) {
-            $imageHtml = str_replace('$1', $values->image_url, $imageTemplate);
+        if (isset($values['image_title']) && isset($values['image_url'])) {
+            $imageHtml = str_replace('$1', $values['image_url'], $captionTemplate);
+            $imageHtml = str_replace('$2', $values['image_title'], $imageHtml);
+        } elseif (isset($values['image_url'])) {
+            $imageHtml = str_replace('$1', $values['image_url'], $imageTemplate);
         }
 
         $post = $imageHtml . $post;
@@ -195,19 +195,19 @@ class DennikeGenerator implements IGenerator
         $lockedText = preg_replace('/(\r\n|\r|\n)+/', "\n", $lockedText);
 
         $params = [
-            'title' => $values->title,
-            'sub_title' => $values->sub_title,
-            'author' => $values->author,
-            'url' => $values->url,
+            'title' => $values['title'],
+            'sub_title' => $values['sub_title'],
+            'author' => $values['author'],
+            'url' => $values['url'],
             'html' => $post,
             'text' => $text,
         ];
 
         $lockedParams = [
-            'title' => $values->title,
-            'sub_title' => $values->sub_title,
-            'author' => $values->author,
-            'url' => $values->url,
+            'title' => $values['title'],
+            'sub_title' => $values['sub_title'],
+            'author' => $values['>author'],
+            'url' => $values['url'],
             'html' => $lockedPost,
             'text' => strip_tags($lockedText),
         ];

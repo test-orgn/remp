@@ -73,9 +73,9 @@ class MinutaAlertGenerator implements IGenerator
 
     public function process(array $values): array
     {
-        $sourceTemplate = $this->sourceTemplatesRepository->find($values->source_template_id);
+        $sourceTemplate = $this->sourceTemplatesRepository->find($values['source_template_id']);
 
-        $post = $this->content->fetchUrlMeta($values->post);
+        $post = $this->content->fetchUrlMeta($values['post']);
 
         $params = [
             'post' => $post,

@@ -67,10 +67,10 @@ class DennikNBestPerformingArticlesGenerator implements IGenerator
 
     public function process(array $values): array
     {
-        $sourceTemplate = $this->sourceTemplatesRepository->find($values->source_template_id);
+        $sourceTemplate = $this->sourceTemplatesRepository->find($values['source_template_id']);
 
         $items = [];
-        $urls = explode("\n", trim($values->articles));
+        $urls = explode("\n", trim($values['articles']));
         foreach ($urls as $url) {
             $url = trim($url);
             $meta = $this->content->fetchUrlMeta($url);

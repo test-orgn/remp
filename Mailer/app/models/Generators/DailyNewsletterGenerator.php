@@ -60,10 +60,10 @@ class DailyNewsletterGenerator implements IGenerator
 
     public function process(array $values): array
     {
-        $sourceTemplate = $this->sourceTemplatesRepository->find($values->source_template_id);
+        $sourceTemplate = $this->sourceTemplatesRepository->find($values['source_template_id']);
 
         $posts = [];
-        $urls = explode("\n", $values->posts);
+        $urls = explode("\n", $values['posts']);
         foreach ($urls as $url) {
             $url = trim($url);
             if (Validators::isUrl($url)) {

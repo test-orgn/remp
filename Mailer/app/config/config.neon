@@ -38,7 +38,7 @@ webpack:
 		directory: %wwwDir%/assets/vendor
 		publicPath: assets/vendor/
 	manifest:
-	    name: www/assets/vendor/mix-manifest.json
+		name: mix-manifest.json
 
 application:
 	errorPresenter: Mailer:Error

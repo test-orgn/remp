@@ -89,8 +89,6 @@ HTML;
         $htmlOutput = $output['htmlContent'];
         $textOutput = $output['textContent'];
 
-        var_dump($textOutput);
-
         self::assertStringContainsString("here_is_title", $htmlOutput);
         self::assertStringContainsString("here_is_title", $textOutput);
 
