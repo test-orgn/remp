@@ -25,8 +25,8 @@ class JobsRepository extends Repository
 
     public function __construct(
         Context $database,
-        IStorage $cacheStorage = null,
-        BatchesRepository $batchesRepository
+        BatchesRepository $batchesRepository,
+        IStorage $cacheStorage = null
     ) {
         parent::__construct($database, $cacheStorage);
 

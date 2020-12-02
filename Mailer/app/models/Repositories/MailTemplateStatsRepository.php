@@ -10,11 +10,6 @@ class MailTemplateStatsRepository extends Repository
 {
     protected $tableName = 'mail_template_stats';
 
-    /**
-     * @param DateTime $date
-     * @param $id
-     * @return false|\Remp\MailerModule\ActiveRow
-     */
     public function byDateAndMailTemplateId(DateTime $date, int $id)
     {
         return $this->getTable()
@@ -23,20 +18,12 @@ class MailTemplateStatsRepository extends Repository
             ->fetch();
     }
 
-    /**
-     * @param $id
-     * @return \Remp\MailerModule\Selection
-     */
     public function byMailTemplateId(int $id)
     {
         return $this->getTable()
             ->where('mail_template_id', $id);
     }
 
-    /**
-     * @param $id
-     * @return \Remp\MailerModule\Selection
-     */
     public function byMailTypeId(int $id)
     {
         return $this->getTable()
@@ -52,12 +39,6 @@ class MailTemplateStatsRepository extends Repository
         return $this->getTable();
     }
 
-    /**
-     * @param $mailTypeId
-     * @param DateTime $from
-     * @param DateTime $to
-     * @return \Remp\MailerModule\Selection
-     */
     public function getMailTypeGraphData(int $mailTypeId, DateTime $from, DateTime $to)
     {
         return $this->getTable()
@@ -75,11 +56,6 @@ class MailTemplateStatsRepository extends Repository
             ->order('label_date DESC');
     }
 
-    /**
-     * @param DateTime $from
-     * @param DateTime $to
-     * @return \Remp\MailerModule\Selection
-     */
     public function getAllMailTemplatesGraphData(DateTime $from, DateTime $to)
     {
         return $this->getTable()
@@ -92,11 +68,6 @@ class MailTemplateStatsRepository extends Repository
             ->group('date');
     }
 
-    /**
-     * @param DateTime $from
-     * @param DateTime $to
-     * @return \Remp\MailerModule\Selection
-     */
     public function getTemplatesGraphDataGroupedByMailType(DateTime $from, DateTime $to)
     {
         return $this->getTable()

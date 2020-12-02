@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Remp\MailerModule\Sender;
 
-use Nette\Mail\IMailer;
 use Remp\MailerModule\Config\Config;
 use Remp\MailerModule\Mailer\Mailer;
 
@@ -20,20 +19,17 @@ class MailerFactory
         $this->config = $config;
     }
 
-    /**
-     * @param IMailer $mailer
-     */
-    public function addMailer(IMailer $mailer): void
+    public function addMailer(Mailer $mailer): void
     {
         $this->availableMailers[$mailer->getAlias()] = $mailer;
     }
 
     /**
      * @param null|string $alias - If $alias is null, default mailer is returned.
-     * @return IMailer|Mailer
+     * @return Mailer
      * @throws MailerNotExistsException|\Remp\MailerModule\Config\ConfigNotExistsException
      */
-    public function getMailer(?string $alias = null): IMailer
+    public function getMailer(?string $alias = null): Mailer
     {
         if ($alias === null) {
             $alias = $this->config->get('default_mailer');
@@ -47,7 +43,7 @@ class MailerFactory
     }
 
     /**
-     * @return IMailer[]
+     * @return Mailer[]
      */
     public function getAvailableMailers(): array
     {

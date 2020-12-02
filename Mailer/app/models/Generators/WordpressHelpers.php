@@ -167,7 +167,7 @@ class WordpressHelpers
         return $haystack;
     }
 
-    public function wpHTMLSplit(string $input): string
+    public function wpHTMLSplit(string $input): array
     {
         return preg_split($this->getHTMLSplitRegex(), $input, -1, PREG_SPLIT_DELIM_CAPTURE);
     }

@@ -59,12 +59,6 @@ class UnreadArticlesResolver
         }
     }
 
-    /**
-     * @param $templateCode
-     * @param $userId
-     *
-     * @throws UserUnreadArticlesResolveException
-     */
     private function checkValidParameters(string $templateCode, int $userId): void
     {
         // check enough parameters were resolved for template
@@ -76,13 +70,6 @@ class UnreadArticlesResolver
         }
     }
 
-    /**
-     * @param $templateCode
-     * @param $userId
-     *
-     * @return array
-     * @throws UserUnreadArticlesResolveException
-     */
     public function getMailParameters(string $templateCode, int $userId): array
     {
         $this->checkValidParameters($templateCode, $userId);

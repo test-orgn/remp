@@ -11,7 +11,6 @@ use Remp\MultiArmedBandit\Machine;
 
 class BatchExperimentEvaluation extends Control
 {
-    /** @var ActiveRow */
     private $batchesRepository;
 
     public function __construct(BatchesRepository $batchesRepository)

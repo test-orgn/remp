@@ -58,11 +58,11 @@ class MailCache
      * The URL destination itself will be kept, however, e.g. tracking parameters could be added, URL shortener used.
      * Example: https://dennikn.sk/1589603/ could be changed to https://dennikn.sk/1589603/?utm_source=email
      *
-     * @param       $userId
-     * @param       $email
-     * @param       $templateCode
-     * @param       $queueId
-     * @param       $context
+     * @param int $userId
+     * @param string $email
+     * @param string $templateCode
+     * @param int $queueId
+     * @param string|null $context
      * @param array $params contains array of key-value items that will replace variables in email and subject
      *
      * @return bool

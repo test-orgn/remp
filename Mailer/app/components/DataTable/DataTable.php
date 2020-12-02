@@ -13,10 +13,6 @@ class DataTable extends Control
     private $tableSettings = [];
     private $rowActions = [];
 
-    /**
-     * @param $sourceUrl
-     * @return $this
-     */
     public function setSourceUrl(string $sourceUrl): self
     {
         $this->sourceUrl = $sourceUrl;
@@ -34,11 +30,6 @@ class DataTable extends Control
         return $this->sourceUrl;
     }
 
-    /**
-     * @param $colName
-     * @param $colSetting
-     * @return $this
-     */
     public function setColSetting(string $colName, array $colSetting): self
     {
         if (!array_key_exists('priority', $colSetting)) {
@@ -49,11 +40,6 @@ class DataTable extends Control
         return $this;
     }
 
-    /**
-     * @param $colSettingName
-     * @param $colSettingValue
-     * @return $this
-     */
     public function setAllColSetting(string $colSettingName, bool $colSettingValue = true): self
     {
         foreach ($this->colSettings as $colName => $colSetting) {
@@ -63,11 +49,6 @@ class DataTable extends Control
         return $this;
     }
 
-    /**
-     * @param $tableSettingName
-     * @param $tableSetting
-     * @return $this
-     */
     public function setTableSetting(string $tableSettingName, $tableSetting = null): self
     {
         $this->tableSettings[$tableSettingName] = $tableSetting;
@@ -75,12 +56,6 @@ class DataTable extends Control
         return $this;
     }
 
-    /**
-     * @param $actionName
-     * @param $actionClass
-     * @param $actionTitle
-     * @return $this
-     */
     public function setRowAction(string $actionName, string $actionClass, string $actionTitle): self
     {
         $this->rowActions[] = [

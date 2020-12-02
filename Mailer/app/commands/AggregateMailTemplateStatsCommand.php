@@ -110,5 +110,7 @@ class AggregateMailTemplateStatsCommand extends Command
         } else {
             $output->writeln('<info>OK!</info> (no data)');
         }
+
+        return 0;
     }
 }

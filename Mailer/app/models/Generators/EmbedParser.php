@@ -9,18 +9,11 @@ class EmbedParser
 {
     private $videoLinkText;
 
-    /**
-     * @param string $videoLinkText
-     */
     public function setVideoLinkText(?string $videoLinkText = null): void
     {
         $this->videoLinkText = $videoLinkText;
     }
 
-    /**
-     * @param $url
-     * @return array|null
-     */
     private function fetch(string $url): ?array
     {
         $embed = Embed::create($url);
@@ -41,10 +34,6 @@ class EmbedParser
         ];
     }
 
-    /**
-     * @param $link
-     * @return string|null
-     */
     public function parse(string $link): ?string
     {
         if (!isset($link[0]) && empty($link[0])) {
@@ -66,13 +55,6 @@ class EmbedParser
         return null;
     }
 
-    /**
-     * @param $link
-     * @param $title
-     * @param null $image
-     * @param bool $isVideo
-     * @return string
-     */
     public function createEmbedMarkup(string $link, string $title, ?string $image = null, bool $isVideo = false): string
     {
         $html = "<br>";

@@ -211,6 +211,7 @@ class ProcessConversionStatsCommand extends Command
         $output->writeln('');
         $output->writeln('Done');
         $output->writeln('');
+        return 0;
     }
 
     private function getUserData($userIds)

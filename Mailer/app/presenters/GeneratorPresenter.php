@@ -70,7 +70,7 @@ final class GeneratorPresenter extends BasePresenter
             'data' => []
         ];
 
-        /** @var ActiveRow $list */
+        /** @var ActiveRow $sourceTemplate */
         foreach ($sourceTemplates as $sourceTemplate) {
             $editUrl = $this->link('Edit', $sourceTemplate->id);
             $generateUrl = $this->link('Generate', $sourceTemplate->id);

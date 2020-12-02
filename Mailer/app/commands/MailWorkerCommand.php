@@ -135,7 +135,7 @@ class MailWorkerCommand extends Command
                 $msg = "Exiting mail worker: restart instruction received '{$now}'.";
                 $output->write("\n<comment>{$msg}</comment>\n");
                 $this->logger->info($msg);
-                exit;
+                return 0;
             }
 
             $batch = $this->mailJobBatchRepository->getBatchToSend();
@@ -308,12 +308,14 @@ class MailWorkerCommand extends Command
                 }
             }
         }
+
+        return 0;
     }
 
     private function cacheJobs($jobs, $batchId)
     {
         foreach ($jobs as $job) {
-            $this->mailCache->addJob($job->userId, $job->email, $job->templateCode, $batchId, $job->context, $job->params ?? []);
+            $this->mailCache->addJob($job->userId, $job->email, $job->templateCode, $batchId, $job->context, (array) ($job->params ?? []));
         }
     }
 

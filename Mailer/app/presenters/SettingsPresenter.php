@@ -24,8 +24,7 @@ final class SettingsPresenter extends BasePresenter
         $availableMailers =  $this->mailerFactory->getAvailableMailers();
 
         $requiredFields = [];
-        array_walk($availableMailers, function ($mailer, $name) use (&$requiredFields) {
-            /** @var $mailer Mailer */
+        array_walk($availableMailers, function (Mailer $mailer, $name) use (&$requiredFields) {
             $requiredFields[$name] = $mailer->getRequiredOptions();
         });
 

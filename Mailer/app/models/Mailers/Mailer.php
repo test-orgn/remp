@@ -108,8 +108,7 @@ abstract class Mailer implements IMailer
      * Return value is ordered as [transformed params for twig,
      * altered params for mailer header X-Mailer-Template-Params]
      *
-     * @param $params
-     *
+     * @param array $params
      * @return array
      */
     public function transformTemplateParams(array $params): array

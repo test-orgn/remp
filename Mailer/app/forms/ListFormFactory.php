@@ -41,7 +41,7 @@ class ListFormFactory
         if ($id !== null) {
             $list = $this->listsRepository->find($id);
             $defaults = $list->toArray();
-        };
+        }
 
         $categoryPairs = $this->listCategoriesRepository->all()->fetchPairs('id', 'title');
         if (!isset($defaults['mail_type_category_id'])) {

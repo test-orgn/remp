@@ -348,10 +348,10 @@ class Sender
 
     /**
      * @param null|string $alias - If $alias is null, default mailer is returned.
-     * @return IMailer|Mailer
+     * @return Mailer
      * @throws MailerNotExistsException|Config\ConfigNotExistsException
      */
-    public function getMailer($alias = null): IMailer
+    public function getMailer($alias = null): Mailer
     {
         return $this->mailerFactory->getMailer($alias);
     }

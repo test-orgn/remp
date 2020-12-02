@@ -29,5 +29,6 @@ class HeartbeatCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->emitter->emit(new Message('heartbeat', ['executed' => time()]));
+        return 0;
     }
 }

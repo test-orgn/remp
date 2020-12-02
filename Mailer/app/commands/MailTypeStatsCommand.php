@@ -68,5 +68,6 @@ class MailTypeStatsCommand extends Command
         $output->writeln('');
         $output->writeln('Done');
         $output->writeln('');
+        return 0;
     }
 }

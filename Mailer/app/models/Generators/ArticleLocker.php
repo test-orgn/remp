@@ -55,11 +55,6 @@ HTML;
         return str_replace($this->placeholder, $lockedHtml, $post);
     }
 
-    /**
-     * @param $linkText
-     * @param $linkUrl
-     * @return ArticleLocker
-     */
     public function setupLockLink(string $linkText, string $linkUrl): self
     {
         $this->linkText = $linkText;
@@ -67,10 +62,6 @@ HTML;
         return $this;
     }
 
-    /**
-     * @param string $text
-     * @return ArticleLocker
-     */
     public function setLockText(string $text): self
     {
         $this->text = $text;

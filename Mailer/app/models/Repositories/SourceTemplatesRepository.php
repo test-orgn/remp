@@ -44,16 +44,7 @@ class SourceTemplatesRepository extends Repository
         return $this->getTable()->order('sorting DESC')->limit(1);
     }
 
-    /**
-     * @param $query
-     * @param $order
-     * @param $orderDirection
-     * @param null $limit
-     * @param null $offset
-     *
-     * @return Selection
-     */
-    public function tableFilter(string $query, string $order, string $orderDirection, ?int $limit = null, ?int $offset = null)
+    public function tableFilter(string $query, string $order, string $orderDirection, ?int $limit = null, ?int $offset = null): Selection
     {
         $selection = $this->getTable()
             ->order($order . ' ' . strtoupper($orderDirection));

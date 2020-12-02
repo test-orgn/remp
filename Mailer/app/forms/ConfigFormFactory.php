@@ -66,7 +66,6 @@ class ConfigFormFactory
 
         unset($configs[$defaultMailerKey]); // remove to avoid double populating in internal section lower.
 
-        /** @var $mailer Mailer */
         foreach ($this->mailerFactory->getAvailableMailers() as $mailer) {
             $label = explode('\\', $mailers[$mailer->getAlias()]);
             $mailerContainer = $settings->addContainer($label[count($label)-1]);
