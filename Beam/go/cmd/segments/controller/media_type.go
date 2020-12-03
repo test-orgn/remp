@@ -268,17 +268,35 @@ func (e *Event) ToMediaType() (*app.Event, error) {
 	if e.UserAgent != "" {
 		event.User.UserAgent = &e.UserAgent
 	}
+
+	if e.RtmSource != "" {
+		event.RtmSource = &e.UtmSource
+	}
+	if e.RtmCampaign != "" {
+		event.RtmCampaign = &e.RtmCampaign
+	}
+	if e.RtmMedium != "" {
+		event.RtmMedium = &e.RtmMedium
+	}
+	if e.RtmContent != "" {
+		event.RtmContent = &e.RtmContent
+	}
+	// Deprecated, will be removed
 	if e.UtmSource != "" {
 		event.UtmSource = &e.UtmSource
+		event.RtmSource = &e.UtmSource
 	}
 	if e.UtmCampaign != "" {
 		event.UtmCampaign = &e.UtmCampaign
+		event.RtmCampaign = &e.UtmCampaign
 	}
 	if e.UtmMedium != "" {
 		event.UtmMedium = &e.UtmMedium
+		event.RtmMedium = &e.UtmMedium
 	}
 	if e.UtmContent != "" {
 		event.UtmContent = &e.UtmContent
+		event.RtmContent = &e.UtmContent
 	}
 	return event, nil
 }
@@ -337,18 +355,38 @@ func (c *Commerce) ToMediaType() (*app.Commerce, error) {
 		event.User.UserAgent = &c.UserAgent
 	}
 
-	// UTM
+	// During
+
+	if c.RtmCampaign != "" {
+		event.Source.RtmCampaign = &c.RtmCampaign
+	}
+	if c.RtmContent != "" {
+		event.Source.RtmContent = &c.RtmContent
+	}
+	if c.RtmMedium != "" {
+		event.Source.RtmMedium = &c.RtmMedium
+	}
+	if c.RtmSource != "" {
+		event.Source.RtmSource = &c.RtmSource
+	}
+
+	// UTM - deprecated, will be removed
+	// During the deprecation beriod, API returns both RTM and UTM parameters
 	if c.UtmCampaign != "" {
 		event.Source.UtmCampaign = &c.UtmCampaign
+		event.Source.RtmCampaign = &c.UtmCampaign
 	}
 	if c.UtmContent != "" {
 		event.Source.UtmContent = &c.UtmContent
+		event.Source.RtmContent = &c.UtmContent
 	}
 	if c.UtmMedium != "" {
 		event.Source.UtmMedium = &c.UtmMedium
+		event.Source.RtmMedium = &c.UtmMedium
 	}
 	if c.UtmSource != "" {
 		event.Source.UtmSource = &c.UtmSource
+		event.Source.RtmSource = &c.UtmSource
 	}
 
 	// Commerce details
@@ -442,17 +480,36 @@ func (p *Pageview) ToMediaType() (*app.Pageview, error) {
 	}
 
 	// optional tracked params
+	if p.RtmSource != "" {
+		pageview.User.Source.RtmSource = &p.RtmSource
+	}
+	if p.RtmMedium != "" {
+		pageview.User.Source.RtmMedium = &p.RtmMedium
+	}
+	if p.RtmCampaign != "" {
+		pageview.User.Source.RtmCampaign = &p.RtmCampaign
+	}
+	if p.RtmContent != "" {
+		pageview.User.Source.RtmContent = &p.RtmContent
+	}
+
+	// UTM is deprecated and will be removed in favor of RTM parameters
+	// During deprecation period, both RTM and UTM parameters are returned
 	if p.UTMSource != "" {
 		pageview.User.Source.UtmSource = &p.UTMSource
+		pageview.User.Source.RtmSource = &p.UTMSource
 	}
 	if p.UTMMedium != "" {
 		pageview.User.Source.UtmMedium = &p.UTMMedium
+		pageview.User.Source.RtmMedium = &p.UTMMedium
 	}
 	if p.UTMCampaign != "" {
 		pageview.User.Source.UtmCampaign = &p.UTMCampaign
+		pageview.User.Source.RtmCampaign = &p.UTMCampaign
 	}
 	if p.UTMContent != "" {
 		pageview.User.Source.UtmContent = &p.UTMContent
+		pageview.User.Source.RtmContent = &p.UTMContent
 	}
 
 	if p.IP != "" {
