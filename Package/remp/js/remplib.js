@@ -12,7 +12,7 @@ export default {
 
     rempSessionIDKey: "remp_session_id",
 
-    rempCheckoutIDKey: "remp_checkout_id",
+    commerceSessionIDKey: "commerce_session_id",
 
     storage: "local_storage", // "cookie", "local_storage"
 
@@ -78,20 +78,20 @@ export default {
         return this.rempPageviewID;
     },
 
-    getRempCheckoutID: function() {
-        let rempCheckoutID = this.getFromStorage(this.rempCheckoutIDKey);
-        if (rempCheckoutID) {
-            return rempCheckoutID;
+    getCommerceSessionID: function() {
+        let commerceSessionID = this.getFromStorage(this.commerceSessionIDKey);
+        if (commerceSessionID) {
+            return commerceSessionID;
         }
 
-        return this.generateRempCheckoutID();
+        console.warn("remplib: commerce_session_id not found. It has to be generated in the checkout step.");
     },
 
-    generateRempCheckoutID: function() {
-        let rempCheckoutID = remplib.uuidv4();
-        this.setToStorage(this.rempCheckoutIDKey, rempCheckoutID);
+    generateCommerceSessionID: function() {
+        let commerceSessionIDKey = remplib.uuidv4();
+        this.setToStorage(this.commerceSessionIDKey, commerceSessionIDKey);
 
-        return rempCheckoutID;
+        return commerceSessionIDKey;
     },
 
     uuidv4: function() {

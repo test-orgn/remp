@@ -63,8 +63,8 @@ func (c *TrackController) Commerce(ctx *app.CommerceTrackContext) error {
 		tags["remp_commerce_id"] = *ctx.Payload.RempCommerceID
 	}
 
-	if ctx.Payload.RempCheckoutID != nil {
-		tags["remp_checkout_id"] = *ctx.Payload.RempCheckoutID
+	if ctx.Payload.CommerceSessionID != nil {
+		tags["commerce_session_id"] = *ctx.Payload.CommerceSessionID
 	}
 
 	fields := map[string]interface{}{}
