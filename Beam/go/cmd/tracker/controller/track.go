@@ -359,11 +359,35 @@ func (c *TrackController) payloadToTagsFields(system *app.System, user *app.User
 		}
 
 		if user.Source != nil {
+			if user.Source.RtmSource != nil {
+				tags["rtm_source"] = *user.Source.RtmSource
+			}
+			if user.Source.RtmMedium != nil {
+				tags["rtm_medium"] = *user.Source.RtmMedium
+
+				// Rewrite referer medium in case of email RTM medium
+				if *user.Source.RtmMedium == "email" {
+					tags["derived_referer_medium"] = "email"
+				}
+			}
+			if user.Source.RtmCampaign != nil {
+				tags["rtm_campaign"] = *user.Source.RtmCampaign
+			}
+			if user.Source.RtmContent != nil {
+				tags["rtm_content"] = *user.Source.RtmContent
+			}
+			if user.Source.RtmVariant != nil {
+				tags["rtm_variant"] = *user.Source.RtmVariant
+			}
+
+			//
+			// Deprecated utm_ parameters -- support will be removed in the future
+			//
 			if user.Source.UtmSource != nil {
-				tags["utm_source"] = *user.Source.UtmSource
+				tags["rtm_source"] = *user.Source.UtmSource
 			}
 			if user.Source.UtmMedium != nil {
-				tags["utm_medium"] = *user.Source.UtmMedium
+				tags["rtm_medium"] = *user.Source.UtmMedium
 
 				// Rewrite referer medium in case of email UTM
 				if *user.Source.UtmMedium == "email" {
@@ -371,13 +395,13 @@ func (c *TrackController) payloadToTagsFields(system *app.System, user *app.User
 				}
 			}
 			if user.Source.UtmCampaign != nil {
-				tags["utm_campaign"] = *user.Source.UtmCampaign
+				tags["rtm_campaign"] = *user.Source.UtmCampaign
 			}
 			if user.Source.UtmContent != nil {
-				tags["utm_content"] = *user.Source.UtmContent
+				tags["rtm_content"] = *user.Source.UtmContent
 			}
 			if user.Source.BannerVariant != nil {
-				tags["banner_variant"] = *user.Source.BannerVariant
+				tags["rtm_variant"] = *user.Source.BannerVariant
 			}
 		}
 
