@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Generator;
 
 use PHPUnit\Framework\TestCase;
-use Remp\MailerModule\ContentGenerator\Engine\EngineFactory;
-use Remp\MailerModule\Generators\GenericBestPerformingArticlesGenerator;
-use Remp\MailerModule\PageMeta\GenericPageContent;
-use Remp\MailerModule\PageMeta\TransportInterface;
-use Remp\MailerModule\Repository\SourceTemplatesRepository;
+use Remp\MailerModule\Models\ContentGenerator\Engine\EngineFactory;
+use Remp\MailerModule\Models\Generators\GenericBestPerformingArticlesGenerator;
+use Remp\MailerModule\Models\PageMeta\GenericPageContent;
+use Remp\MailerModule\Models\PageMeta\Transport\TransportInterface;
+use Remp\MailerModule\Repositories\SourceTemplatesRepository;
 
 class GenericBestPerformingArticlesGeneratorTest extends TestCase
 {

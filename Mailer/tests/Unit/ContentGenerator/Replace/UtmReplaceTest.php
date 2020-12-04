@@ -5,8 +5,8 @@ namespace Tests\Unit\ContentGenerator\Replace;
 
 use PHPUnit\Framework\TestCase;
 use Remp\MailerModule\Components\GeneratorWidgets\Widgets\DataRow;
-use Remp\MailerModule\ContentGenerator\GeneratorInput;
-use Remp\MailerModule\ContentGenerator\Replace\AnchorUtmReplace;
+use Remp\MailerModule\Models\ContentGenerator\GeneratorInput;
+use Remp\MailerModule\Models\ContentGenerator\Replace\AnchorUtmReplace;
 
 class UtmReplaceTest extends TestCase
 {
