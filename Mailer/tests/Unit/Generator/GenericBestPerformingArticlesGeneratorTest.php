@@ -6,7 +6,7 @@ namespace Tests\Unit\Generator;
 use PHPUnit\Framework\TestCase;
 use Remp\MailerModule\Models\ContentGenerator\Engine\EngineFactory;
 use Remp\MailerModule\Models\Generators\GenericBestPerformingArticlesGenerator;
-use Remp\MailerModule\Models\PageMeta\GenericPageContent;
+use Remp\MailerModule\Models\PageMeta\Content\GenericPageContent;
 use Remp\MailerModule\Models\PageMeta\Transport\TransportInterface;
 use Remp\MailerModule\Repositories\SourceTemplatesRepository;
 
@@ -78,7 +78,10 @@ HTML;
             }
         };
 
-        $generator = new GenericBestPerformingArticlesGenerator($this->sourceTemplateRepository, new GenericPageContent($transport), $this->engineFactory);
+        $generator = new GenericBestPerformingArticlesGenerator(
+            $this->sourceTemplateRepository,
+            new GenericPageContent($transport), $this->engineFactory
+        );
 
         $testObj = [];
         $testObj['source_template_id'] = 1;

@@ -56,7 +56,7 @@ class PhinxRegistrator
 
         $configData = [
             'paths' => [
-                'migrations' => '%%PHINX_CONFIG_DIR%%/../../../migrations',
+                'migrations' => '%%PHINX_CONFIG_DIR%%/../../migrations',
             ],
             'environments' => [
                 'default_migration_table' => 'phinxlog',
