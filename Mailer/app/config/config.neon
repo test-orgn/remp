@@ -227,7 +227,7 @@ services:
 		class: Remp\MailerModule\Models\PageMeta\Transport\GuzzleTransport
 
 	content:
-		class: Remp\MailerModule\Models\PageMeta\Transport\GenericPageContent
+		class: Remp\MailerModule\Models\PageMeta\Content\GenericPageContent
 
 	# Repositories
 	- Remp\MailerModule\Repositories\AuditLogRepository

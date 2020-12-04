@@ -41,15 +41,15 @@ services:
 
     # This is a reference IUser implementation.
     # You should make your own implementation against your CRM system and register it here.
-    - Remp\MailerModule\Models\User\Dummy
+    - Remp\MailerModule\Models\Users\Dummy
 
     # To be able to send an email, you need to provide at least one ISegment implementation
     # You should make your own implementation against your CRM system and register it here.
     segmentAgreggator:
         setup:
             - register(Remp\MailerModule\Models\Segment\Dummy())
-            - register(Remp\MailerModule\Models\Segment\Beam(%remp.beam.segments_addr%))
-            - register(Remp\MailerModule\Models\Segment\Pythia(%remp.pythia.segments_addr%))
+#            - register(Remp\MailerModule\Models\Segment\Beam(%remp.beam.segments_addr%))
+#            - register(Remp\MailerModule\Models\Segment\Pythia(%remp.pythia.segments_addr%))
 
 #    - Remp\MailerModule\Tracker\Remp(%remp.beam.tracker_addr%, %remp.beam.tracker_property_token%)
 #    eventDispatcher:
