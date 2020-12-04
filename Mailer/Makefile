@@ -1,6 +1,6 @@
 #! /usr/bin/make
 
-PHP_FOLDERS=app bin Tests
+PHP_FOLDERS=app bin tests
 
 sniff:
 	php vendor/bin/phpcs --standard=.phpcs_ruleset.xml ${PHP_FOLDERS} -n -p
